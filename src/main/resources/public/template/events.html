@@ -1,0 +1,64 @@
+<h2>[[timeline.name]]</h2>
+
+<div class="twelve cell">
+	<behaviour name="contrib" resource="timeline" class="contextual-buttons row">
+		<div>
+			<button ng-click="newEvent()"><i18n>timelinegenerator.event.new</i18n></button>
+		</div>
+	</behaviour>
+	<div class="row vertical-spacing"></div>
+	<table class="twelve">
+		<tbody>
+			<tr ng-repeat="event in events.all" ng-class="{ checked: event.selected }">
+				<td>
+					<behaviour name="contrib" resource="timeline">
+						<input type="checkbox" ng-model="event.selected" />
+					</behaviour>
+				</td>
+				<td ng-click="openEvent(event)"><i class="prive" ng-if="event.locked"></i> <a>[[event.title]]</a></td>
+			</tr>
+		</tbody>
+
+	</table>
+	<div ng-if="events.all.length === 0">
+		<i18n>timelinegenerator.no.event.created.in.timeline</i18n>
+	</div>
+</div>
+
+<behaviour name="contrib" resource="timeline" class="cell">
+	<section class="toggle-buttons" ng-class="{ hide: events.selection().length === 0 }">
+		<div class="toggle">
+			<div class="row">
+				<button ng-click="confirmRemoveSelectedEvents()"><i18n>remove</i18n></button>
+				<button
+						ng-if="(events.where({ locked: undefined, selected: true}).length > 0 || events.where({ locked: false, selected: true}).length > 0)
+								&& events.where({ locked: true, selected: true}).length === 0"
+						ng-click="events.lockSelection()"
+				>
+					<i18n>lock</i18n>
+				</button>
+				<button ng-if="events.where({ locked: true, selected: true}).length > 0 
+								&& (events.where({ locked: undefined, selected: true}).length === 0 || events.where({ locked: false, selected: true}).length === 0)"
+						ng-click="events.unlockSelection()"
+				>
+					<i18n>unlock</i18n>
+				</button>
+			</div>
+		</div>
+	</section>
+</behaviour>
+
+<div ng-if="display.confirmDeleteSubjects">
+	<lightbox show="display.confirmDeleteSubjects" on-close="cancelRemoveSubjects()">
+		<div class="row" ng-if="events.selection().length === 1">
+			<i18n>forum.confirm.delete.subject</i18n>
+		</div>
+		<div class="row" ng-if="events.selection().length > 1">
+			<i18n>forum.confirm.delete.subjects</i18n>
+		</div>
+		<div class="row">
+			<button class="right-magnet" ng-click="removeSelectedEvents()"><i18n>remove</i18n></button>
+			<input type="button" class="cancel right-magnet" i18n-value="cancel" ng-click="cancelRemoveSubjects()" />
+		</div>
+	</lightbox>
+</div>

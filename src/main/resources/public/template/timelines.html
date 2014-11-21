@@ -1,0 +1,49 @@
+<h1><i18n ng-click="openMainPage()">timelinegenerator.title</i18n></h1>
+
+<div class="patchwork">
+	<div class="twelve cell">
+		<button ng-click="newTimeline()"><i18n>timelinegenerator.timeline.new</i18n></button>
+		<i class="open-right right-magnet big-hidden" ng-click="template.close('main')"></i>
+	</div>
+	<hr />
+	<div class="row" ng-repeat="tl in timelines.all" ng-click="openTimeline(tl)" ng-class="{ selected: tl === timeline }">
+		<div class="cell">
+			<img skin-src="/img/illustrations/forum-default.png" ng-if="(tl.icon === undefined)" class="cell" />
+			<img ng-src="[[tl.icon]]?thumbnail=120x120" ng-if="tl.icon !== undefined" class="cell" />
+		</div>
+		<article class="six cell">
+			<h1>[[tl.name]]</h1>
+			
+			<div class="small-hidden bottom-locked">
+				<behaviour name="manage" resource="tl">
+					<button ng-click="editTimeline(tl, $event)"><i18n>edit</i18n></button>
+					<button ng-click="confirmRemoveTimeline(tl, $event)"><i18n>remove</i18n></button>
+					<button ng-click="shareTimeline(tl, $event)"><i18n>share</i18n></button>
+				</behaviour>
+			</div>
+		</article>
+	</div>
+</div>
+
+<!-- Lightbox : Thread share -->
+<div ng-if="display.showPanel">
+	<lightbox show="display.showPanel" on-close="display.showPanel = false;">
+		<share-panel app-prefix="'timelinegenerator'" resources="timeline"></share-panel>
+	</lightbox>
+</div>
+
+
+<div ng-if="display.confirmDeleteTimelines">
+	<lightbox show="display.confirmDeleteTimelines" on-close="cancelRemoveTimeline()">
+		<div class="row" ng-if="categories.selection().length === 1">
+			<i18n>forum.confirm.delete.category</i18n>
+		</div>
+		<div class="row" ng-if="categories.selection().length > 1">
+			<i18n>forum.confirm.delete.categories</i18n>
+		</div>
+		<div class="row">
+			<button class="right-magnet" ng-click="removeSelectedTimelines()"><i18n>remove</i18n></button>
+			<input type="button" class="cancel right-magnet" i18n-value="cancel" ng-click="cancelRemoveTimeline()" />
+		</div>
+	</lightbox>
+</div>

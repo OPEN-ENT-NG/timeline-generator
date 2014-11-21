@@ -1,0 +1,35 @@
+<h1><i18n ng-click="openMainPage()">timelinegenerator.title</i18n></h1>
+
+<h2 ng-if="timeline._id"><i18n>edit</i18n></h2>
+<h2 ng-if="!timeline._id"><i18n>timelinegenerator.create.a.timeline</i18n></h2>
+
+<article class="twelve cell">
+	<div class="two cell">
+		<image-select ng-model="category.icon" default="/img/illustrations/forum-default.png" thumbnails="[{ width: 290, height: 290 }]" class="absolute"></image-select>
+	</div>
+	<div class="ten cell height-two left-two">
+		<div class="absolute">
+			<div class="row">
+				<div class="twelve cell horizontal-spacing-twice">
+					<div class="row">
+						<label class="three cell"><i18n>timelinegenerator.timeline</i18n></label>
+						<input type="text" class="nine cell" ng-model="timeline.name" required />
+					</div>
+				</div>
+			</div>
+			<div class="row bottom-locked">
+				<div class="twelve cell horizontal-spacing-twice">
+					<button ng-if="timeline._id" class="right-magnet" ng-click="saveTimelineEdit()">
+						<i18n>save</i18n>
+					</button>
+					<button ng-if="!timeline._id" class="right-magnet" ng-click="saveTimelineEdit()">
+						<i18n>save</i18n>
+					</button>
+					<input type="button" class="cancel right-magnet" i18n-value="cancel" ng-click="cancelTimelineEdit()" />
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+</article>
