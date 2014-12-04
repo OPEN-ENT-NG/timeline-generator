@@ -39,6 +39,13 @@ public class TimelineController extends MongoDbControllerHelper {
 	}
 	
 
+	@Get("/timeline/:id/data")
+	@SecuredAction(value = "timelinegenerator.read", type = ActionType.RESOURCE)
+	public void getTimelineData(HttpServerRequest request) {
+		retrieve(request);
+	}
+	
+
 	@Post("/timelines")
 	@SecuredAction("timelinegenerator.create")
 	public void createTimeline(HttpServerRequest request) {

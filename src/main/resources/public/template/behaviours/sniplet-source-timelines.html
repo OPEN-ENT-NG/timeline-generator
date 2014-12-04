@@ -1,0 +1,16 @@
+
+<ul ng-repeat="timeline in timelines" class="thought-out-actions">
+	<li ng-click="setSource(timeline)">
+		<h2>[[timeline.headline]]</h2>
+	</li>
+</ul>
+
+<div ng-repeat="timeline in timelines" class="timelines-sniplet">
+	<div class="row">
+		<h2 class="upper-title">[[timeline.headline]]</h2>
+		<em class="subtitle">
+			<i18n>timeline.author</i18n> <a href="/directory/annuaire#[[timeline.author.userId]]">[[timeline.author.username]]</a> 
+			[[formatDate(timeline.created.$date)]]
+		</em>
+	</div>
+</div>

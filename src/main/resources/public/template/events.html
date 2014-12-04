@@ -1,11 +1,13 @@
 <h2>[[timeline.name]]</h2>
 
 <div class="twelve cell">
-	<behaviour name="contrib" resource="timeline" class="contextual-buttons row">
-		<div>
+	<div>
+		<behaviour name="contrib" resource="timeline" class="contextual-buttons row">
 			<button ng-click="newEvent()"><i18n>timelinegenerator.event.new</i18n></button>
-		</div>
-	</behaviour>
+		</behaviour>
+		<button ng-click="openTimelineViewer(timeline)"><i18n>timelinegenerator.timeline.view</i18n></button>
+	</div>
+	
 	<div class="row vertical-spacing"></div>
 	<table class="twelve">
 		<tbody>
@@ -15,7 +17,7 @@
 						<input type="checkbox" ng-model="event.selected" />
 					</behaviour>
 				</td>
-				<td ng-click="openEvent(event)"><i class="prive" ng-if="event.locked"></i> <a>[[event.title]]</a></td>
+				<td ng-click="editEvent(event, $event)"><i class="prive" ng-if="event.locked"></i> <a>[[event.headline]]</a></td>
 			</tr>
 		</tbody>
 
@@ -48,8 +50,8 @@
 	</section>
 </behaviour>
 
-<div ng-if="display.confirmDeleteSubjects">
-	<lightbox show="display.confirmDeleteSubjects" on-close="cancelRemoveSubjects()">
+<div ng-if="display.confirmDeleteEvents">
+	<lightbox show="display.confirmDeleteEvents" on-close="cancelRemoveEvents()">
 		<div class="row" ng-if="events.selection().length === 1">
 			<i18n>forum.confirm.delete.subject</i18n>
 		</div>

@@ -1,2 +1,14 @@
 {
+	"group.Teacher" : "All teachers of the group {0}.",
+	"group.Personnel" : "All staff of the group {0}.",
+	"group.Student" : "All students of the group {0}.",
+	"group.Relative" : "All parents of the group {0}.",
+	"group.school.Teacher" : "All teachers of {0}.",
+	"group.school.Personnel" : "All staff of {0}.",
+	"group.school.Student" : "All students of {0}.",
+	"group.school.Relative" : "All parents of {0}.",
+	"group.class.Teacher" : "All teachers of the class {0}.",
+	"group.class.Personnel" : "All staff of the class {0}.",
+	"group.class.Student" : "All students of the class {0}.",
+	"group.class.Relative" : "All parents of the class {0}."
 }

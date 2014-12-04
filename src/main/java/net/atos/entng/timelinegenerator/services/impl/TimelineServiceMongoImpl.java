@@ -41,4 +41,5 @@ public class TimelineServiceMongoImpl extends MongoDbCrudService implements Time
 	public void retrieve(String id, UserInfos user, Handler<Either<String, JsonObject>> handler) {
 		super.retrieve(id, user, handler);
 	}
+
 }

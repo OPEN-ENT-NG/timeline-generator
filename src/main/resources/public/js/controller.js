@@ -57,6 +57,14 @@ function TimelineGeneratorController($scope, template, model, date, route) {
         });
     };
 
+     $scope.openTimelineViewer = function(timeline){
+        $scope.timeline = timeline;
+        $scope.events = timeline.events;
+        timeline.open(function(){
+            template.open('main', 'read-timeline');
+        });
+    };
+
     $scope.newTimeline = function(){
 		$scope.timeline = new Timeline();
 		template.open('main', 'edit-timeline');
@@ -67,24 +75,30 @@ function TimelineGeneratorController($scope, template, model, date, route) {
         template.open('main', 'new-event');
     };
 
+    $scope.openEvent = function(event){
+        $scope.event = event;
+        event.open(function(){
+            template.open('main', 'read-event');
+        });
+    };
+
     $scope.addEvent = function(){
-        if ($scope.isTitleEmpty($scope.event.title)) {
-            $scope.event.title = undefined;
-            $scope.event.error = 'timelinegenerator.event.missing.title';
+        if ($scope.isTitleEmpty($scope.event.headline)) {
+            $scope.event.headline = undefined;
+            $scope.event.error = 'timelinegenerator.event.missing.headline';
             return; 
         }
 
-        if ($scope.isTextEmpty($scope.editedEvent.content)) {
-            $scope.event.error = 'timelinegenerator.event.missing.content';
+        if ($scope.isTextEmpty($scope.event.text)) {
+            $scope.event.text = undefined;
+            $scope.event.error = 'timelinegenerator.event.missing.text';
             return;
         }
 
         $scope.event.error = undefined;
 
-        $scope.timeline.addEvent($scope.event, function(){
-            $scope.event.content = ($scope.editedEvent.content);
-        });
-        template.open('main', 'read-event');
+        $scope.timeline.addEvent($scope.event);
+        template.open('main', 'events');
     };
 
 	$scope.saveTimelineEdit = function(){
@@ -105,6 +119,25 @@ function TimelineGeneratorController($scope, template, model, date, route) {
 		template.close('main');
 	};
 
+    $scope.saveEventEdit = function(){
+        if ($scope.event._id) { // when editing an event
+            $scope.event.save(function(){
+                template.close('main');
+                $scope.timeline.events.sync(function(){
+                    $scope.cancelEventEdit();
+                });
+            });
+        }
+        else { // when creating an event
+           $scope.addEvent();
+        }
+    };
+
+    $scope.cancelEventEdit = function(){
+        $scope.event = undefined;
+        $scope.openTimeline($scope.timeline);
+    };
+
 	$scope.cancelTimelineEdit = function(){
 		$scope.timeline = undefined;
 		template.close('main');
@@ -116,6 +149,11 @@ function TimelineGeneratorController($scope, template, model, date, route) {
         template.open('main', 'edit-timeline');
     };
 
+     $scope.editEvent = function(timelineEvent, event){
+        $scope.event = timelineEvent;
+        event.stopPropagation();
+        template.open('main', 'edit-event');
+    };
 
     $scope.shareTimeline = function(timeline, event){
         $scope.timeline = timeline;
@@ -153,5 +191,42 @@ function TimelineGeneratorController($scope, template, model, date, route) {
             return false;
         }
         return true;
+    }
+
+
+    $scope.confirmRemoveSelectedEvents = function() {
+        $scope.display.confirmDeleteEvents = true;
+    };
+
+    $scope.removeSelectedEvents = function() {
+        $scope.events.removeSelection(function(){
+            $scope.display.confirmDeleteEvents = undefined;
+        });
+    };
+
+    $scope.cancelRemoveSubjects = function() {
+        $scope.display.confirmDeleteEvents = undefined;
+    };
+
+    $scope.toTimelineJsJSON = function() {
+        var objectData = {
+            "timeline" : {
+                "headline": $scope.timeline.headline,
+                "type": $scope.timeline.type,
+                "text": $scope.timeline.text
+            }
+        };
+        objectData["timeline"]["date"] = [];
+        $scope.timeline.events.forEach(function(event) {
+
+            var eventData = {
+                "headline" : event.headline,
+                "startDate" : moment(event.startDate).format("YYYY,MM,DD"),
+                "endDate" : moment(event.endDate).format("YYYY,MM,DD"),
+                "text" : event.text,
+            };
+            objectData["timeline"]["date"].push(eventData);
+        });
+        return objectData;
     }
 }

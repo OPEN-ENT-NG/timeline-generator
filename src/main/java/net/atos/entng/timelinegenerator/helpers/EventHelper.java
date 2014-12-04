@@ -11,6 +11,10 @@ import org.entcore.common.user.UserInfos;
 import org.entcore.common.user.UserUtils;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.http.HttpServerRequest;
+import org.vertx.java.core.json.JsonObject;
+
+import fr.wseduc.webutils.http.Renders;
+import fr.wseduc.webutils.request.RequestUtils;
 
 public class EventHelper extends MongoDbControllerHelper {
 
@@ -41,12 +45,44 @@ public class EventHelper extends MongoDbControllerHelper {
 
 	@Override
 	public void create(final HttpServerRequest request) {
-		super.create(request);
+		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {		
+			@Override
+			public void handle(final UserInfos user) {
+				final String timelineId = request.params().get(TIMELINE_ID_PARAMETER);
+				if (user != null) {
+					RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
+						@Override
+						public void handle(JsonObject object) {
+							eventService.create(timelineId, object, user, notEmptyResponseHandler(request));
+						}
+					});
+				} else {
+					log.debug("User not found in session.");
+					Renders.unauthorized(request);
+				}
+			}
+		});
 	}
 
 	@Override
 	public void update(final HttpServerRequest request) {
-		super.update(request);
+		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
+			@Override
+			public void handle(final UserInfos user) {
+				if (user != null) {
+					RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
+						@Override
+						public void handle(JsonObject object) {
+							String id = request.params().get(EVENT_ID_PARAMETER);
+							crudService.update(id, object, user, notEmptyResponseHandler(request));
+						}
+					});
+				} else {
+					log.debug("User not found in session.");
+					Renders.unauthorized(request);
+				}
+			}
+		});
 	}
 
 	@Override

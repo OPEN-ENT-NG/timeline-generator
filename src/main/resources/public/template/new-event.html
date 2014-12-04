@@ -1,18 +1,27 @@
-<h1><i18n ng-click="openMainPage()">timelinegenerator.title</i18n></h1>
 
 <div class="row">
 	<h2><i18n>timelinegenerator.event.new</i18n></h2>
 	<article class="twelve cell">
-		<label class="two cell"><i18n>timelinegenerator.event</i18n></label>
-		<input type="text" i18n-placeholder="timelinegenerator.event.placeholder" class="ten cell" ng-model="event.title" required />
+		<label class="twelve cell"><i18n>timelinegenerator.event.headline</i18n></label>
+		<input type="text" i18n-placeholder="timelinegenerator.event.placeholder" class="ten cell" ng-model="event.headline" required></input>
 
-		<label class="twelve cell"><i18n>timelinegenerator.event.content</i18n></label>
-		<html-editor ng-model="editedEvent.content" required></html-editor>
+		<label class="twelve cell"><i18n>timelinegenerator.event.startdate</i18n></label>
+		<span class="twelve cell">
+			<date-picker ng-model="event.startDate"></date-picker>
+		</span>
+		
+		<label class="twelve cell"><i18n>timelinegenerator.event.enddate</i18n></label>
+		<span class="twelve cell">
+			<date-picker ng-model="event.endDate"></date-picker>
+		</span>
+		
+		<label class="twelve cell"><i18n>timelinegenerator.event.text</i18n></label>
+		<html-editor ng-model="event.text" required></html-editor>
 
 		<div class="ten cell warning" ng-if="event.error !== undefined" translate content="[[event.error]]">
 		</div>
 
 		<button class="right-magnet" ng-click="addEvent()"><i18n>submit</i18n></button>
-		<input type="button" class="cancel right-magnet" i18n-value="cancel" ng-click="closeEvent()" />
+		<button class="cancel right-magnet" ng-click="closeEvent()"><i18n>cancel</i18n></button>
 	</article>
 </div>
