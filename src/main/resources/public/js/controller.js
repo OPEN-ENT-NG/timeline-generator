@@ -44,8 +44,19 @@ function TimelineGeneratorController($scope, template, model, date, route) {
         }
     });
 
+    $scope.hideAlmostAllButtons = function(timeline){
+        $scope.timelines.forEach(function(tl){
+            if(tl !== timeline){
+                tl.showButtons = false;
+            }
+        });
+    };
+
     $scope.openMainPage = function(){
 		delete $scope.timeline;
+        $scope.timelines.forEach(function(timeline) {
+            timeline.showButtons = false;
+        });
 		template.close('main');
 	};
 
@@ -60,6 +71,7 @@ function TimelineGeneratorController($scope, template, model, date, route) {
      $scope.openTimelineViewer = function(timeline){
         $scope.timeline = timeline;
         $scope.events = timeline.events;
+        Behaviours.applicationsBehaviours.timelinegenerator.sniplets.timelines.controller.source = timeline;
         timeline.open(function(){
             template.open('main', 'read-timeline');
         });
@@ -72,7 +84,9 @@ function TimelineGeneratorController($scope, template, model, date, route) {
 
     $scope.newEvent = function(){
         $scope.event = new Event();
-        template.open('main', 'new-event');
+        $scope.event.startDate = moment();
+        $scope.event.endDate = moment();
+        template.open('main', 'edit-event');
     };
 
     $scope.openEvent = function(event){
@@ -96,9 +110,9 @@ function TimelineGeneratorController($scope, template, model, date, route) {
         }
 
         $scope.event.error = undefined;
-
-        $scope.timeline.addEvent($scope.event);
-        template.open('main', 'events');
+        $scope.timeline.addEvent($scope.event, function() {
+            $scope.openTimeline($scope.timeline);
+        });
     };
 
 	$scope.saveTimelineEdit = function(){

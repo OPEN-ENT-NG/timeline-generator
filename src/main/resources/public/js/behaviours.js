@@ -3,13 +3,12 @@ loader.loadFile('/timelinegenerator/public/js/storyjs-embed.js');
 
 var timelineNamespace = {
 	Event: function(){
-		var event = this;
+	
 	},
 
 	Timeline: function(){
 	 	var timeline = this;
-
-	 	this.collection(Event, {
+	 	this.collection(Behaviours.applicationsBehaviours.timelinegenerator.timelineNamespace.Event, {
 			sync: function(callback){
 				http().get('/timelinegenerator/timeline/' + timeline._id + '/events').done(function(events){
 					_.each(events, function(event){
@@ -127,6 +126,27 @@ timelineNamespace.Timeline.prototype.toJSON = function(){
 	}
 };
 
+timelineNamespace.Timeline.prototype.toTimelineJsJSON = function() {
+    var objectData = {
+        "timeline" : {
+            "headline": this.headline,
+            "type": this.type,
+            "text": this.text
+        }
+    };
+    objectData["timeline"]["date"] = [];
+    this.events.forEach(function(event) {
+        var eventData = {
+            "headline" : event.headline,
+            "startDate" : moment(event.startDate).format("YYYY,MM,DD"),
+            "endDate" : moment(event.endDate).format("YYYY,MM,DD"),
+            "text" : event.text,
+        };
+        objectData["timeline"]["date"].push(eventData);
+    });
+    return objectData;
+}
+
 timelineNamespace.Event.prototype.save = function(cb){
 	if(this._id){
 		this.saveModifications(cb);
@@ -148,6 +168,7 @@ timelineNamespace.Event.prototype.createEvent = function(cb){
 	var event = this;
 	http().postJson('/timelinegenerator/timeline/' + this.timeline._id + '/events', this).done(function(e){
 		event.updateData(e);
+		console.log('create event');
 		if(typeof cb === 'function'){
 			cb();
 		}
@@ -223,16 +244,22 @@ Behaviours.register('timelinegenerator', {
 				init: function(){
 					var scope = this;
 					http().get('/timelinegenerator/timeline/' + this.source._id).done(function(timeline){
-						console.log(timeline);
-						this.timeline = new timelineNamespace.Timeline(timeline);
-						this.timeline.events.sync(function() {
-							console.log("Timeline Events synced");
-							console.log(this.timeline);
+						scope.timeline = new timelineNamespace.Timeline(timeline);
+						scope.timeline.events.sync(function() {
+							createStoryJS({
+				                type:       'timeline',
+				                width:      '100%',
+				                height:     '600',
+				                source:     scope.timeline.toTimelineJsJSON(),
+				                embed_id:   scope.timeline._id,
+				                lang: 'fr',
+				                css: '/timelinegenerator/public/css/timeline/timeline.css',
+				                js: '/timelinegenerator/public/js/timeline-min.js'
+			            	});
 						});
 					}.bind(this));
 				},
 				initSource: function(){
-					console.log('Sniplet init source');
 					this.loadTimelines();
 				},
 				setSource: function(source){
@@ -249,28 +276,7 @@ Behaviours.register('timelinegenerator', {
 					http().get('/timelinegenerator/timelines').done(function(timelines){
 						this.timelines = timelines;
 					}.bind(this));
-				},
-				toTimelineJsJSON: function() {
-			        var objectData = {
-			            "timeline" : {
-			                "headline": this.timeline.headline,
-			                "type": this.timeline.type,
-			                "text": this.timeline.text
-			            }
-			        };
-			        objectData["timeline"]["date"] = [];
-			        this.timeline.events.forEach(function(event) {
-
-			            var eventData = {
-			                "headline" : event.headline,
-			                "startDate" : moment(event.startDate).format("YYYY,MM,DD"),
-			                "endDate" : moment(event.endDate).format("YYYY,MM,DD"),
-			                "text" : event.text,
-			            };
-			            objectData["timeline"]["date"].push(eventData);
-			        });
-			        return objectData;
-			    }
+				}
 			}
 		}
 	},

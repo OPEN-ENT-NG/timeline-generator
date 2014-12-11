@@ -1,8 +1,4 @@
-loader.loadFile('/timelinegenerator/public/js/additional.js');
-
-
 model.build = function(){
-	console.log(Behaviours.applicationsBehaviours);
 	this.makeModel(Behaviours.applicationsBehaviours.timelinegenerator.timelineNamespace.Timeline);
 	this.makeModel(Behaviours.applicationsBehaviours.timelinegenerator.timelineNamespace.Event);
 

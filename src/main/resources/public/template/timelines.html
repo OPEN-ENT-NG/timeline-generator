@@ -1,6 +1,6 @@
 <h1><i18n ng-click="openMainPage()">timelinegenerator.title</i18n></h1>
 
-<div class="patchwork">
+<div class="items">
 	<div class="twelve cell">
 		<button ng-click="newTimeline()"><i18n>timelinegenerator.timeline.new</i18n></button>
 		<i class="open-right right-magnet big-hidden" ng-click="template.close('main')"></i>
@@ -11,10 +11,14 @@
 			<img skin-src="/img/illustrations/forum-default.png" ng-if="(tl.icon === undefined)" class="cell" />
 			<img ng-src="[[tl.icon]]?thumbnail=120x120" ng-if="tl.icon !== undefined" class="cell" />
 		</div>
-		<article class="six cell">
+		<article>
 			<h1>[[tl.headline]]</h1>
-			
-			<div class="small-hidden bottom-locked">
+			<div class="bottom-locked">
+				<behaviour name="manage" resource="tl">
+					<input type="checkbox" ng-model="tl.showButtons" ng-change="hideAlmostAllButtons(tl)"/>
+				</behaviour>
+			</div>
+			<div class="small-hidden buttons" ng-class="{ hidden: !tl.showButtons || tl !== timeline }">
 				<behaviour name="manage" resource="tl">
 					<button ng-click="editTimeline(tl, $event)"><i18n>edit</i18n></button>
 					<button ng-click="confirmRemoveTimeline(tl, $event)"><i18n>remove</i18n></button>
@@ -34,16 +38,16 @@
 
 
 <div ng-if="display.confirmDeleteTimelines">
-	<lightbox show="display.confirmDeleteTimelines" on-close="cancelRemoveTimeline()">
-		<div class="row" ng-if="categories.selection().length === 1">
-			<i18n>forum.confirm.delete.category</i18n>
+	<lightbox show="display.confirmDeleteTimelines" on-close="cancelRemoveTimelines()">
+		<div class="row" ng-if="timelines.selection().length === 1">
+			<i18n>timelinegenerator.confirm.delete.timeline</i18n>
 		</div>
-		<div class="row" ng-if="categories.selection().length > 1">
-			<i18n>forum.confirm.delete.categories</i18n>
+		<div class="row" ng-if="timelines.selection().length > 1">
+			<i18n>timelinegenerator.confirm.delete.timelines</i18n>
 		</div>
 		<div class="row">
 			<button class="right-magnet" ng-click="removeSelectedTimelines()"><i18n>remove</i18n></button>
-			<input type="button" class="cancel right-magnet" i18n-value="cancel" ng-click="cancelRemoveTimeline()" />
+			<input type="button" class="cancel right-magnet" i18n-value="cancel" ng-click="cancelRemoveTimelines()" />
 		</div>
 	</lightbox>
 </div>
