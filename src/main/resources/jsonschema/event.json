@@ -1,0 +1,41 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "_id": {
+            "type": "string"
+        },
+        "headline": {
+            "type": "string"
+        },
+        "text": {
+            "type": "string"
+        },
+        "startDate": {
+            "type": "string"
+        },
+        "endDate": {
+            "type": "string"
+        },
+         "owner": {
+            "type": "object"
+        },
+        "created": {
+            "type": "object"
+        }, 
+        "modified": {
+            "type": "object"
+        },
+        "img": {
+            "type": "string"
+        },
+        "video": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "headline",
+        "startDate"
+    ]
+}

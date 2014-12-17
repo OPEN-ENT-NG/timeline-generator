@@ -1,4 +1,5 @@
 {
+	"timelinegenerator.back.to.timeline": "Revenir à la timeline",
 	"timelinegenerator.title": "Création de timeline",
 	"timelinegenerator.timeline.new": "Ajouter",
 	"timelinegenerator.timeline.view": "Voir la timeline",
@@ -10,6 +11,8 @@
 	"timelinegenerator.timeline.headline": "Titre",
 	"timelinegenerator.timeline.text": "Descriptif",
 	"timelinegenerator.timeline.modification.saved" : "Modification de la timeline enregistrée",
+	"timelinegenerator.event.add.image": "Ajouter une image",
+	"timelinegenerator.event.add.video": "Ajouter une vidéo",
 	"timelinegenerator.event.unlocked": "Evènement de la timeline débloqué",
 	"timelinegenerator.event.locked": "Evènement de la timeline bloqué",
 	"timelinegenerator.event.new": "Ajouter un évènement",
@@ -20,6 +23,8 @@
 	"timelinegenerator.event.missing.headline": "Titre de l'évènement manquant",
 	"timelinegenerator.event.missing.text": "Contenu de l'évènement manquant",
 	"timelinegenerator.event.placeholder": "Renseignez un titre pour votre évènement",
+	"timelinegenerator.event.video.placeholder": "Insérez un lien vers la vidéo",
+
 	"timelinegenerator.no.event.created.in.timeline": "Pas d'évènement créé dans la timeline",
 	
 	"timelinegenerator.read": "Lire",

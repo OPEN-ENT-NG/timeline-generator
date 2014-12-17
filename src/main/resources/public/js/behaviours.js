@@ -127,21 +127,29 @@ timelineNamespace.Timeline.prototype.toJSON = function(){
 };
 
 timelineNamespace.Timeline.prototype.toTimelineJsJSON = function() {
+	var timeline = this;
     var objectData = {
         "timeline" : {
-            "headline": this.headline,
-            "type": this.type,
-            "text": this.text
+            "headline": timeline.headline,
+            "type": timeline.type,
+            "text": timeline.text,
+            "asset": {
+            	"media": window.location.protocol + "//" + window.location.host + timeline.icon
+            }
         }
     };
     objectData["timeline"]["date"] = [];
-    this.events.forEach(function(event) {
+    timeline.events.forEach(function(event) {
         var eventData = {
             "headline" : event.headline,
             "startDate" : moment(event.startDate).format("YYYY,MM,DD"),
             "endDate" : moment(event.endDate).format("YYYY,MM,DD"),
-            "text" : event.text,
+            "text" : event.text
         };
+        if (event.img || event.video) {
+        	eventData.asset = {};
+        	eventData.asset.media = event.img ? "http://localhost:8090" + event.img : event.video;
+        }
         objectData["timeline"]["date"].push(eventData);
     });
     return objectData;
@@ -168,7 +176,6 @@ timelineNamespace.Event.prototype.createEvent = function(cb){
 	var event = this;
 	http().postJson('/timelinegenerator/timeline/' + this.timeline._id + '/events', this).done(function(e){
 		event.updateData(e);
-		console.log('create event');
 		if(typeof cb === 'function'){
 			cb();
 		}
@@ -187,7 +194,9 @@ timelineNamespace.Event.prototype.toJSON = function(){
 		text: this.text,
 		locked: this.locked,
 		startDate: this.startDate,
-		endDate: this.endDate
+		endDate: this.endDate,
+		img: this.img,
+		video: this.video
 	}
 };
 
@@ -236,6 +245,12 @@ Behaviours.register('timelinegenerator', {
 	resourceRights: function(){
 		return ['read', 'contrib', 'manager']
 	},
+	loadResources: function(callback) {
+		http().get('/timelinegenerator/timelines').done(function(timelines){
+			this.resources = timelines;
+			callback(this.resources);
+		}.bind(this));
+	},
 	sniplets: {
 		timelines: {
 			title: 'Timelines',
@@ -244,14 +259,14 @@ Behaviours.register('timelinegenerator', {
 				init: function(){
 					var scope = this;
 					http().get('/timelinegenerator/timeline/' + this.source._id).done(function(timeline){
-						scope.timeline = new timelineNamespace.Timeline(timeline);
-						scope.timeline.events.sync(function() {
+						scope.source = new timelineNamespace.Timeline(timeline);
+						scope.source.events.sync(function() {
 							createStoryJS({
 				                type:       'timeline',
 				                width:      '100%',
 				                height:     '600',
-				                source:     scope.timeline.toTimelineJsJSON(),
-				                embed_id:   scope.timeline._id,
+				                source:     scope.source.toTimelineJsJSON(),
+				                embed_id:   scope.source._id,
 				                lang: 'fr',
 				                css: '/timelinegenerator/public/css/timeline/timeline.css',
 				                js: '/timelinegenerator/public/js/timeline-min.js'
@@ -260,7 +275,10 @@ Behaviours.register('timelinegenerator', {
 					}.bind(this));
 				},
 				initSource: function(){
-					this.loadTimelines();
+					Behaviours.applicationsBehaviours.timelinegenerator.loadResources(function(resources){
+						this.timelines = resources;
+						this.$apply('timelines');
+					}.bind(this));
 				},
 				setSource: function(source){
 					this.setSnipletSource({
@@ -272,11 +290,7 @@ Behaviours.register('timelinegenerator', {
 						Behaviours.copyRights(snipletResource, timeline, timelineGeneratorBehaviours.viewRights, 'timeline');
 					});
 				},
-				loadTimelines: function() {
-					http().get('/timelinegenerator/timelines').done(function(timelines){
-						this.timelines = timelines;
-					}.bind(this));
-				}
+				
 			}
 		}
 	},

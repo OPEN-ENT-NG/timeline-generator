@@ -3,7 +3,6 @@ package net.atos.entng.timelinegenerator;
 import net.atos.entng.timelinegenerator.controllers.EventController;
 import net.atos.entng.timelinegenerator.controllers.TimelineController;
 import net.atos.entng.timelinegenerator.services.impl.EventServiceMongoImpl;
-import net.atos.entng.timelinegenerator.services.impl.TimelineServiceMongoImpl;
 
 import org.entcore.common.http.BaseServer;
 import org.entcore.common.http.filter.ShareAndOwner;
@@ -17,11 +16,9 @@ public class TimelineGenerator extends BaseServer {
 	public final static String TIMELINE_GENERATOR_EVENT_COLLECTION = "timelinegeneratorevent";
 
 	final CrudService eventService = new EventServiceMongoImpl(TIMELINE_GENERATOR_EVENT_COLLECTION);
-	final CrudService timelineService = new TimelineServiceMongoImpl(TIMELINE_GENERATOR_COLLECTION);
 	
 	@Override
 	public void start() {
-		
 		final MongoDbConf conf = MongoDbConf.getInstance();
 		conf.setCollection(TIMELINE_GENERATOR_COLLECTION);
 		conf.setResourceIdLabel("id");
@@ -29,9 +26,8 @@ public class TimelineGenerator extends BaseServer {
 		super.start();
 		setDefaultResourceFilter(new ShareAndOwner());
 
-		addController(new TimelineController(TIMELINE_GENERATOR_COLLECTION, timelineService));
+		addController(new TimelineController(TIMELINE_GENERATOR_COLLECTION));
 		addController(new EventController(TIMELINE_GENERATOR_EVENT_COLLECTION, eventService));
-
 	}
 
 	

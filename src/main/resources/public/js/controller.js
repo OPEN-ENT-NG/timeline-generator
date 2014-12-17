@@ -32,7 +32,7 @@ function TimelineGeneratorController($scope, template, model, date, route) {
                     template.open('error', '404');
                 } else {
                     $scope.notFound = false;
-                    $scope.timeline($scope.timeline);
+                    $scope.openTimeline($scope.timeline);
                 }
             });
             model.timelines.sync();
@@ -54,8 +54,8 @@ function TimelineGeneratorController($scope, template, model, date, route) {
 
     $scope.openMainPage = function(){
 		delete $scope.timeline;
-        $scope.timelines.forEach(function(timeline) {
-            timeline.showButtons = false;
+        $scope.timelines.forEach(function(tl) {
+            tl.showButtons = false;
         });
 		template.close('main');
 	};
@@ -63,8 +63,15 @@ function TimelineGeneratorController($scope, template, model, date, route) {
     $scope.openTimeline = function(timeline){
         $scope.timeline = timeline;
         $scope.events = timeline.events;
-        timeline.open(function(){
+        $scope.timelines.forEach(function(tl) {
+            if (tl._id != timeline._id) {
+                tl.showButtons = false;                
+            }
+        });
+        $scope.timeline.open(function(){
+            template.open('timelines', 'timelines');
             template.open('main', 'events');
+            $scope.$apply();
         });
     };
 
@@ -73,7 +80,8 @@ function TimelineGeneratorController($scope, template, model, date, route) {
         $scope.events = timeline.events;
         Behaviours.applicationsBehaviours.timelinegenerator.sniplets.timelines.controller.source = timeline;
         timeline.open(function(){
-            template.open('main', 'read-timeline');
+            template.close('main');
+            template.open('timelines', 'read-timeline');
         });
     };
 
@@ -221,26 +229,4 @@ function TimelineGeneratorController($scope, template, model, date, route) {
     $scope.cancelRemoveSubjects = function() {
         $scope.display.confirmDeleteEvents = undefined;
     };
-
-    $scope.toTimelineJsJSON = function() {
-        var objectData = {
-            "timeline" : {
-                "headline": $scope.timeline.headline,
-                "type": $scope.timeline.type,
-                "text": $scope.timeline.text
-            }
-        };
-        objectData["timeline"]["date"] = [];
-        $scope.timeline.events.forEach(function(event) {
-
-            var eventData = {
-                "headline" : event.headline,
-                "startDate" : moment(event.startDate).format("YYYY,MM,DD"),
-                "endDate" : moment(event.endDate).format("YYYY,MM,DD"),
-                "text" : event.text,
-            };
-            objectData["timeline"]["date"].push(eventData);
-        });
-        return objectData;
-    }
 }

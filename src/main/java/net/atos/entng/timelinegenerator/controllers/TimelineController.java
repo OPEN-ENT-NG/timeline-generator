@@ -1,8 +1,9 @@
 package net.atos.entng.timelinegenerator.controllers;
 
 import org.entcore.common.mongodb.MongoDbControllerHelper;
-import org.entcore.common.service.CrudService;
+import org.vertx.java.core.Handler;
 import org.vertx.java.core.http.HttpServerRequest;
+import org.vertx.java.core.json.JsonObject;
 
 import fr.wseduc.rs.ApiDoc;
 import fr.wseduc.rs.Delete;
@@ -11,13 +12,13 @@ import fr.wseduc.rs.Post;
 import fr.wseduc.rs.Put;
 import fr.wseduc.security.ActionType;
 import fr.wseduc.security.SecuredAction;
+import fr.wseduc.webutils.request.RequestUtils;
 
 
 public class TimelineController extends MongoDbControllerHelper {
 	
-	public TimelineController(String collection, CrudService timelineService) {
+	public TimelineController(String collection) {
 		super(collection);
-		this.crudService = timelineService;
 	}
 
 	@Get("")
@@ -28,7 +29,7 @@ public class TimelineController extends MongoDbControllerHelper {
 	
 	@Get("/timelines")
 	@SecuredAction("timelinegenerator.list")
-	public void listCategories(HttpServerRequest request) {
+	public void listTimelines(HttpServerRequest request) {
 		list(request);
 	}
 	
@@ -48,14 +49,24 @@ public class TimelineController extends MongoDbControllerHelper {
 
 	@Post("/timelines")
 	@SecuredAction("timelinegenerator.create")
-	public void createTimeline(HttpServerRequest request) {
-		create(request);
+	public void createTimeline(final HttpServerRequest request) {
+	    RequestUtils.bodyToJson(request, pathPrefix + "timeline", new Handler<JsonObject>() {
+            @Override
+            public void handle(JsonObject event) {
+                create(request);
+            }
+        });
 	}
 	
 	@Put("/timeline/:id")
 	@SecuredAction(value = "timelinegenerator.manager", type = ActionType.RESOURCE)
-	public void updateTimeline(HttpServerRequest request) {
-		update(request);
+	public void updateTimeline(final HttpServerRequest request) {
+	    RequestUtils.bodyToJson(request, pathPrefix + "timeline", new Handler<JsonObject>() {
+            @Override
+            public void handle(JsonObject event) {
+                update(request);
+            }
+        });
 	}
 	
 	@Delete("/timeline/:id")

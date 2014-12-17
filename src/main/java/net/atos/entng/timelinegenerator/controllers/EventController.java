@@ -3,7 +3,9 @@ package net.atos.entng.timelinegenerator.controllers;
 import net.atos.entng.timelinegenerator.helpers.EventHelper;
 
 import org.entcore.common.service.CrudService;
+import org.vertx.java.core.Handler;
 import org.vertx.java.core.http.HttpServerRequest;
+import org.vertx.java.core.json.JsonObject;
 
 import fr.wseduc.rs.Delete;
 import fr.wseduc.rs.Get;
@@ -12,6 +14,7 @@ import fr.wseduc.rs.Put;
 import fr.wseduc.security.ActionType;
 import fr.wseduc.security.SecuredAction;
 import fr.wseduc.webutils.http.BaseController;
+import fr.wseduc.webutils.request.RequestUtils;
 
 public class EventController extends BaseController {
 
@@ -29,8 +32,13 @@ public class EventController extends BaseController {
 	
 	@Post("/timeline/:id/events")
 	@SecuredAction(value = "timelinegenerator.contrib", type = ActionType.RESOURCE)
-	public void createEvent(HttpServerRequest request) {
-		eventHelper.create(request);
+	public void createEvent(final HttpServerRequest request) {
+	    RequestUtils.bodyToJson(request, pathPrefix + "event", new Handler<JsonObject>() {
+            @Override
+            public void handle(JsonObject event) {
+                eventHelper.create(request);
+            }
+	    });
 	}
 	
 	@Get("/timeline/:id/event/:eventid")
@@ -41,8 +49,13 @@ public class EventController extends BaseController {
 	
 	@Put("/timeline/:id/event/:eventid")
 	@SecuredAction(value = "timelinegenerator.contrib", type = ActionType.RESOURCE)
-	public void updateEvent(HttpServerRequest request) {
-		eventHelper.update(request);
+	public void updateEvent(final HttpServerRequest request) {
+	    RequestUtils.bodyToJson(request, pathPrefix + "event", new Handler<JsonObject>() {
+            @Override
+            public void handle(JsonObject event) {
+                eventHelper.update(request);
+            }
+        });
 	}
 	
 	@Delete("/timeline/:id/event/:eventid")

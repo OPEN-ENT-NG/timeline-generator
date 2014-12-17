@@ -6,7 +6,7 @@
 		<i class="open-right right-magnet big-hidden" ng-click="template.close('main')"></i>
 	</div>
 	<hr />
-	<div class="row" ng-repeat="tl in timelines.all" ng-click="openTimeline(tl)" ng-class="{ selected: tl === timeline }">
+	<div class="row" ng-repeat="tl in timelines.all" ng-click="openTimeline(tl)" ng-class="{ selected: tl._id === timeline._id }">
 		<div class="cell">
 			<img skin-src="/img/illustrations/forum-default.png" ng-if="(tl.icon === undefined)" class="cell" />
 			<img ng-src="[[tl.icon]]?thumbnail=120x120" ng-if="tl.icon !== undefined" class="cell" />
@@ -18,7 +18,7 @@
 					<input type="checkbox" ng-model="tl.showButtons" ng-change="hideAlmostAllButtons(tl)"/>
 				</behaviour>
 			</div>
-			<div class="small-hidden buttons" ng-class="{ hidden: !tl.showButtons || tl !== timeline }">
+			<div class="small-hidden buttons" ng-class="{ hidden: !tl.showButtons || tl._id !== timeline._id }">
 				<behaviour name="manage" resource="tl">
 					<button ng-click="editTimeline(tl, $event)"><i18n>edit</i18n></button>
 					<button ng-click="confirmRemoveTimeline(tl, $event)"><i18n>remove</i18n></button>
