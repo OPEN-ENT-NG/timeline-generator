@@ -15,13 +15,9 @@
   <body ng-controller="TimelineGeneratorController">
     <portal>
 
-      <div class="row patchwork" ng-if="notFound === false">
+      <div class="row patchwork">
     		<container template="main" class="flexible content cell"></container>
     		<container template="timelines" class="flexible navigation" ng-class="{ 'empty-neighbour': template.isEmpty('main'), 'filled-neighbour': !template.isEmpty('main') }"></container>
-      </div>
-
-      <div ng-if="notFound" class="row">
-        <container template="error"></container>
       </div>
     
     </portal>

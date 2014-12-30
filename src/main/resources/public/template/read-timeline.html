@@ -1,7 +1,11 @@
+<div class="height-two">
+	<button ng-click="openTimeline(timeline)"><i18n>timelinegenerator.back.to.timeline</i18n></button>
+</div>
 
-<button ng-click="openTimeline(timeline)"><i18n>timelinegenerator.back.to.timeline</i18n></button>
-
-
-<div class="row toggle-buttons-spacer">
-	<sniplet source="cell.media.source.source" application="timelinegenerator" template="timelines"></sniplet>
+<div class="row toggle-buttons-spacer" >
+	<sniplet source="cell.media.source.source" application="timelinegenerator" template="timelines" ng-if="timeline.events.length() > 0">
+	</sniplet>
+	<div ng-if="timeline.events.length() === 0">
+		<i18n>timelinegenerator.no.event.created.in.timeline</i18n>
+	</div>
 </div>

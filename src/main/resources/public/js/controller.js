@@ -94,14 +94,8 @@ function TimelineGeneratorController($scope, template, model, date, route) {
         $scope.event = new Event();
         $scope.event.startDate = moment();
         $scope.event.endDate = moment();
+        $scope.setEventMediaType($scope.event);
         template.open('main', 'edit-event');
-    };
-
-    $scope.openEvent = function(event){
-        $scope.event = event;
-        event.open(function(){
-            template.open('main', 'read-event');
-        });
     };
 
     $scope.addEvent = function(){
@@ -173,9 +167,18 @@ function TimelineGeneratorController($scope, template, model, date, route) {
 
      $scope.editEvent = function(timelineEvent, event){
         $scope.event = timelineEvent;
+        $scope.setEventMediaType($scope.event);
         event.stopPropagation();
         template.open('main', 'edit-event');
     };
+
+    $scope.setEventMediaType = function(event) {
+         if (event.video) {
+            event.mediatype = 'video';
+        } else {
+            event.mediatype = 'img';
+        }
+    }
 
     $scope.shareTimeline = function(timeline, event){
         $scope.timeline = timeline;
@@ -229,4 +232,15 @@ function TimelineGeneratorController($scope, template, model, date, route) {
     $scope.cancelRemoveSubjects = function() {
         $scope.display.confirmDeleteEvents = undefined;
     };
+
+    $scope.resetEventImage = function(event) {
+        console.log('reset event image');
+        event.img = '';
+        console.log(event);
+    }
+
+    $scope.resetEventVideo = function(event) {
+        console.log('reset event video');
+        event.video = '';
+    }
 }

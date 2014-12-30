@@ -7,24 +7,34 @@
 		<label class="twelve cell"><i18n>timelinegenerator.event.headline</i18n></label>
 		<input type="text" i18n-placeholder="timelinegenerator.event.placeholder" class="twelve cell" ng-model="event.headline" required></input>
 
-		<label class="twelve cell"><i18n>timelinegenerator.event.startdate</i18n></label>
-		<span class="twelve cell">
-			<date-picker ng-model="event.startDate"></date-picker>
-		</span>
-		
-		<label class="twelve cell"><i18n>timelinegenerator.event.enddate</i18n></label>
-		<span class="twelve cell">
-			<date-picker ng-model="event.endDate"></date-picker>
-		</span>
-		
-		<div class="twelve cell" ng-if="event.video === undefined">
-			<label class="twelve cell"><i18n>timelinegenerator.event.add.image</i18n></label>
-			<image-select ng-model="event.img" default="/img/icons/folder-large.png" thumbnails="[{ width: 120, height: 120 }]"></image-select>
+		<div class="six cell">
+			<label class="twelve cell"><i18n>timelinegenerator.event.startdate</i18n></label>
+			<span class="twelve cell">
+				<date-picker ng-model="event.startDate"></date-picker>
+			</span>
 		</div>
+		
+		<div class="six cell">
+			<label class="twelve cell"><i18n>timelinegenerator.event.enddate</i18n></label>
+			<span class="twelve cell">
+				<date-picker ng-model="event.endDate"></date-picker>
+			</span>
+		</div>
+		
+		<label><i18n>timelinegenerator.select.media.type</i18n>: </label>
+      	<input id="mediatype-image" type="radio" name="mediatype" ng-model="event.mediatype" value="img"/> 
+		<label for="mediatype-image"><i18n>timelinegenerator.image</i18n></label>
 
-		<div class="twelve cell" ng-if="event.img === undefined">
-			<label class="twelve cell"><i18n>timelinegenerator.event.add.video</i18n></label>
-			<input type="text" i18n-placeholder="timelinegenerator.event.video.placeholder" class="twelve cell" ng-model="event.video"></input>
+		<input id="mediatype-video" type="radio" name="mediatype" ng-model="event.mediatype" value="video"/>
+		<label for="mediatype-video"><i18n>timelinegenerator.video</i18n></label>
+
+		<div class="twelve cell height-two">
+			<div class="two cell" ng-if="event.mediatype == 'img'">
+				<image-select ng-change="resetEventVideo(event)" ng-model="event.img" default="/img/icons/folder-large.png" thumbnails="[{ width: 120, height: 120 }]"></image-select>
+			</div>
+			<div ng-if="event.mediatype == 'video'">
+				<input type="text" i18n-placeholder="timelinegenerator.event.video.placeholder" class="twelve cell" ng-model="event.video" ng-change="resetEventImage(event)" ></input>
+			</div>
 		</div>
 
 		<div class="twelve cell">
@@ -35,7 +45,7 @@
 		<div class="ten cell warning" ng-if="event.error !== undefined" translate content="[[event.error]]">
 		</div>
 
-		<button class="right-magnet" ng-click="saveEventEdit()"><i18n>submit</i18n></button>
-		<button class="cancel right-magnet" ng-click="closeEvent()"><i18n>cancel</i18n></button>
+		<button class="right-magnet" ng-click="saveEventEdit()"><i18n>save</i18n></button>
+		<button class="cancel right-magnet" ng-click="cancelEventEdit()"><i18n>cancel</i18n></button>
 	</article>
 </div>

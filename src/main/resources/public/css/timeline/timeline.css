@@ -25,4 +25,4 @@
 
 	Designed and built by Atos
 */
-.storyjs-embed iframe{min-height:0}.storyjs-embed .media,.storyjs-embed .media-container,.storyjs-embed .media-wrapper{box-sizing:content-box!important;min-height:0;outline:0}.storyjs-embed .media-container{max-width:480px!important}.storyjs-embed .content{width:100%;padding-top:0}
+.storyjs-embed iframe{min-height:0}.storyjs-embed .media,.storyjs-embed .media-container,.storyjs-embed .media-wrapper{min-height:0;outline:0}.storyjs-embed .media-container{max-width:480px!important}.storyjs-embed .content{width:100%;padding-top:0;overflow:visible;}

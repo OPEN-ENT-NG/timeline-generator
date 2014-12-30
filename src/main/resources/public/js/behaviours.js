@@ -1,9 +1,7 @@
-
 loader.loadFile('/timelinegenerator/public/js/storyjs-embed.js');
 
 var timelineNamespace = {
 	Event: function(){
-	
 	},
 
 	Timeline: function(){
@@ -133,12 +131,13 @@ timelineNamespace.Timeline.prototype.toTimelineJsJSON = function() {
             "headline": timeline.headline,
             "type": timeline.type,
             "text": timeline.text,
-            "asset": {
-            	"media": window.location.protocol + "//" + window.location.host + timeline.icon
-            }
         }
     };
-    objectData["timeline"]["date"] = [];
+    if (timeline.icon) {
+    	objectData.timeline.asset = {};
+    	objectData.timeline.asset.media = window.location.protocol + "//" + window.location.host + timeline.icon;
+    }
+    objectData.timeline.date = [];
     timeline.events.forEach(function(event) {
         var eventData = {
             "headline" : event.headline,
@@ -148,9 +147,9 @@ timelineNamespace.Timeline.prototype.toTimelineJsJSON = function() {
         };
         if (event.img || event.video) {
         	eventData.asset = {};
-        	eventData.asset.media = event.img ? "http://localhost:8090" + event.img : event.video;
+        	eventData.asset.media = event.img ? window.location.protocol + "//" + window.location.host + event.img : event.video;
         }
-        objectData["timeline"]["date"].push(eventData);
+        objectData.timeline.date.push(eventData);
     });
     return objectData;
 }
@@ -253,24 +252,40 @@ Behaviours.register('timelinegenerator', {
 	},
 	sniplets: {
 		timelines: {
-			title: 'Timelines',
-			description: 'Les timelines permettent d\'ajouter des frises chronologiques sur votre page',
+			title: 'Frises chronologiques',
+			description: 'Permet d\'ajouter des frises chronologiques sur votre page',
 			controller: {
 				init: function(){
 					var scope = this;
 					http().get('/timelinegenerator/timeline/' + this.source._id).done(function(timeline){
 						scope.source = new timelineNamespace.Timeline(timeline);
 						scope.source.events.sync(function() {
-							createStoryJS({
-				                type:       'timeline',
-				                width:      '100%',
-				                height:     '600',
-				                source:     scope.source.toTimelineJsJSON(),
-				                embed_id:   scope.source._id,
-				                lang: 'fr',
-				                css: '/timelinegenerator/public/css/timeline/timeline.css',
-				                js: '/timelinegenerator/public/js/timeline-min.js'
-			            	});
+
+							// Hack to display more than one timeline in the same page
+							// https://github.com/NUKnightLab/TimelineJS/issues/591
+							var injectedScript = function(){
+								createStoryJS({
+					                type:       'timeline',
+					                width:      '100%',
+					                height:     '600',
+					                source:     timeline,
+					                embed_id:   'timeline',
+					                lang: 'fr',
+					                css: '/timelinegenerator/public/css/timeline/timeline.css',
+					                js: '/timelinegenerator/public/js/timeline-min.js'
+			            		});
+							};
+							var innerDoc = $('#' + scope.source._id)[0].contentWindow.document;
+							innerDoc.open();
+							innerDoc.write("<html><head><title></title></head><body><div id='timeline'></div>"+
+							    "<script src='/infra/public/js/jquery-1.10.2.min.js'></script>" +
+							    "<script src='/timelinegenerator/public/js/storyjs-embed.js'></script>" +
+
+							    "<script>var timeline = "+ JSON.stringify(scope.source.toTimelineJsJSON()) + ";</script>" +
+							    "<script>var injectedScript= "+ injectedScript + ";injectedScript();</script>" +
+							    "</body></html>");
+							innerDoc.close();
+							
 						});
 					}.bind(this));
 				},
