@@ -27,15 +27,26 @@
 						<input type="checkbox" ng-model="event.selected" />
 					</behaviour>
 				</td>
-				<td ng-click="editEvent(event, $event)">
-					<i class="prive" ng-if="event.locked"></i> <a>[[event.headline]]</a>
-				</td>
-				<td ng-click="editEvent(event, $event)">
-					<i class="prive" ng-if="event.locked"></i> <a>[[event.startDate | date:'dd/MM/yyyy']]</a>
-				</td>
-				<td ng-click="editEvent(event, $event)">
-					<i class="prive" ng-if="event.locked"></i> <a>[[event.endDate | date:'dd/MM/yyyy']]</a>
-				</td>
+					<td ng-if="timeline.myRights.contrib" ng-click="editEvent(event, $event)">
+						<a>[[event.headline]]</a>
+					</td>
+					<td ng-if="!timeline.myRights.contrib">
+						[[event.headline]]
+					</td>
+
+					<td ng-if="timeline.myRights.contrib" ng-click="editEvent(event, $event)">
+						<a>[[event.startDate | date:'dd/MM/yyyy']]</a>
+					</td>
+					<td ng-if="!timeline.myRights.contrib">
+						[[event.startDate | date:'dd/MM/yyyy']]
+					</td>
+
+					<td ng-if="timeline.myRights.contrib" ng-click="editEvent(event, $event)">
+						<a>[[event.endDate | date:'dd/MM/yyyy']]</a>
+					</td>
+					<td ng-if="!timeline.myRights.contrib">
+						[[event.endDate | date:'dd/MM/yyyy']]
+					</td>
 			</tr>
 		</tbody>
 
@@ -50,19 +61,6 @@
 		<div class="toggle">
 			<div class="row">
 				<button ng-click="confirmRemoveSelectedEvents()"><i18n>remove</i18n></button>
-				<button
-						ng-if="(events.where({ locked: undefined, selected: true}).length > 0 || events.where({ locked: false, selected: true}).length > 0)
-								&& events.where({ locked: true, selected: true}).length === 0"
-						ng-click="events.lockSelection()"
-				>
-					<i18n>lock</i18n>
-				</button>
-				<button ng-if="events.where({ locked: true, selected: true}).length > 0 
-								&& (events.where({ locked: undefined, selected: true}).length === 0 || events.where({ locked: false, selected: true}).length === 0)"
-						ng-click="events.unlockSelection()"
-				>
-					<i18n>unlock</i18n>
-				</button>
 			</div>
 		</div>
 	</section>

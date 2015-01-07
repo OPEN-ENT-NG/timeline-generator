@@ -78,22 +78,22 @@ public class TimelineController extends MongoDbControllerHelper {
 	@Get("/share/json/:id")
 	@ApiDoc("Share timeline by id.")
 	@SecuredAction(value = "timelinegenerator.manager", type = ActionType.RESOURCE)
-	public void shareCategory(final HttpServerRequest request) {
-		shareJson(request);
+	public void shareTimeline(final HttpServerRequest request) {
+		shareJson(request, false);
 	}
 
 	@Put("/share/json/:id")
 	@ApiDoc("Share timeline by id.")
 	@SecuredAction(value = "timelinegenerator.manager", type = ActionType.RESOURCE)
-	public void shareCategorySubmit(final HttpServerRequest request) {
-		shareJsonSubmit(request, "notify-timeline-shared.html");
+	public void shareTimelineSubmit(final HttpServerRequest request) {
+		shareJsonSubmit(request, "notify-timeline-shared.html", false);
 	}
 
 	@Put("/share/remove/:id")
 	@ApiDoc("Remove timeline by id.")
 	@SecuredAction(value = "timelinegenerator.manager", type = ActionType.RESOURCE)
-	public void removeShareCategory(final HttpServerRequest request) {
-		removeShare(request);
+	public void removeShareTimeline(final HttpServerRequest request) {
+		removeShare(request, false);
 	}
 
 }

@@ -156,6 +156,9 @@ function TimelineGeneratorController($scope, template, model, date, route) {
 
 	$scope.cancelTimelineEdit = function(){
 		$scope.timeline = undefined;
+        $scope.timelines.forEach(function(tl) {
+            tl.showButtons = false;                
+        });
 		template.close('main');
 	};
 
@@ -234,13 +237,16 @@ function TimelineGeneratorController($scope, template, model, date, route) {
     };
 
     $scope.resetEventImage = function(event) {
-        console.log('reset event image');
         event.img = '';
-        console.log(event);
     }
 
     $scope.resetEventVideo = function(event) {
-        console.log('reset event video');
         event.video = '';
     }
+
+    $scope.$watch('event.startDate', function() {
+       if (moment($scope.event.startDate).isAfter($scope.event.endDate)) {
+            $scope.event.endDate = $scope.event.startDate;
+       }
+    });
 }

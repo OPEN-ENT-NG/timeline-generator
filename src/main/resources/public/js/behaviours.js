@@ -213,7 +213,7 @@ var timelineGeneratorBehaviours = {
 			right: 'net-atos-entng-timelinegenerator-controllers-TimelineController|shareTimeline'
 		}
 	},
-	viewRights: [ 'net-atos-entng-timelimakeModelsnegenerator-controllers-TimelineController|view' ]
+	viewRights: [ 'net-atos-entng-timelinegenerator-controllers-TimelineController|view' ]
 };
 
 Behaviours.register('timelinegenerator', {
@@ -242,7 +242,7 @@ Behaviours.register('timelinegenerator', {
 		return resource;
 	},
 	resourceRights: function(){
-		return ['read', 'contrib', 'manager']
+		return ['read', 'manager']
 	},
 	loadResources: function(callback) {
 		http().get('/timelinegenerator/timelines').done(function(timelines){
