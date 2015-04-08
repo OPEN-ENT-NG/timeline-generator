@@ -69,6 +69,7 @@ public class TimelineController extends MongoDbControllerHelper {
         });
 	}
 	
+	
 	@Delete("/timeline/:id")
 	@SecuredAction(value = "timelinegenerator.manager", type = ActionType.RESOURCE)
 	public void deleteTimeline(HttpServerRequest request) {

@@ -7,33 +7,49 @@
 		<label class="twelve cell"><i18n>timelinegenerator.event.headline</i18n></label>
 		<input type="text" i18n-placeholder="timelinegenerator.event.placeholder" class="twelve cell" ng-model="event.headline" required></input>
 
-		<div class="six cell">
-			<label class="twelve cell"><i18n>timelinegenerator.event.startdate</i18n></label>
-			<span class="twelve cell">
-				<date-picker ng-model="event.startDate"></date-picker>
-			</span>
+		<div class="row">
+			<label class="twelve cell"><i18n>timelinegenerator.date.format</i18n></label>
+			<input type="radio" name="dateFormat" ng-change="switchDateFormat()" ng-model="event.dateFormat" value="year"/><i18n>timelinegenerator.year</i18n>
+			<input type="radio" name="dateFormat" ng-change="switchDateFormat()" ng-model="event.dateFormat" value="month"/><i18n>timelinegenerator.month</i18n>
+			<input type="radio" name="dateFormat" ng-change="switchDateFormat()" ng-model="event.dateFormat" value="day"/><i18n>timelinegenerator.day</i18n>
 		</div>
-		
-		<div class="six cell">
-			<label class="twelve cell"><i18n>timelinegenerator.event.enddate</i18n></label>
-			<span class="twelve cell">
-				<date-picker ng-model="event.endDate"></date-picker>
-			</span>
-		</div>
-		
-		<label><i18n>timelinegenerator.select.media.type</i18n>: </label>
-      	<input id="mediatype-image" type="radio" name="mediatype" ng-model="event.mediatype" value="img"/> 
-		<label for="mediatype-image"><i18n>timelinegenerator.image</i18n></label>
 
-		<input id="mediatype-video" type="radio" name="mediatype" ng-model="event.mediatype" value="video"/>
-		<label for="mediatype-video"><i18n>timelinegenerator.video</i18n></label>
-
-		<div class="twelve cell height-two">
-			<div class="two cell" ng-if="event.mediatype == 'img'">
-				<image-select ng-change="resetEventVideo(event)" ng-model="event.img" default="/img/icons/folder-large.png" thumbnails="[{ width: 120, height: 120 }]"></image-select>
+		<div class="row">
+			<div class="six cell">
+				<label class="twelve cell"><i18n>timelinegenerator.event.startdate</i18n></label>
+				<span class="twelve cell">
+					<date-picker-timeline ng-if="event.dateFormat == 'day'" event-date-format="event.dateFormat" ng-model="event.startDate"></date-picker-timeline>
+					<input type="text" ng-if="event.dateFormat == 'month' || event.dateFormat == 'year'" ng-model="event.startDate.newDate" ng-blur="setDateYear(event.startDate)" placeholder="[[ model.inputPlaceholderDateFormat[event.dateFormat] ]]">
+				</span>
 			</div>
-			<div ng-if="event.mediatype == 'video'">
-				<input type="text" i18n-placeholder="timelinegenerator.event.video.placeholder" class="twelve cell" ng-model="event.video" ng-change="resetEventImage(event)" ></input>
+			
+			<div class="six cell">
+				<label class="twelve cell">
+					<input type="checkbox" ng-change="resetEndDate()" ng-model="event.enableEndDate"/>
+					<i18n>timelinegenerator.event.enddate</i18n>
+				</label>
+				<span class="twelve cell" ng-if="event.enableEndDate">
+					<date-picker-timeline ng-if=" event.dateFormat == 'day'" event-date-format="event.dateFormat" ng-model="event.endDate"></date-picker-timeline>
+					<input type="text" ng-if="event.dateFormat == 'month' || event.dateFormat == 'year'" ng-model="event.endDate.newDate" ng-blur="setDateYear(event.endDate)" placeholder="[[ model.inputPlaceholderDateFormat[event.dateFormat] ]]">
+				</span>
+			</div>
+		</div>
+
+		<div class="row">
+			<label><i18n>timelinegenerator.select.media.type</i18n>: </label>
+	      	<input id="mediatype-image" type="radio" name="mediatype" ng-model="event.mediatype" value="img"/> 
+			<label for="mediatype-image"><i18n>timelinegenerator.image</i18n></label>
+
+			<input id="mediatype-video" type="radio" name="mediatype" ng-model="event.mediatype" value="video"/>
+			<label for="mediatype-video"><i18n>timelinegenerator.video</i18n></label>
+
+			<div class="twelve cell height-two">
+				<div class="two cell" ng-if="event.mediatype == 'img'">
+					<image-select ng-change="resetEventVideo(event)" ng-model="event.img" default="/img/icons/folder-large.png" thumbnails="[{ width: 120, height: 120 }]"></image-select>
+				</div>
+				<div ng-if="event.mediatype == 'video'">
+					<input type="text" i18n-placeholder="timelinegenerator.event.video.placeholder" class="twelve cell" ng-model="event.video" ng-change="resetEventImage(event)" ></input>
+				</div>
 			</div>
 		</div>
 

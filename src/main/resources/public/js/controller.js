@@ -12,11 +12,18 @@ function TimelineGeneratorController($scope, template, model, date, route) {
     $scope.notFound = false;
 	$scope.template = template;
     $scope.timelines = model.timelines;
+    $scope.model = model;
     $scope.display = {};
     $scope.me = model.me;
     $scope.date = date;
+    $scope.moment = moment;
 
     $scope.editedEvent = new Event();
+
+    $scope.sort = {
+        predicate: 'headline',
+        reverse: false
+    }
 
     // Definition of actions
     route({
@@ -92,6 +99,7 @@ function TimelineGeneratorController($scope, template, model, date, route) {
 
     $scope.newEvent = function(){
         $scope.event = new Event();
+        $scope.event.dateFormat = "day";
         $scope.event.startDate = moment();
         $scope.event.endDate = moment();
         $scope.setEventMediaType($scope.event);
@@ -136,6 +144,9 @@ function TimelineGeneratorController($scope, template, model, date, route) {
 	};
 
     $scope.saveEventEdit = function(){
+        if (!$scope.event.enableEndDate) {
+            $scope.event.endDate = "";
+        }
         if ($scope.event._id) { // when editing an event
             $scope.event.save(function(){
                 template.close('main');
@@ -170,6 +181,27 @@ function TimelineGeneratorController($scope, template, model, date, route) {
 
      $scope.editEvent = function(timelineEvent, event){
         $scope.event = timelineEvent;
+        $scope.event.startDate = moment($scope.event.startDate);
+        var endDate = $scope.event.endDate;
+        $scope.event.endDate = moment($scope.event.endDate);
+
+        if (endDate) {
+
+            $scope.event.enableEndDate = true;
+
+            if ($scope.event.dateFormat == 'year') {
+                $scope.event.endDate.newDate = $scope.event.endDate.years();
+            } else if ($scope.event.dateFormat == 'month') {
+                $scope.event.endDate.newDate = $scope.event.endDate.format('MM') + '/' + $scope.event.endDate.years();   
+            } 
+        }
+
+        if ($scope.event.dateFormat == 'year') {
+            $scope.event.startDate.newDate = $scope.event.startDate.years();
+        } else if ($scope.event.dateFormat == 'month') {
+            $scope.event.startDate.newDate = $scope.event.startDate.format('MM') + '/' + $scope.event.startDate.years();
+        } 
+
         $scope.setEventMediaType($scope.event);
         event.stopPropagation();
         template.open('main', 'edit-event');
@@ -244,9 +276,45 @@ function TimelineGeneratorController($scope, template, model, date, route) {
         event.video = '';
     }
 
-    $scope.$watch('event.startDate', function() {
-       if (moment($scope.event.startDate).isAfter($scope.event.endDate)) {
-            $scope.event.endDate = $scope.event.startDate;
-       }
-    });
+    $scope.switchDateFormat = function() {
+        if ($scope.event.dateFormat == 'year') {
+            $scope.event.startDate.newDate = $scope.event.startDate.years();
+            $scope.event.endDate.newDate = $scope.event.endDate.years();
+        } else if ($scope.event.dateFormat == 'month') {
+            $scope.event.startDate.newDate = $scope.event.startDate.format('MM/YYYY');
+            $scope.event.endDate.newDate = $scope.event.endDate.format('MM/YYYY');   
+        }
+    }
+
+    $scope.resetEndDate = function() {
+        if (!$scope.event.enableEndDate) {
+            $scope.event.endDate = undefined;
+        }
+    }
+
+    $scope.setDateYear = function(date) {
+        if ($scope.event.dateFormat == 'month') {
+            var splitted = date.newDate.split("/");
+            date.month(parseInt(splitted[0]) - 1);
+            date.year(splitted[1]);
+        } else if ($scope.event.dateFormat == 'year') {
+            date.year(date.newDate);
+        }
+    }
+
+    // Sort
+    $scope.switchSortBy = function(predicate) {
+        if (predicate === $scope.sort.predicate) {
+            $scope.sort.reverse = ! $scope.sort.reverse;
+        }
+        else {
+            $scope.sort.predicate = predicate;
+            $scope.sort.reverse = false;
+        }
+    };
+
+    $scope.resetSort = function() {
+        $scope.sort.predicate = 'headline';
+        $scope.sort.reverse = false;
+    }
 }

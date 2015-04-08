@@ -34,6 +34,10 @@
 	"timelinegenerator.read": "Lire",
 	"timelinegenerator.contrib": "Contribuer",
 	"timelinegenerator.manager": "Gérer",
+	"timelinegenerator.date.format": "Format de la date",
+	"timelinegenerator.year": "Année",
+	"timelinegenerator.month": "Mois",
+	"timelinegenerator.day": "Jour",
 
 	"group.Teacher" : "Tous les enseignants du groupe {0}.",
 	"group.Personnel" : "Tous les personnels du groupe {0}.",

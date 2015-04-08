@@ -11,7 +11,13 @@ var timelineNamespace = {
 				http().get('/timelinegenerator/timeline/' + timeline._id + '/events').done(function(events){
 					_.each(events, function(event){
 						event.timeline = timeline;
-					});
+						if (event.endDate == "") {
+							event.endDate = undefined;
+						}
+						if (!event.dateFormat) {
+							event.dateFormat = 'day';
+						}
+ 					});
 					this.load(events);
 					if(typeof callback === 'function'){
 						callback();
@@ -141,16 +147,20 @@ timelineNamespace.Timeline.prototype.toTimelineJsJSON = function() {
     timeline.events.forEach(function(event) {
         var eventData = {
             "headline" : event.headline,
-            "startDate" : moment(event.startDate).format("YYYY,MM,DD"),
-            "endDate" : moment(event.endDate).format("YYYY,MM,DD"),
+            "startDate" : moment(event.startDate).format(model.timelineJSDateFormat[event.dateFormat]),
             "text" : event.text
         };
         if (event.img || event.video) {
         	eventData.asset = {};
         	eventData.asset.media = event.img ? window.location.protocol + "//" + window.location.host + event.img : event.video;
         }
+        if (event.endDate) {
+        	eventData.endDate = moment(event.endDate).format(model.timelineJSDateFormat[event.dateFormat]);
+        }
         objectData.timeline.date.push(eventData);
     });
+
+    console.log(objectData);
     return objectData;
 }
 
@@ -188,15 +198,18 @@ timelineNamespace.Event.prototype.open = function(cb){
 
 
 timelineNamespace.Event.prototype.toJSON = function(){
-	return {
+	var jsonEvent = {
 		headline: this.headline,
 		text: this.text,
 		locked: this.locked,
 		startDate: this.startDate,
-		endDate: this.endDate,
+		endDate: this.endDate ? this.endDate : '',
 		img: this.img,
-		video: this.video
-	}
+		video: this.video,
+		dateFormat: this.dateFormat
+	};
+	
+	return jsonEvent;
 };
 
 model.makeModels(timelineNamespace);
