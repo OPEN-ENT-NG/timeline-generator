@@ -4,10 +4,7 @@
 	<h2 ng-if="timeline._id"><i18n>edit</i18n></h2>
 	<h2 ng-if="!timeline._id"><i18n>timelinegenerator.create.a.timeline</i18n></h2>
 	<article class="twelve cell">
-		<div class="two cell">
-			<image-select ng-model="timeline.icon" default="/img/illustrations/forum-default.png" thumbnails="[{ width: 290, height: 290 }]" class="absolute"></image-select>
-		</div>
-
+		<image-select ng-model="timeline.icon" default="/img/illustrations/forum-default.png" thumbnails="[{ width: 290, height: 290 }]" class="two cell clip height-two"></image-select>
 		<div class="ten cell height-two left-two">
 			<div class="twelve cell horizontal-spacing-twice">
 				<label class="twelve cell"><i18n>timelinegenerator.timeline.headline</i18n></label>
@@ -29,7 +26,7 @@
 				<i18n>cancel</i18n>
 			</button>
 		</div>
-		
+
 
 	</article>
 

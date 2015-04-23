@@ -32,7 +32,7 @@ module.directive('datePickerTimeline', function($compile){
                 if ($scope.ngModel === undefined || $scope.ngModel === null) {
                     $scope.ngModel = moment().startOf('day');
                 }
-                $element.val($scope.ngModel.format(model.momentDateFormat[$scope.eventDateFormat]));  
+                $element.val($scope.ngModel.format(model.momentDateFormat[$scope.eventDateFormat]));
             });
             loader.asyncLoad('/calendar/public/js/bootstrap-datepicker.js', function(){
                 $element.datepicker({
@@ -44,7 +44,7 @@ module.directive('datePickerTimeline', function($compile){
                             daysMin: moment.weekdaysMin()
                         },
                         format: datePickerFormat,
-                        viewMode: viewMode, 
+                        viewMode: viewMode,
                         minViewMode: minViewMode
                     })
                     .on('changeDate', function(){
@@ -92,8 +92,9 @@ module.directive('datePickerTimeline', function($compile){
             });
 
             $element.on('$destroy', function() {
-                $element.datepicker('destroy');         
+                if($element.datepicker)
+                    $element.datepicker('destroy');
             });
         }
-    }
+    };
 });
