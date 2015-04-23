@@ -1,6 +1,8 @@
 package net.atos.entng.timelinegenerator.controllers;
 
 import org.entcore.common.mongodb.MongoDbControllerHelper;
+import org.entcore.common.user.UserInfos;
+import org.entcore.common.user.UserUtils;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.http.HttpServerRequest;
 import org.vertx.java.core.json.JsonObject;
@@ -87,7 +89,25 @@ public class TimelineController extends MongoDbControllerHelper {
 	@ApiDoc("Share timeline by id.")
 	@SecuredAction(value = "timelinegenerator.manager", type = ActionType.RESOURCE)
 	public void shareTimelineSubmit(final HttpServerRequest request) {
-		shareJsonSubmit(request, "notify-timeline-shared.html", false);
+	    UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
+            @Override
+            public void handle(final UserInfos user) {
+                if (user != null) {
+                    final String id = request.params().get("id");
+                    if (id == null || id.trim().isEmpty()) {
+                        badRequest(request);
+                        return;
+                    }
+
+                    JsonObject params = new JsonObject();
+                    params.putString("profilUri", container.config().getString("userbook-host") + "/userbook/annuaire#" + user.getUserId() + "#" + user.getType());
+                    params.putString("username", user.getUsername());
+                    params.putString("timelineUri", container.config().getString("host") + "/timelinegenerator#/view/" + id);
+
+                    shareJsonSubmit(request, "notify-timeline-shared.html", false, params, "headline");
+                }
+            }
+        });
 	}
 
 	@Put("/share/remove/:id")

@@ -4,6 +4,7 @@
 	<h2 ng-if="!event._id"><i18n>timelinegenerator.event.new</i18n></h2>
 
 	<article class="twelve cell">
+		<form name="form">
 		<label class="twelve cell"><i18n>timelinegenerator.event.headline</i18n></label>
 		<input type="text" i18n-placeholder="timelinegenerator.event.placeholder" class="twelve cell" ng-model="event.headline" required></input>
 
@@ -58,10 +59,11 @@
 			<html-editor ng-model="event.text" ></html-editor>
 		</div>
 
-		<div class="ten cell warning" ng-if="event.error !== undefined" translate content="[[event.error]]">
+		<div class="twelve cell warning" ng-if="event.error !== undefined" translate content="[[event.error]]">
 		</div>
 
-		<button class="right-magnet" ng-click="saveEventEdit()"><i18n>save</i18n></button>
+		<button class="right-magnet" ng-class="" ng-click="saveEventEdit()" ng-disabled="form.$invalid"><i18n>save</i18n></button>
 		<button class="cancel right-magnet" ng-click="cancelEventEdit()"><i18n>cancel</i18n></button>
+		</form>
 	</article>
 </div>

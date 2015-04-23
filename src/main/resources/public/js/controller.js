@@ -1,5 +1,5 @@
 routes.define(function($routeProvider) {
-    $routeProvider.when('/timeline/:timelineId', {
+    $routeProvider.when('/view/:timelineId', {
         action : 'goToTimeline'
     }).when('/timeline/:timelineId/:eventId', {
         action : 'goToEvent'
@@ -112,10 +112,8 @@ function TimelineGeneratorController($scope, template, model, date, route) {
             $scope.event.error = 'timelinegenerator.event.missing.headline';
             return; 
         }
-
-        if ($scope.isTextEmpty($scope.event.text)) {
-            $scope.event.text = undefined;
-            $scope.event.error = 'timelinegenerator.event.missing.text';
+        if ($scope.event.startDate.isAfter($scope.event.endDate)) {
+            $scope.event.error = 'timelinegenerator.event.start.date.after.end.date';
             return;
         }
 

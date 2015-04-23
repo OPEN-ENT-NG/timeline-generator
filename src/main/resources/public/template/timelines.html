@@ -2,7 +2,9 @@
 
 <div class="items">
 	<div class="twelve cell">
-		<button ng-click="newTimeline()"><i18n>timelinegenerator.timeline.new</i18n></button>
+		<div workflow="timelinegenerator.create" class="cell">
+			<button ng-click="newTimeline()"><i18n>timelinegenerator.timeline.new</i18n></button>
+		</div>
 		<i class="open-right right-magnet big-hidden" ng-click="template.close('main')"></i>
 	</div>
 	<hr />

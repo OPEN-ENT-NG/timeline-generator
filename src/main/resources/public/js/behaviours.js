@@ -217,7 +217,7 @@ model.makeModels(timelineNamespace);
 var timelineGeneratorBehaviours = {
 	resources: {
 		contrib: {
-			right: 'net-atos-entng-timelinegenerator-controllers-TimelineController|createTimeline'
+			right: 'net-atos-entng-timelinegenerator-controllers-EventController|createEvent'
 		},
 		manage: {
 			right: 'net-atos-entng-timelinegenerator-controllers-TimelineController|updateTimeline'
@@ -226,8 +226,13 @@ var timelineGeneratorBehaviours = {
 			right: 'net-atos-entng-timelinegenerator-controllers-TimelineController|shareTimeline'
 		}
 	},
+	workflow : {
+        create : 'net.atos.entng.timelinegenerator.controllers.TimelineController|createTimeline'
+    },
 	viewRights: [ 'net-atos-entng-timelinegenerator-controllers-TimelineController|view' ]
 };
+
+console.log(timelineGeneratorBehaviours);
 
 Behaviours.register('timelinegenerator', {
 	behaviours:  timelineGeneratorBehaviours,
@@ -254,9 +259,27 @@ Behaviours.register('timelinegenerator', {
 		}
 		return resource;
 	},
+
+    /**
+     * Allows to load workflow rights according to rights defined by the
+     * administrator for the current user in the console.
+     */
+    workflow : function() {
+        var workflow = {};
+
+        var timelineGeneratorWorkflow = timelineGeneratorBehaviours.workflow;
+        for ( var prop in timelineGeneratorWorkflow) {
+            if (model.me.hasWorkflow(timelineGeneratorWorkflow[prop])) {
+                workflow[prop] = true;
+            }
+        }
+        return workflow;
+    },
+
 	resourceRights: function(){
 		return ['read', 'manager']
 	},
+
 	loadResources: function(callback) {
 		http().get('/timelinegenerator/timelines').done(function(timelines){
 			this.resources = timelines;
