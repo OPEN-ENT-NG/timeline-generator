@@ -1,5 +1,29 @@
 loader.loadFile('/timelinegenerator/public/js/storyjs-embed.js');
 
+model.momentDateFormat = {
+	"year" : "YYYY",
+	"month": "MM/YYYY",
+	"day": "DD/MM/YYYY"
+}
+
+model.timelineJSDateFormat = {
+	"year": "YYYY",
+	"month": "YYYY,MM",
+	"day": "YYYY,MM,DD"
+}
+
+model.datePickerDateFormat = {
+	"year" : "yyyy",
+	"month": "mm/yyyy",
+	"day": "dd/mm/yyyy"
+}
+
+model.inputPlaceholderDateFormat = {
+	"year": "année",
+	"month": "mois/année",
+	"day": "jour/mois/année"
+}
+
 var timelineNamespace = {
 	Event: function(){
 	},
