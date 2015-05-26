@@ -15,6 +15,8 @@ public class TimelineGenerator extends BaseServer {
 	public final static String TIMELINE_GENERATOR_COLLECTION = "timelinegenerator";
 	public final static String TIMELINE_GENERATOR_EVENT_COLLECTION = "timelinegeneratorevent";
 
+    public static final String MANAGE_RIGHT_ACTION = "net-atos-entng-timelinegenerator-controllers-TimelineController|updateTimeline";
+
 	final CrudService eventService = new EventServiceMongoImpl(TIMELINE_GENERATOR_EVENT_COLLECTION);
 	
 	@Override
@@ -25,6 +27,8 @@ public class TimelineGenerator extends BaseServer {
 		
 		super.start();
 		setDefaultResourceFilter(new ShareAndOwner());
+
+        setRepositoryEvents(new TimelineGeneratorRepositoryEvents());
 
 		addController(new TimelineController(TIMELINE_GENERATOR_COLLECTION));
 		addController(new EventController(TIMELINE_GENERATOR_EVENT_COLLECTION, eventService));
