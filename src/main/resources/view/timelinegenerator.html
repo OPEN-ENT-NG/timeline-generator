@@ -13,14 +13,69 @@
   </head>
 
   <body ng-controller="TimelineGeneratorController">
-    <portal>
-
-      <div class="row patchwork">
+    <portal ng-if="!notFound">
+      <div class="row">
+        <div class="twelve cell">
+          <div class="seven cell">
+            <h1>
+              <i class="timelinegenerator">
+                <side-panel ng-if="selectedTimeline">
+                    <container template="side-panel"></container>
+                </side-panel>
+              </i>
+              <a ng-click="openMainPage()"><i18n>timelinegenerator.title</i18n></a>
+              <span ng-if="selectedTimeline.headline && selectedTimeline.headline.trim().length > 0">
+                  : [[timeline.headline]]
+              </span>
+            </h1>
+          </div>
+          <div class="contextual-buttons five cell">
+            <button workflow="timelinegenerator.create" ng-if="!timeline || !timeline._id" ng-click="newTimeline()" class="cell right-magnet">
+                <i18n>timelinegenerator.timeline.new</i18n>
+            </button>
+          </div>
+        </div>
+        <div class="clear"></div>
+      </div>
+      <hr>
+      <section id="timeline-content">
     		<container template="main" class="flexible content cell"></container>
     		<container template="timelines" class="flexible navigation" ng-class="{ 'empty-neighbour': template.isEmpty('main'), 'filled-neighbour': !template.isEmpty('main') }"></container>
-      </div>
+      </section>
     
     </portal>
+    <div ng-if="notFound">
+      <div ng-if="!me.userId" class="absolute">
+          <default-styles>
+      
+              <h1><a data-reload><i class="oops"></i><i18n>oops</i18n></a></h1>
+              <article>
+                  <div class="row">
+                      <i18n>timeline.or.page.notfound.or.unauthorized</i18n>
+                  </div>
+      
+                  <div class="row vertical-spacing-twice">
+                      <button data-reload onclick="history.go(-1)"><i18n>back</i18n></button>
+                  </div>
+              </article>
+      
+          </default-styles>
+      </div>
+      <div ng-if="me.userId" class="absolute">
+          <portal>
+      
+              <h1><a data-reload><i class="oops"></i><i18n>oops</i18n></a></h1>
+              <article>
+                  <div class="row">
+                      <i18n>timeline.or.page.notfound.or.unauthorized</i18n>
+                  </div>
+      
+                  <div class="row vertical-spacing-twice">
+                      <button data-reload onclick="history.go(-1)"><i18n>back</i18n></button>
+                  </div>
+              </article>
+          </portal>
+      </div>
   </body>
 
 </html>

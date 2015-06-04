@@ -1,7 +1,7 @@
 {
-	"timelinegenerator.back.to.timeline": "Edition de la frise",
+	"timelinegenerator.back.to.timeline": "Voir le tableau d'évènements",
 	"timelinegenerator.title": "Création de frise chronologique",
-	"timelinegenerator.timeline.new": "Ajouter",
+	"timelinegenerator.timeline.new": "Créer une frise chronologique",
 	"timelinegenerator.timeline.view": "Voir la frise chronologique",
 	"timelinegenerator.create.a.timeline": "Créer une frise chronologique",
 	"timelinegenerator.confirm.delete.event": "Confirmer la supressioon de l'évènement",
@@ -39,6 +39,13 @@
 	"timelinegenerator.year": "Année",
 	"timelinegenerator.month": "Mois",
 	"timelinegenerator.day": "Jour",
+
+    "timelinegenerator.mode.timeline": "Frise",
+    "timelinegenerator.mode.table": "Tableau",
+
+    "timeline.or.page.notfound.or.unauthorized": "",
+
+    "timeline.or.page.notfound.or.unauthorized": "La frise chronologique ou la page demandée n'existe pas, a été supprimée, ou vous n'avez pas les droits pour y accéder.",
 
     "group.AdminLocal": "Tous les administrateurs locaux",
     "group.Personnel": "Tous les personnels du groupe {0}.",

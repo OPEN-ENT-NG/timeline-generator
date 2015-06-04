@@ -1,33 +1,30 @@
-
-
-<div class="row toggle-buttons-spacer">
-	<h2 ng-if="timeline._id"><i18n>edit</i18n></h2>
-	<h2 ng-if="!timeline._id"><i18n>timelinegenerator.create.a.timeline</i18n></h2>
-	<article class="twelve cell">
-		<image-select ng-model="timeline.icon" default="/img/illustrations/forum-default.png" thumbnails="[{ width: 290, height: 290 }]" class="two cell clip height-two"></image-select>
-		<div class="ten cell height-two left-two">
-			<div class="twelve cell horizontal-spacing-twice">
-				<label class="twelve cell"><i18n>timelinegenerator.timeline.headline</i18n></label>
-				<input type="text" class="nine cell" ng-model="timeline.headline" required />
-			</div>
-		</div>
-
-		<label class="twelve cell"><i18n>timelinegenerator.timeline.text</i18n></label>
-		<html-editor ng-model="timeline.text" required></html-editor>
-
-		<div class="twelve cell horizontal-spacing-twice">
-			<button ng-if="timeline._id" class="right-magnet" ng-click="saveTimelineEdit()">
-				<i18n>save</i18n>
-			</button>
-			<button ng-if="!timeline._id" class="right-magnet" ng-click="saveTimelineEdit()">
-				<i18n>save</i18n>
-			</button>
-			<button class="cancel right-magnet" ng-click="cancelTimelineEdit()">
-				<i18n>cancel</i18n>
-			</button>
-		</div>
-
-
-	</article>
-
-</div>
+<article class="row">
+    <form name="form">
+        <div class="rigid-grid row">
+            <div class="two cell clip height-two">
+                <div class="absolute" loading-panel="upload-timeline-thumbnail">
+                    <image-select ng-model="timeline.icon" default="/img/illustrations/mindmap-default.png"></image-select>
+                </div>
+            </div>
+            <div class="margin-two height-seven">
+            	<div class="twelve cell horizontal-spacing">
+            	    <input type="text" ng-model="timeline.headline" class="twelve cell" i18n-placeholder="timelinegenerator.timeline.headline" required />
+                    <div class="row">
+                        <hr class="row" />
+                    </div>
+                    <label class="twelve cell"><i18n>timelinegenerator.timeline.text</i18n></label>
+                    <html-editor ng-model="timeline.text" class="twelve cell" required></html-editor>
+                    <div class="row">
+                        <hr class="row" />
+                    </div>
+                </div>
+                <div class="row bottom-locked">
+                    <button ng-click="saveTimelineEdit()" class="right-magnet" ng-disabled="form.$invalid">
+                        <i18n>save</i18n>
+                    </button>
+                    <input type="button" class="button right-magnet cancel" ng-click="cancelTimelineEdit()" i18n-value="cancel">
+                </div>
+            </div>
+        </div>
+    </form>
+</article>

@@ -1,4 +1,9 @@
 {
+	"timeline.or.page.notfound.or.unauthorized": "The timeline or the webpage requested either does not exists, either has been deleted, or you do not have permission to access it.",
+
+	"timelinegenerator.mode.timeline": "Timeline",
+    "timelinegenerator.mode.table": "Table",
+
 	"group.Teacher" : "All teachers of the group {0}.",
 	"group.Personnel" : "All staff of the group {0}.",
 	"group.Student" : "All students of the group {0}.",

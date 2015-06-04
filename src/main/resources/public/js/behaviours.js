@@ -105,7 +105,7 @@ timelineNamespace.Timeline.prototype.saveModifications = function(callback){
 
 timelineNamespace.Timeline.prototype.save = function(callback){
 	if(this._id){
-		this.saveModifications();
+		this.saveModifications(callback);
 	}
 	else{
 		this.createTimeline(callback);
@@ -251,7 +251,8 @@ var timelineGeneratorBehaviours = {
 		}
 	},
 	workflow : {
-        create : 'net.atos.entng.timelinegenerator.controllers.TimelineController|createTimeline'
+        create : 'net.atos.entng.timelinegenerator.controllers.TimelineController|createTimeline',
+        view : 'net.atos.entng.timelinegenerator.controllers.TimelineController|view'
     },
 	viewRights: [ 'net-atos-entng-timelinegenerator-controllers-TimelineController|view' ]
 };

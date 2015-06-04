@@ -44,8 +44,8 @@
 			<input id="mediatype-video" type="radio" name="mediatype" ng-model="event.mediatype" value="video"/>
 			<label for="mediatype-video"><i18n>timelinegenerator.video</i18n></label>
 
-			<div class="twelve cell height-two">
-				<div class="two cell" ng-if="event.mediatype == 'img'">
+			<div class="twelve cell height">
+				<div class="cell" ng-if="event.mediatype == 'img'">
 					<image-select ng-change="resetEventVideo(event)" ng-model="event.img" default="/img/icons/folder-large.png" thumbnails="[{ width: 120, height: 120 }]"></image-select>
 				</div>
 				<div ng-if="event.mediatype == 'video'">
