@@ -1,13 +1,15 @@
 <div class="twelve cell">
-	<div>
-		<div class="cell">
-			<behaviour name="contrib" resource="timeline" class="contextual-buttons row">
-				<button ng-click="newEvent()"><i18n>timelinegenerator.event.new</i18n></button>
-			</behaviour>
-		</div>
-		<div class="cell">
-			<button ng-click="openTimelineViewer(timeline)"><i18n>timelinegenerator.timeline.view</i18n></button>
-		</div>
+	<div class="contextual-buttons twelve cell vertical-spacing">
+		<section class="tabs cell one right-magnet">
+			<header class="cell right-magnet selected" style="background: transparent;"><span class="no-style ng-scope"><i18n>timelinegenerator.mode.table</i18n></span></header>
+			<header class="right-magnet"><span class="cell">&nbsp;|&nbsp;</span></header>
+			<header ng-click="openTimelineViewer(timeline)" class="cell right-magnet"><span class="no-style ng-scope"><i18n>timelinegenerator.mode.timeline</i18n></span></header>
+  		</section>
+		<behaviour name="contrib" resource="timeline">
+			<section class="cell eleven horizontal-spacing-twice">
+				<button ng-click="newEvent()" class="cell right-magnet"><i18n>timelinegenerator.event.new</i18n></button>
+			</section>
+		</behaviour>
 	</div>
 	
 	<div class="row vertical-spacing"></div>
@@ -64,6 +66,8 @@
 						<span ng-if="event.dateFormat == 'month'">[[moment(event.endDate).format('MM')]]/[[moment(event.endDate).years()]]</span>
 						<span ng-if="event.dateFormat == 'day'">[[event.endDate | date:'dd/MM/yyyy']]</span>
 					</td>
+					<td ng-if="!event.endDate">
+					</td>
 			</tr>
 		</tbody>
 
@@ -85,10 +89,10 @@
 
 <div ng-if="display.confirmDeleteEvents">
 	<lightbox show="display.confirmDeleteEvents" on-close="cancelRemoveEvents()">
-		<div class="row" ng-if="events.selection().length === 1">
+		<div class="row vertical-spacing-twice" ng-if="events.selection().length === 1">
 			<i18n>timelinegenerator.confirm.delete.event</i18n>
 		</div>
-		<div class="row" ng-if="events.selection().length > 1">
+		<div class="row vertical-spacing-twice" ng-if="events.selection().length > 1">
 			<i18n>timelinegenerator.confirm.delete.events</i18n>
 		</div>
 		<div class="row">

@@ -1,55 +1,80 @@
-<h1><i18n ng-click="openMainPage()">timelinegenerator.title</i18n></h1>
-
-<div class="items">
-	<div class="twelve cell">
-		<div workflow="timelinegenerator.create" class="cell">
-			<button ng-click="newTimeline()"><i18n>timelinegenerator.timeline.new</i18n></button>
-		</div>
-		<i class="open-right right-magnet big-hidden" ng-click="template.close('main')"></i>
-	</div>
-	<hr />
-	<div class="row" ng-repeat="tl in timelines.all" ng-click="openTimeline(tl)" ng-class="{ selected: tl._id === timeline._id }">
-		<div class="cell">
-			<img skin-src="/img/illustrations/forum-default.png" ng-if="(tl.icon === undefined)" class="cell" />
-			<img ng-src="[[tl.icon]]?thumbnail=120x120" ng-if="tl.icon !== undefined" class="cell" />
-		</div>
-		<article>
-			<h1>[[tl.headline]]</h1>
-			<div class="bottom-locked">
-				<behaviour name="manage" resource="tl">
-					<input type="checkbox" ng-model="tl.showButtons" ng-change="hideAlmostAllButtons(tl)"/>
-				</behaviour>
-			</div>
-			<div class="small-hidden buttons" ng-class="{ hidden: !tl.showButtons || tl._id !== timeline._id }">
-				<behaviour name="manage" resource="tl">
-					<button ng-click="editTimeline(tl, $event)"><i18n>edit</i18n></button>
-					<button ng-click="confirmRemoveTimeline(tl, $event)"><i18n>remove</i18n></button>
-					<button ng-click="shareTimeline(tl, $event)"><i18n>share</i18n></button>
-				</behaviour>
-			</div>
-		</article>
+<div class="twelve cell" workflow="timelinegenerator.view">
+    <div class="row rigid-grid">
+        <!-- Search bar -->
+        <div class="four cell">
+            <autocomplete
+                    workflow="timelinegenerator.view"
+                    options="searchbar.timelines"
+                    ng-change="openPageFromSearchbar(selectedTimeline._id)"
+                    ng-model="selectedTimeline">
+            </autocomplete>
+        </div>
+    </div>
+    
+    <div class="fallen dominos">
+        <div class="item" ng-repeat="tl in timelines.all">
+            <section class="domino cyan">
+                <div class="top" ng-click="openTimeline(tl)">
+                    <img class="absolute" skin-src="[[getTimelineThumbnail(tl)]]" />
+                </div>
+                <div class="bottom">
+                    <div class="content">
+                        <div class="cell" ng-click="openTimeline(tl)">
+                            <strong>[[tl.headline]]</strong>
+                            <br />[[tl.owner.displayName]]
+                            <br />[[formatDate(tl.modified)]]
+                        </div>
+                        <div ng-show="canManageTimeline(tl)" class="bottom-locked eleven vertical-spacing-twice">
+                            <input type="checkbox" data-ng-model="tl.selected" class="right-magnet cell" />
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+    
+   	<!-- Allows to display a confirm dialog before deleting a mindmap -->
+    <div ng-if="display.confirmDeleteTimelines">
+        <lightbox show="display.confirmDeleteTimelines" on-close="cancelRemoveMindmap()">
+            <p><i18n>timelinegenerator.confirm.delete.timeline</i18n></p>
+            <p ng-repeat="timeline in timelines.selection()">[[timeline.headline]]</p>
+            <div class="row">
+                <button class="right-magnet" ng-click="removeSelectedTimelines()"><i18n>remove</i18n></button>
+                <input type="button" class="cancel right-magnet" i18n-value="cancel" ng-click="cancelRemoveTimelines()" />
+            </div>
+        </lightbox>
+    </div>
+   
+    <div ng-if="display.showPanel">
+		<lightbox show="display.showPanel" on-close="display.showPanel = false;">
+			<share-panel app-prefix="'timelinegenerator'" resources="timeline"></share-panel>
+		</lightbox>
 	</div>
 </div>
 
 <!-- Lightbox : Thread share -->
-<div ng-if="display.showPanel">
-	<lightbox show="display.showPanel" on-close="display.showPanel = false;">
-		<share-panel app-prefix="'timelinegenerator'" resources="timeline"></share-panel>
-	</lightbox>
-</div>
+<section class="toggle-buttons" ng-class="{ hide: timelines.selection().length === 0 }">
+    <div class="toggle">
+        <div class="row">
+            <resource-right name="manage" resource="timelines.selection()" class="cell">
+                <button ng-if="timelines.selection().length === 1" ng-click="editTimeline(timelines.selection()[0], $event)">
+                    <i18n>properties</i18n>
+                </button>
+            </resource-right>
+            <resource-right name="manage" resource="timelines.selection()" class="cell">
+                <button ng-click="shareTimeline(timelines.selection(), $event)">
+                    <i18n>share</i18n>
+                </button>
+            </resource-right>
+            <resource-right name="manage" resource="timelines.selection()" class="cell">
+                <button ng-click="display.confirmDeleteTimelines = true">
+                    <i18n>remove</i18n>
+                </button>
+            </resource-right>
+        </div>
+    </div>
+</section>
 
 
-<div ng-if="display.confirmDeleteTimelines">
-	<lightbox show="display.confirmDeleteTimelines" on-close="cancelRemoveTimelines()">
-		<div class="row" ng-if="timelines.selection().length === 1">
-			<i18n>timelinegenerator.confirm.delete.timeline</i18n>
-		</div>
-		<div class="row" ng-if="timelines.selection().length > 1">
-			<i18n>timelinegenerator.confirm.delete.timelines</i18n>
-		</div>
-		<div class="row">
-			<button class="right-magnet" ng-click="removeSelectedTimelines()"><i18n>remove</i18n></button>
-			<input type="button" class="cancel right-magnet" i18n-value="cancel" ng-click="cancelRemoveTimelines()" />
-		</div>
-	</lightbox>
-</div>
+
+

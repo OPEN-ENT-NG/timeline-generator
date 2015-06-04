@@ -1,0 +1,8 @@
+<nav class="vertical">
+    <h2 ng-click="openMainPage()"><i18n >timelinegenerator.title</i18n></h2>
+    <ul>
+        <li ng-repeat="timeline in timelines.all">
+            <a ng-click="openTimeline(timeline)">[[timeline.headline]]</a>
+        </li>
+    </ul>
+</nav>

@@ -17,6 +17,8 @@ function TimelineGeneratorController($scope, template, model, date, route) {
     $scope.me = model.me;
     $scope.date = date;
     $scope.moment = moment;
+    $scope.searchbar = {};
+    $scope.previewMode = false;
 
     $scope.editedEvent = new Event();
 
@@ -24,6 +26,8 @@ function TimelineGeneratorController($scope, template, model, date, route) {
         predicate: 'headline',
         reverse: false
     }
+
+    template.open('side-panel', 'timeline-side-panel');
 
     // Definition of actions
     route({
@@ -36,7 +40,8 @@ function TimelineGeneratorController($scope, template, model, date, route) {
                 });
                 if ($scope.timeline === undefined) {
                     $scope.notFound = true;
-                    template.open('error', '404');
+                    $scope.openMainPage();
+                    //template.open('error', '404');
                 } else {
                     $scope.notFound = false;
                     $scope.openTimeline($scope.timeline);
@@ -61,23 +66,28 @@ function TimelineGeneratorController($scope, template, model, date, route) {
 
     $scope.openMainPage = function(){
 		delete $scope.timeline;
+        delete $scope.selectedTimeline;
         $scope.timelines.forEach(function(tl) {
             tl.showButtons = false;
         });
 		template.close('main');
+        template.open('timelines', 'timelines');
+        window.location.hash = "";
 	};
 
     $scope.openTimeline = function(timeline){
-        $scope.timeline = timeline;
+        $scope.timeline = $scope.selectedTimeline = timeline;
         $scope.events = timeline.events;
+        $scope.previewMode = false;
         $scope.timelines.forEach(function(tl) {
             if (tl._id != timeline._id) {
                 tl.showButtons = false;                
             }
         });
         $scope.timeline.open(function(){
-            template.open('timelines', 'timelines');
-            template.open('main', 'events');
+            template.close('main');
+            template.open('timelines', 'events');
+            window.location.hash = '/view/' + $scope.timeline._id;
             $scope.$apply();
         });
     };
@@ -85,6 +95,7 @@ function TimelineGeneratorController($scope, template, model, date, route) {
      $scope.openTimelineViewer = function(timeline){
         $scope.timeline = timeline;
         $scope.events = timeline.events;
+        $scope.previewMode = true;
         Behaviours.applicationsBehaviours.timelinegenerator.sniplets.timelines.controller.source = timeline;
         timeline.open(function(){
             template.close('main');
@@ -94,7 +105,8 @@ function TimelineGeneratorController($scope, template, model, date, route) {
 
     $scope.newTimeline = function(){
 		$scope.timeline = new Timeline();
-		template.open('main', 'edit-timeline');
+        template.close('main');
+		template.open('timelines', 'edit-timeline');
 	};
 
     $scope.newEvent = function(){
@@ -103,7 +115,7 @@ function TimelineGeneratorController($scope, template, model, date, route) {
         $scope.event.startDate = moment();
         $scope.event.endDate = moment();
         $scope.setEventMediaType($scope.event);
-        template.open('main', 'edit-event');
+        template.open('timelines', 'edit-event');
     };
 
     $scope.addEvent = function(){
@@ -119,7 +131,11 @@ function TimelineGeneratorController($scope, template, model, date, route) {
 
         $scope.event.error = undefined;
         $scope.timeline.addEvent($scope.event, function() {
-            $scope.openTimeline($scope.timeline);
+            if ($scope.previewMode) {
+                $scope.openTimelineViewer($scope.timeline);
+            } else {
+                $scope.openTimeline($scope.timeline);
+            }
         });
     };
 
@@ -127,18 +143,22 @@ function TimelineGeneratorController($scope, template, model, date, route) {
 		if ($scope.timeline._id) { // when editing a timeline
 			$scope.timeline.save(function(){
 				$scope.timelines.sync(function(){
-					$scope.cancelTimelineEdit();
-					$scope.$apply();
+                    $scope.updateSearchBar();
+                    $scope.cancelTimelineEdit();
 				});
+                
 			});
 		}
 		else { // when creating a timeline
 		    $scope.timeline.save(function(){
-				template.open('main', 'share-timeline');
+                $scope.timelines.sync(function() {
+                    $scope.updateSearchBar();
+                    $scope.cancelTimelineEdit();
+                });
 			});
-			$scope.timelines.sync();
 		}
-		template.close('main');
+        template.close('main');
+
 	};
 
     $scope.saveEventEdit = function(){
@@ -160,7 +180,12 @@ function TimelineGeneratorController($scope, template, model, date, route) {
 
     $scope.cancelEventEdit = function(){
         $scope.event = undefined;
-        $scope.openTimeline($scope.timeline);
+
+        if ($scope.previewMode) {
+            $scope.openTimelineViewer($scope.timeline);
+        } else {
+            $scope.openTimeline($scope.timeline);
+        }
     };
 
 	$scope.cancelTimelineEdit = function(){
@@ -169,12 +194,13 @@ function TimelineGeneratorController($scope, template, model, date, route) {
             tl.showButtons = false;                
         });
 		template.close('main');
+        template.open('timelines', 'timelines');
 	};
 
     $scope.editTimeline = function(timeline, event){
         $scope.timeline = timeline;
         event.stopPropagation();
-        template.open('main', 'edit-timeline');
+        template.open('timelines', 'edit-timeline');
     };
 
      $scope.editEvent = function(timelineEvent, event){
@@ -202,7 +228,7 @@ function TimelineGeneratorController($scope, template, model, date, route) {
 
         $scope.setEventMediaType($scope.event);
         event.stopPropagation();
-        template.open('main', 'edit-event');
+        template.open('timelines', 'edit-event');
     };
 
     $scope.setEventMediaType = function(event) {
@@ -229,8 +255,14 @@ function TimelineGeneratorController($scope, template, model, date, route) {
 
     $scope.removeSelectedTimelines = function() {
         $scope.timelines.removeSelection(function(){
+            $scope.updateSearchBar();
             $scope.display.confirmDeleteTimelines = undefined;
         });
+
+        delete $scope.timeline;
+        delete $scope.selectedTimeline;
+        $scope.display.confirmDeleteTimelines = false;
+
     };
 
     $scope.cancelRemoveTimelines = function() {
@@ -315,4 +347,57 @@ function TimelineGeneratorController($scope, template, model, date, route) {
         $scope.sort.predicate = 'headline';
         $scope.sort.reverse = false;
     }
+
+    /**
+     * Display date in French format
+     */ 
+    $scope.formatDate = function(dateObject){
+        return moment(dateObject.$date).lang('fr').calendar();
+    };
+
+    /**
+     * Checks if a user is a manager
+     */
+    $scope.canManageTimeline = function(timeline){
+        return timeline.myRights.manage !== undefined;
+    };
+
+
+    /**
+     * Update the search bar according server timelines
+     */    
+    $scope.updateSearchBar = function() {
+        model.timelines.sync(function() {
+            $scope.searchbar.timelines = $scope.timelines.all.map(function(timeline) {
+                return {
+                    title : timeline.headline,
+                    _id : timeline._id,
+                    toString : function() {
+                                    return this.title;
+                               }
+                }
+            });
+        });
+    }
+
+    // Update search bar
+    $scope.updateSearchBar();
+
+    /**
+     * Opens a timeline through the search bar
+     */
+    $scope.openPageFromSearchbar = function(timelineId) {
+        window.location.hash = '/view/' + timelineId;
+    };
+
+
+    /**
+     * Retrieve the timeline thumbnail if there is one
+     */
+    $scope.getTimelineThumbnail = function(timeline){
+        if(!timeline.icon || timeline.icon === ''){
+            return '/img/illustrations/timeline-default.png';
+        }
+        return timeline.icon + '?thumbnail=120x120';
+    };
 }
