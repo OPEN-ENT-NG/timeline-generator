@@ -40,8 +40,8 @@
 	"timelinegenerator.month": "Mois",
 	"timelinegenerator.day": "Jour",
 
-    "timelinegenerator.mode.timeline": "Frise",
-    "timelinegenerator.mode.table": "Tableau",
+    "timelinegenerator.mode.timeline": "Voir frise",
+    "timelinegenerator.mode.table": "Voir tableau",
 
     "timeline.or.page.notfound.or.unauthorized": "",
 

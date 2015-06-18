@@ -5,46 +5,52 @@
 
 	<article class="twelve cell">
 		<form name="form">
-		<label class="twelve cell"><i18n>timelinegenerator.event.headline</i18n></label>
-		<input type="text" i18n-placeholder="timelinegenerator.event.placeholder" class="twelve cell" ng-model="event.headline" required></input>
-
-		<div class="row">
-			<label class="twelve cell"><i18n>timelinegenerator.date.format</i18n></label>
-			<input type="radio" name="dateFormat" ng-change="switchDateFormat()" ng-model="event.dateFormat" value="year"/><i18n>timelinegenerator.year</i18n>
-			<input type="radio" name="dateFormat" ng-change="switchDateFormat()" ng-model="event.dateFormat" value="month"/><i18n>timelinegenerator.month</i18n>
-			<input type="radio" name="dateFormat" ng-change="switchDateFormat()" ng-model="event.dateFormat" value="day"/><i18n>timelinegenerator.day</i18n>
+		<div class="row vertical-spacing">
+			<label class="two cell"><i18n>timelinegenerator.event.headline</i18n></label>
+			<input type="text" i18n-placeholder="timelinegenerator.event.placeholder" class="ten cell" ng-model="event.headline" required></input>
 		</div>
 
-		<div class="row">
-			<div class="six cell">
-				<label class="twelve cell"><i18n>timelinegenerator.event.startdate</i18n></label>
-				<span class="twelve cell">
-					<date-picker-timeline ng-if="event.dateFormat == 'day'" event-date-format="event.dateFormat" ng-model="event.startDate"></date-picker-timeline>
-					<input type="text" ng-if="event.dateFormat == 'month' || event.dateFormat == 'year'" ng-model="event.startDate.newDate" ng-blur="setDateYear(event.startDate)" placeholder="[[ model.inputPlaceholderDateFormat[event.dateFormat] ]]">
-				</span>
-			</div>
-			
-			<div class="six cell">
-				<label class="twelve cell">
-					<input type="checkbox" ng-change="resetEndDate()" ng-model="event.enableEndDate"/>
-					<i18n>timelinegenerator.event.enddate</i18n>
-				</label>
-				<span class="twelve cell" ng-if="event.enableEndDate">
-					<date-picker-timeline ng-if=" event.dateFormat == 'day'" event-date-format="event.dateFormat" ng-model="event.endDate"></date-picker-timeline>
-					<input type="text" ng-if="event.dateFormat == 'month' || event.dateFormat == 'year'" ng-model="event.endDate.newDate" ng-blur="setDateYear(event.endDate)" placeholder="[[ model.inputPlaceholderDateFormat[event.dateFormat] ]]">
-				</span>
+		<div class="row vertical-spacing">
+			<label class="two cell"><i18n>timelinegenerator.date.format</i18n></label>
+			<div class="ten cell">
+				<div class="row">
+					<label class="two cell">Format de la date</label>
+					<span class="ten cell">
+						<select ng-model="event.dateFormat" ng-change="switchDateFormat()">
+							<option name="dateFormat" value="year">[[lang.translate("timelinegenerator.year")]]</option>
+							<option name="dateFormat" value="month">[[lang.translate("timelinegenerator.month")]]</option>
+							<option name="dateFormat" value="day"><i18n></i18n>[[lang.translate("timelinegenerator.day")]]</option>
+						</select>
+					</span>					
+				</div>
+				<div class="row">
+					<label class="two cell"><i18n>timelinegenerator.event.startdate</i18n></label>
+					<span class="ten cell">
+						<date-picker-timeline ng-if="event.dateFormat == 'day'" event-date-format="event.dateFormat" ng-model="event.startDate"></date-picker-timeline>
+						<input type="text" ng-if="event.dateFormat == 'month' || event.dateFormat == 'year'" ng-model="event.startDate.newDate" ng-blur="setDateYear(event.startDate)" placeholder="[[ model.inputPlaceholderDateFormat[event.dateFormat] ]]">
+					</span>
+				</div>
+				<div class="row">
+					<label class="two cell">
+						<input type="checkbox" ng-change="resetEndDate()" ng-model="event.enableEndDate"/>
+						<i18n>timelinegenerator.event.enddate</i18n>
+					</label>
+					<span class="ten cell" ng-if="event.enableEndDate">
+						<date-picker-timeline ng-if=" event.dateFormat == 'day'" event-date-format="event.dateFormat" ng-model="event.endDate"></date-picker-timeline>
+						<input type="text" ng-if="event.dateFormat == 'month' || event.dateFormat == 'year'" ng-model="event.endDate.newDate" ng-blur="setDateYear(event.endDate)" placeholder="[[ model.inputPlaceholderDateFormat[event.dateFormat] ]]">
+					</span>
+				</div>
 			</div>
 		</div>
+		<div class="row vertical-spacing">
+			<label class="two cell"><i18n>timelinegenerator.select.media.type</i18n> </label>
+			<div class="ten cell height">
+				<input id="mediatype-image" type="radio" name="mediatype" ng-model="event.mediatype" value="img"/> 
+				<label for="mediatype-image"><i18n>timelinegenerator.image</i18n></label>
 
-		<div class="row">
-			<label><i18n>timelinegenerator.select.media.type</i18n>: </label>
-	      	<input id="mediatype-image" type="radio" name="mediatype" ng-model="event.mediatype" value="img"/> 
-			<label for="mediatype-image"><i18n>timelinegenerator.image</i18n></label>
-
-			<input id="mediatype-video" type="radio" name="mediatype" ng-model="event.mediatype" value="video"/>
-			<label for="mediatype-video"><i18n>timelinegenerator.video</i18n></label>
-
-			<div class="twelve cell height">
+				<input id="mediatype-video" type="radio" name="mediatype" ng-model="event.mediatype" value="video"/>
+				<label for="mediatype-video"><i18n>timelinegenerator.video</i18n></label>
+				<BR/>
 				<div class="cell" ng-if="event.mediatype == 'img'">
 					<image-select ng-change="resetEventVideo(event)" ng-model="event.img" default="/img/icons/folder-large.png" thumbnails="[{ width: 120, height: 120 }]"></image-select>
 				</div>
@@ -55,8 +61,10 @@
 		</div>
 
 		<div class="twelve cell">
-			<label class="twelve cell"><i18n>timelinegenerator.event.text</i18n></label>
-			<html-editor ng-model="event.text" ></html-editor>
+			<label class="two cell"><i18n>timelinegenerator.event.text</i18n></label>
+			<div class="ten cell">
+				<html-editor ng-model="event.text"></html-editor>
+			</div>
 		</div>
 
 		<div class="twelve cell warning" ng-if="event.error !== undefined" translate content="[[event.error]]">
