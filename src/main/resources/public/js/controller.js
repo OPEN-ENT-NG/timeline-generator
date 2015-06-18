@@ -8,7 +8,7 @@ routes.define(function($routeProvider) {
     });
 });
 
-function TimelineGeneratorController($scope, template, model, date, route) {
+function TimelineGeneratorController($scope, template, model, lang, date, route) {
     $scope.notFound = false;
 	$scope.template = template;
     $scope.timelines = model.timelines;
@@ -19,6 +19,7 @@ function TimelineGeneratorController($scope, template, model, date, route) {
     $scope.moment = moment;
     $scope.searchbar = {};
     $scope.previewMode = false;
+    $scope.lang = lang;
 
     $scope.editedEvent = new Event();
 
