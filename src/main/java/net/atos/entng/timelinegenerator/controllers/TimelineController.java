@@ -1,11 +1,20 @@
 package net.atos.entng.timelinegenerator.controllers;
 
+import java.util.Map;
+
+import net.atos.entng.timelinegenerator.TimelineGenerator;
+
+import org.entcore.common.events.EventStore;
+import org.entcore.common.events.EventStoreFactory;
 import org.entcore.common.mongodb.MongoDbControllerHelper;
 import org.entcore.common.user.UserInfos;
 import org.entcore.common.user.UserUtils;
 import org.vertx.java.core.Handler;
+import org.vertx.java.core.Vertx;
 import org.vertx.java.core.http.HttpServerRequest;
+import org.vertx.java.core.http.RouteMatcher;
 import org.vertx.java.core.json.JsonObject;
+import org.vertx.java.platform.Container;
 
 import fr.wseduc.rs.ApiDoc;
 import fr.wseduc.rs.Delete;
@@ -18,7 +27,19 @@ import fr.wseduc.webutils.request.RequestUtils;
 
 
 public class TimelineController extends MongoDbControllerHelper {
-	
+
+	// Used for module "statistics"
+	private EventStore eventStore;
+	private enum TimelineGeneratorEvent { ACCESS }
+
+
+	@Override
+	public void init(Vertx vertx, Container container, RouteMatcher rm,
+			Map<String, fr.wseduc.webutils.security.SecuredAction> securedActions) {
+		super.init(vertx, container, rm, securedActions);
+		eventStore = EventStoreFactory.getFactory().getEventStore(TimelineGenerator.class.getSimpleName());
+	}
+
 	public TimelineController(String collection) {
 		super(collection);
 	}
@@ -27,27 +48,30 @@ public class TimelineController extends MongoDbControllerHelper {
 	@SecuredAction("timelinegenerator.view")
 	public void view(HttpServerRequest request) {
 		renderView(request);
+
+		// Create event "access to application TimelineGenerator" and store it, for module "statistics"
+		eventStore.createAndStoreEvent(TimelineGeneratorEvent.ACCESS.name(), request);
 	}
-	
+
 	@Get("/timelines")
 	@SecuredAction("timelinegenerator.list")
 	public void listTimelines(HttpServerRequest request) {
 		list(request);
 	}
-	
+
 	@Get("/timeline/:id")
 	@SecuredAction(value = "timelinegenerator.read", type = ActionType.RESOURCE)
 	public void getTimeline(HttpServerRequest request) {
 		retrieve(request);
 	}
-	
+
 
 	@Get("/timeline/:id/data")
 	@SecuredAction(value = "timelinegenerator.read", type = ActionType.RESOURCE)
 	public void getTimelineData(HttpServerRequest request) {
 		retrieve(request);
 	}
-	
+
 
 	@Post("/timelines")
 	@SecuredAction("timelinegenerator.create")
@@ -59,7 +83,7 @@ public class TimelineController extends MongoDbControllerHelper {
             }
         });
 	}
-	
+
 	@Put("/timeline/:id")
 	@SecuredAction(value = "timelinegenerator.manager", type = ActionType.RESOURCE)
 	public void updateTimeline(final HttpServerRequest request) {
@@ -70,8 +94,8 @@ public class TimelineController extends MongoDbControllerHelper {
             }
         });
 	}
-	
-	
+
+
 	@Delete("/timeline/:id")
 	@SecuredAction(value = "timelinegenerator.manager", type = ActionType.RESOURCE)
 	public void deleteTimeline(HttpServerRequest request) {
