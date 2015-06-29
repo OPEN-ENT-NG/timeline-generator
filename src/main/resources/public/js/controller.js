@@ -45,7 +45,7 @@ function TimelineGeneratorController($scope, template, model, lang, date, route)
                     //template.open('error', '404');
                 } else {
                     $scope.notFound = false;
-                    $scope.openTimeline($scope.timeline);
+                    $scope.openTimelineViewer($scope.timeline);
                 }
             });
             model.timelines.sync();
