@@ -307,8 +307,23 @@ Behaviours.register('timelinegenerator', {
 
 	loadResources: function(callback) {
 		http().get('/timelinegenerator/timelines').done(function(timelines){
-			this.resources = timelines;
-			callback(this.resources);
+            this.resources = _.map(timelines, function(timeline) {
+                timelineIcon = timeline.icon;
+                if (!timelineIcon) {
+                    timelineIcon = "/img/illustrations/timeline-default.png";
+                }
+                return {
+                    title : timeline.headline,
+                    ownerName : timeline.owner.displayName,
+                    owner : timeline.owner.userId,
+                    icon : timelineIcon,
+                    path : '/timelinegenerator#/view/' + timeline._id,
+                    id : timeline._id
+                };
+            })
+            if(typeof callback === 'function'){
+                callback(this.resources);
+            }
 		}.bind(this));
 	},
 	sniplets: {
