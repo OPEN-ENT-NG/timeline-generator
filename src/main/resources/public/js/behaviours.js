@@ -1,28 +1,30 @@
+console.log('timelinegenerator behaviours loaded');
+
 loader.loadFile('/timelinegenerator/public/js/storyjs-embed.js');
 
 model.momentDateFormat = {
 	"year" : "YYYY",
 	"month": "MM/YYYY",
 	"day": "DD/MM/YYYY"
-}
+};
 
 model.timelineJSDateFormat = {
 	"year": "YYYY",
 	"month": "YYYY,MM",
 	"day": "YYYY,MM,DD"
-}
+};
 
 model.datePickerDateFormat = {
 	"year" : "yyyy",
 	"month": "mm/yyyy",
 	"day": "dd/mm/yyyy"
-}
+};
 
 model.inputPlaceholderDateFormat = {
 	"year": "année",
 	"month": "mois/année",
 	"day": "jour/mois/année"
-}
+};
 
 var timelineNamespace = {
 	Event: function(){
@@ -35,7 +37,7 @@ var timelineNamespace = {
 				http().get('/timelinegenerator/timeline/' + timeline._id + '/events').done(function(events){
 					_.each(events, function(event){
 						event.timeline = timeline;
-						if (event.endDate == "") {
+						if (event.endDate === "") {
 							event.endDate = undefined;
 						}
 						if (!event.dateFormat) {
@@ -136,7 +138,7 @@ timelineNamespace.Timeline.prototype.addEvent = function(event, cb){
 	event.owner = {
 		userId: model.me.userId,
 		displayName: model.me.username
-	}
+	};
 	this.events.push(event);
 	event.save(function(){
 		if(typeof cb === 'function'){
@@ -151,7 +153,7 @@ timelineNamespace.Timeline.prototype.toJSON = function(){
 		text: this.text,
 		type: 'default',
 		icon: this.icon
-	}
+	};
 };
 
 timelineNamespace.Timeline.prototype.toTimelineJsJSON = function() {
@@ -186,7 +188,7 @@ timelineNamespace.Timeline.prototype.toTimelineJsJSON = function() {
 
     console.log(objectData);
     return objectData;
-}
+};
 
 timelineNamespace.Event.prototype.save = function(cb){
 	if(this._id){
@@ -271,9 +273,9 @@ Behaviours.register('timelinegenerator', {
 		}
 
 		for(var behaviour in timelineGeneratorBehaviours.resources){
-			if(model.me.hasRight(rightsContainer, timelineGeneratorBehaviours.resources[behaviour]) 
-					|| model.me.userId === resource.owner.userId 
-					|| model.me.userId === rightsContainer.owner.userId){
+			if(model.me.hasRight(rightsContainer, timelineGeneratorBehaviours.resources[behaviour]) ||
+					model.me.userId === resource.owner.userId  ||
+					model.me.userId === rightsContainer.owner.userId){
 				if(resource.myRights[behaviour] !== undefined){
 					resource.myRights[behaviour] = resource.myRights[behaviour] && timelineGeneratorBehaviours.resources[behaviour];
 				}
@@ -302,7 +304,7 @@ Behaviours.register('timelinegenerator', {
     },
 
 	resourceRights: function(){
-		return ['read', 'manager']
+		return ['read', 'manager'];
 	},
 
 	loadResources: function(callback) {
@@ -318,7 +320,7 @@ Behaviours.register('timelinegenerator', {
                     owner : timeline.owner.userId,
                     icon : timelineIcon,
                     path : '/timelinegenerator#/view/' + timeline._id,
-                    id : timeline._id
+                    _id : timeline._id
                 };
             })
             if(typeof callback === 'function'){
