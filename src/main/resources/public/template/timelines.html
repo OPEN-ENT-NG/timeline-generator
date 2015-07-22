@@ -5,7 +5,7 @@
             <autocomplete
                     workflow="timelinegenerator.view"
                     options="searchbar.timelines"
-                    ng-change="openPageFromSearchbar(selectedTimeline._id)"
+                    ng-change="openTl(selectedTimeline._id)"
                     ng-model="selectedTimeline">
             </autocomplete>
         </div>
@@ -14,12 +14,12 @@
     <div class="fallen dominos">
         <div class="item" ng-repeat="tl in timelines.all">
             <section class="domino cyan">
-                <div class="top" ng-click="openTimelineViewer(tl)">
+                <div class="top" ng-click="openTl(tl._id)">
                     <img class="absolute" skin-src="[[getTimelineThumbnail(tl)]]" />
                 </div>
                 <div class="bottom">
                     <div class="content">
-                        <div class="cell" ng-click="openTimelineViewer(tl)">
+                        <div class="cell" ng-click="openTl(tl._id)">
                             <strong>[[tl.headline]]</strong>
                             <br />[[tl.owner.displayName]]
                             <br />[[formatDate(tl.modified)]]

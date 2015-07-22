@@ -88,7 +88,6 @@ function TimelineGeneratorController($scope, template, model, lang, date, route)
         $scope.timeline.open(function(){
             template.close('main');
             template.open('timelines', 'events');
-            window.location.hash = '/view/' + $scope.timeline._id;
             $scope.$apply();
         });
     };
@@ -385,9 +384,9 @@ function TimelineGeneratorController($scope, template, model, lang, date, route)
     $scope.updateSearchBar();
 
     /**
-     * Opens a timeline through the search bar
+     * Opens a timeline from the search bar or the main page
      */
-    $scope.openPageFromSearchbar = function(timelineId) {
+    $scope.openTl = function(timelineId) {
         window.location.hash = '/view/' + timelineId;
     };
 
