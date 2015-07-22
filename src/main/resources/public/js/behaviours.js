@@ -263,7 +263,7 @@ console.log(timelineGeneratorBehaviours);
 
 Behaviours.register('timelinegenerator', {
 	behaviours:  timelineGeneratorBehaviours,
-	resource: function(resource){
+	resourceRights: function(resource){
 		var rightsContainer = resource;
 		if(resource instanceof Event && resource.timeline){
 			rightsContainer = resource.timeline;
@@ -303,10 +303,6 @@ Behaviours.register('timelinegenerator', {
         return workflow;
     },
 
-	resourceRights: function(){
-		return ['read', 'manager'];
-	},
-
 	loadResources: function(callback) {
 		http().get('/timelinegenerator/timelines').done(function(timelines){
             this.resources = _.map(timelines, function(timeline) {
@@ -322,7 +318,7 @@ Behaviours.register('timelinegenerator', {
                     path : '/timelinegenerator#/view/' + timeline._id,
                     _id : timeline._id
                 };
-            })
+            });
             if(typeof callback === 'function'){
                 callback(this.resources);
             }
@@ -377,6 +373,7 @@ Behaviours.register('timelinegenerator', {
 					this.setSnipletSource({
 						_id: source._id
 					});
+					this.snipletResource.synchronizeRights(); // propagate rights from sniplet to timeline
 				},
 				copyRights: function(snipletResource, source){
 					source.timelines.forEach(function(timeline){
@@ -384,6 +381,14 @@ Behaviours.register('timelinegenerator', {
 					});
 				},
 				
+                /* Function used by application "Pages", to copy rights from "Pages" to resources. 
+                 * It returns an array containing all resources' ids which are concerned by the rights copy.
+                 * For sniplet "Timelinegenerator", copy rights from "Pages" to associated timeline */
+                getReferencedResources: function(source){
+                    if(source._id){
+                        return [source._id];
+                    }
+                },
 			}
 		}
 	},
