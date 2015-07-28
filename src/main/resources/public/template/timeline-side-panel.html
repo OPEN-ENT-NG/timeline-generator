@@ -2,7 +2,7 @@
     <h2 ng-click="openMainPage()"><i18n >timelinegenerator.title</i18n></h2>
     <ul>
         <li ng-repeat="timeline in timelines.all">
-            <a ng-click="openTimeline(timeline)">[[timeline.headline]]</a>
+            <a ng-click="openTl(timeline._id)">[[timeline.headline]]</a>
         </li>
     </ul>
 </nav>

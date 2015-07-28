@@ -26,7 +26,7 @@ function TimelineGeneratorController($scope, template, model, lang, date, route)
     $scope.sort = {
         predicate: 'headline',
         reverse: false
-    }
+    };
 
     template.open('side-panel', 'timeline-side-panel');
 
@@ -34,21 +34,35 @@ function TimelineGeneratorController($scope, template, model, lang, date, route)
     route({
         goToTimeline : function(params) {
             template.open('timelines', 'timelines');
-            model.timelines.one('sync', function() {
-                $scope.timeline = undefined;
-                $scope.timeline = model.timelines.find(function(timeline) {
+            
+            var findTimelineInModel = function() {
+            	return model.timelines.find(function(timeline) {
                     return timeline._id === params.timelineId;
                 });
-                if ($scope.timeline === undefined) {
-                    $scope.notFound = true;
-                    $scope.openMainPage();
-                    //template.open('error', '404');
-                } else {
-                    $scope.notFound = false;
-                    $scope.openTimelineViewer($scope.timeline);
-                }
-            });
-            model.timelines.sync();
+            };
+            var openTlViewer = function() {
+                $scope.notFound = false;
+                $scope.openTimelineViewer($scope.timeline);
+            };
+            
+            $scope.timeline = findTimelineInModel();
+            
+            if ($scope.timeline !== undefined) {
+            	openTlViewer();
+            }
+            else {
+                model.timelines.one('sync', function() {
+                    $scope.timeline = findTimelineInModel();
+                    if ($scope.timeline === undefined) {
+                        $scope.notFound = true;
+                        $scope.openMainPage();
+                        //template.open('error', '404');
+                    } else {
+                    	openTlViewer();
+                    }
+                });
+                model.timelines.sync();
+            }
         },
         goToEvent : function(params) {
         },
@@ -240,7 +254,7 @@ function TimelineGeneratorController($scope, template, model, lang, date, route)
         } else {
             event.mediatype = 'img';
         }
-    }
+    };
 
     $scope.shareTimeline = function(timeline, event){
         $scope.timeline = timeline;
@@ -277,14 +291,14 @@ function TimelineGeneratorController($scope, template, model, lang, date, route)
             return false;
         }
         return true;
-    }
+    };
 
     $scope.isTextEmpty = function(str) {
         if (str !== undefined && str.replace(/<div class="ng-scope">|<\/div>|<br>|<p>|<\/p>|&nbsp;| /g, '') !== "") {
             return false;
         }
         return true;
-    }
+    };
 
 
     $scope.confirmRemoveSelectedEvents = function() {
@@ -303,11 +317,11 @@ function TimelineGeneratorController($scope, template, model, lang, date, route)
 
     $scope.resetEventImage = function(event) {
         event.img = '';
-    }
+    };
 
     $scope.resetEventVideo = function(event) {
         event.video = '';
-    }
+    };
 
     $scope.switchDateFormat = function() {
         if ($scope.event.dateFormat == 'year') {
@@ -317,13 +331,13 @@ function TimelineGeneratorController($scope, template, model, lang, date, route)
             $scope.event.startDate.newDate = $scope.event.startDate.format('MM/YYYY');
             $scope.event.endDate.newDate = $scope.event.endDate.format('MM/YYYY');   
         }
-    }
+    };
 
     $scope.resetEndDate = function() {
         if (!$scope.event.enableEndDate) {
             $scope.event.endDate = undefined;
         }
-    }
+    };
 
     $scope.setDateYear = function(date) {
         if ($scope.event.dateFormat == 'month') {
@@ -333,7 +347,7 @@ function TimelineGeneratorController($scope, template, model, lang, date, route)
         } else if ($scope.event.dateFormat == 'year') {
             date.year(date.newDate);
         }
-    }
+    };
 
     // Sort
     $scope.switchSortBy = function(predicate) {
@@ -349,7 +363,7 @@ function TimelineGeneratorController($scope, template, model, lang, date, route)
     $scope.resetSort = function() {
         $scope.sort.predicate = 'headline';
         $scope.sort.reverse = false;
-    }
+    };
 
     /**
      * Display date in French format
@@ -378,10 +392,10 @@ function TimelineGeneratorController($scope, template, model, lang, date, route)
                     toString : function() {
                                     return this.title;
                                }
-                }
+                };
             });
         });
-    }
+    };
 
     // Update search bar
     $scope.updateSearchBar();
