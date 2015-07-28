@@ -354,7 +354,7 @@ Behaviours.register('timelinegenerator', {
 							};
 							var innerDoc = $('#' + scope.source._id)[0].contentWindow.document;
 							innerDoc.open();
-							innerDoc.write("<html><head><title></title></head><body><div id='timeline'></div>"+
+							innerDoc.write("<html><head><title></title><base target='_parent' /></head><body><div id='timeline'></div>"+
 							    "<script src='/infra/public/js/jquery-1.10.2.min.js'></script>" +
 							    "<script src='/timelinegenerator/public/js/storyjs-embed.js'></script>" +
 
