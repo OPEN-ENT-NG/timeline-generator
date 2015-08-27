@@ -107,6 +107,7 @@ function TimelineGeneratorController($scope, template, model, lang, date, route)
 		$scope.timeline = new Timeline();
         template.close('main');
 		template.open('timelines', 'edit-timeline');
+        $scope.selectedTimeline = true;
 	};
 
     $scope.newEvent = function(){
@@ -201,6 +202,8 @@ function TimelineGeneratorController($scope, template, model, lang, date, route)
         $scope.timeline = timeline;
         event.stopPropagation();
         template.open('timelines', 'edit-timeline');
+        $scope.selectedTimeline = true;
+
     };
 
      $scope.editEvent = function(timelineEvent, event){
@@ -388,6 +391,7 @@ function TimelineGeneratorController($scope, template, model, lang, date, route)
      */
     $scope.openTl = function(timelineId) {
         window.location.hash = '/view/' + timelineId;
+        $scope.selectedTimeline = true;
     };
 
 
