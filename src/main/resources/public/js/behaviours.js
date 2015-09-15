@@ -158,11 +158,12 @@ timelineNamespace.Timeline.prototype.toJSON = function(){
 
 timelineNamespace.Timeline.prototype.toTimelineJsJSON = function() {
 	var timeline = this;
+    var timelineDescription = timeline.text ? timeline.text : " ";
     var objectData = {
         "timeline" : {
             "headline": timeline.headline,
             "type": timeline.type,
-            "text": timeline.text,
+            "text": timelineDescription,
         }
     };
     if (timeline.icon) {
@@ -171,10 +172,11 @@ timelineNamespace.Timeline.prototype.toTimelineJsJSON = function() {
     }
     objectData.timeline.date = [];
     timeline.events.forEach(function(event) {
+        var eventDescription = eventDescription ? eventDescription : " ";
         var eventData = {
             "headline" : event.headline,
             "startDate" : moment(event.startDate).format(model.timelineJSDateFormat[event.dateFormat]),
-            "text" : event.text
+            "text" : eventDescription
         };
         if (event.img || event.video) {
         	eventData.asset = {};
