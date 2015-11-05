@@ -51,6 +51,7 @@ var timelineNamespace = {
 				}.bind(this));
 			},
 			removeSelection: function(callback){
+				var that = this;
 				var counter = this.selection().length;
 				this.selection().forEach(function(item){
 					http().delete('/timelinegenerator/timeline/' + timeline._id + '/event/' + item._id).done(function(){
@@ -62,7 +63,7 @@ var timelineNamespace = {
 								callback();
 							}
 						}
-					});
+					}.bind(that));
 				});
 			},
 			lockSelection: function(){
