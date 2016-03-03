@@ -173,7 +173,7 @@ timelineNamespace.Timeline.prototype.toTimelineJsJSON = function() {
     }
     objectData.timeline.date = [];
     timeline.events.forEach(function(event) {
-        var eventDescription = eventDescription ? eventDescription : " ";
+        var eventDescription = event.text ? event.text : " ";
         var eventData = {
             "headline" : event.headline,
             "startDate" : moment(event.startDate).format(model.timelineJSDateFormat[event.dateFormat]),
