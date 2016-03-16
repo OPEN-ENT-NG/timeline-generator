@@ -2,12 +2,14 @@ package net.atos.entng.timelinegenerator;
 
 import net.atos.entng.timelinegenerator.controllers.EventController;
 import net.atos.entng.timelinegenerator.controllers.TimelineController;
+import net.atos.entng.timelinegenerator.events.TimelineGeneratorSearchingEvents;
 import net.atos.entng.timelinegenerator.services.impl.EventServiceMongoImpl;
 
 import org.entcore.common.http.BaseServer;
 import org.entcore.common.http.filter.ShareAndOwner;
 import org.entcore.common.mongodb.MongoDbConf;
 import org.entcore.common.service.CrudService;
+import org.entcore.common.service.impl.MongoDbSearchService;
 
 
 public class TimelineGenerator extends BaseServer {
@@ -29,6 +31,8 @@ public class TimelineGenerator extends BaseServer {
 		setDefaultResourceFilter(new ShareAndOwner());
 
         setRepositoryEvents(new TimelineGeneratorRepositoryEvents());
+		setSearchingEvents(new TimelineGeneratorSearchingEvents(new MongoDbSearchService(TIMELINE_GENERATOR_COLLECTION)));
+
 
 		addController(new TimelineController(TIMELINE_GENERATOR_COLLECTION));
 		addController(new EventController(TIMELINE_GENERATOR_EVENT_COLLECTION, eventService));
