@@ -129,6 +129,7 @@ public class TimelineController extends MongoDbControllerHelper {
                     params.putString("username", user.getUsername());
                     params.putString("timelineUri", container.config().getString("host", "http://localhost:8090") +
                     		"/timelinegenerator#/view/" + id);
+                    params.putString("resourceUri", params.getString("timelineUri"));
 
                     shareJsonSubmit(request, "timelinegenerator.share", false, params, "headline");
                 }
