@@ -1,3 +1,6 @@
 {
-	
+	"timelinegenerator": "Timeline generator",
+    "timelinegenerator.share": "Timeline sharing",
+	"timelinegenerator.timeline.shared" : "shared a timeline with you ",
+	"timeline.of.timelinegenerator" : "from the timeline generator module "
 }
