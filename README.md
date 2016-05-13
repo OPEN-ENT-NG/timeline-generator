@@ -2,7 +2,7 @@
 
 * Licence : [AGPL v3](http://www.gnu.org/licenses/agpl.txt) - Copyright Conseil Régional Nord Pas de Calais - Picardie
 * Développeur : ATOS
-* Financeur : Région Picardie
+* Financeur : Région Nord Pas de Calais-Picardie
 * Description : Application de conception de frise chronologique multimédia  (partageable dans l'ENT) qui s'appuie sur la librairie  http://timeline.knightlab.com/.
 
 # Documentation technique
