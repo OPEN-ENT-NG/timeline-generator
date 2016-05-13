@@ -55,7 +55,7 @@ public class TimelineGeneratorRepositoryEvents extends MongoDbRepositoryEvents {
 
     @Override
     public void deleteUsers(JsonArray users) {
-        // TODO : make the user anonymous
+        //FIXME: anonymization is not relevant
         if (users == null || users.size() == 0) {
             log.warn("[TimelineGeneratorRepositoryEvents][deleteUsers] JsonArray users is null or empty");
             return;
@@ -158,8 +158,8 @@ public class TimelineGeneratorRepositoryEvents extends MongoDbRepositoryEvents {
     }
 
     /**
-     * Delete events by calendar identifier
-     * @param calendarIds calendars identifiers
+     * Delete events by timeline identifier
+     * @param timelineIds timeline identifiers
      */
     private void cleanEvents(final String[] timelineIds) {
         JsonObject matcher = MongoQueryBuilder.build(QueryBuilder.start("timeline").in(timelineIds));
@@ -178,7 +178,7 @@ public class TimelineGeneratorRepositoryEvents extends MongoDbRepositoryEvents {
 
     /**
      * Tag as deleted a list of users in their own calendars
-     * @param userIds users identifiers
+     * @param usersIds users identifiers
      */
     private void tagUsersAsDeleted(final String[] usersIds) {
         final JsonObject criteria = MongoQueryBuilder.build(QueryBuilder.start("owner.userId").in(usersIds));
