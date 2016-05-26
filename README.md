@@ -57,6 +57,8 @@ La frise chronologique permet d'associer des événements à leur position dans 
 Des permissions sur les différentes actions possibles sur les frises chronologiques, dont la contribution et la gestion, sont configurées dans la frise chronologique (via des partages Ent-core).
 Le droit de lecture, correspondant à qui peut consulter la frise chronologique est également configuré de cette manière.
 
+La frise chronologique met en œuvre un comportement de recherche sur le titre et le descriptif de la frise (les évènements ne sont pas recherchés).
+
 ## Modèle de persistance
 
 Les données du module sont stockées dans deux collections Mongo :
@@ -73,6 +75,11 @@ Le module serveur utilise 2 contrôleurs de déclaration :
 Les contrôleurs étendent les classes du framework Ent-core exploitant les CrudServices de base. Pour des manipulations spécifiques, des classes de Service sont utilisées :
 
 * `EventService` : Concernant les évènements de la frise chronologique
+
+Le module serveur met en œuvre deux évènements issus du framework Ent-core :
+
+* `TimelineGeneratorRepositoryEvents` : Logique de changement d'année scolaire
+* `TimelineGeneratorSearchingEvents` : Logique de recherche
 
 Des jsonschemas permettent de vérifier les données reçues par le serveur, ils se trouvent dans le dossier "src/main/resources/jsonschema".
 
