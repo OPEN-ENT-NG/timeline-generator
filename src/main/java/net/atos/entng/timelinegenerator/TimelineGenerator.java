@@ -50,8 +50,10 @@ public class TimelineGenerator extends BaseServer {
 		setDefaultResourceFilter(new ShareAndOwner());
 
         setRepositoryEvents(new TimelineGeneratorRepositoryEvents());
-		setSearchingEvents(new TimelineGeneratorSearchingEvents(new MongoDbSearchService(TIMELINE_GENERATOR_COLLECTION)));
 
+		if (config.getBoolean("searching-event", true)) {
+			setSearchingEvents(new TimelineGeneratorSearchingEvents(new MongoDbSearchService(TIMELINE_GENERATOR_COLLECTION)));
+		}
 
 		addController(new TimelineController(TIMELINE_GENERATOR_COLLECTION));
 		addController(new EventController(TIMELINE_GENERATOR_EVENT_COLLECTION, eventService));
