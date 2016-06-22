@@ -52,10 +52,7 @@ public class TimelineGeneratorSearchingEvents implements SearchingEvents {
 			returnFields.add("owner.userId");
 			returnFields.add("owner.displayName");
 
-			final List<String> searchFields = new ArrayList<String>();
-			searchFields.add("headline");
-			searchFields.add("text");
-			searchService.search(userId, groupIds.toList(), returnFields, searchWords.toList(), searchFields, page, limit, new Handler<Either<String, JsonArray>>() {
+			searchService.search(userId, groupIds.toList(), returnFields, searchWords.toList(), page, limit, new Handler<Either<String, JsonArray>>() {
 				@Override
 				public void handle(Either<String, JsonArray> event) {
 					if (event.isRight()) {

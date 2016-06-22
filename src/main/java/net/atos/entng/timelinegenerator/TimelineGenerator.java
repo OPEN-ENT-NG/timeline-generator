@@ -45,7 +45,8 @@ public class TimelineGenerator extends BaseServer {
 		final MongoDbConf conf = MongoDbConf.getInstance();
 		conf.setCollection(TIMELINE_GENERATOR_COLLECTION);
 		conf.setResourceIdLabel("id");
-		
+		conf.addSearchTextField(TIMELINE_GENERATOR_COLLECTION + ".text");
+
 		super.start();
 		setDefaultResourceFilter(new ShareAndOwner());
 
