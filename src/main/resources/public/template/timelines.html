@@ -10,7 +10,7 @@
             </autocomplete>
         </div>
     </div>
-    
+
     <div class="fallen dominos">
         <div class="item" ng-repeat="tl in timelines.all">
             <section class="domino cyan">
@@ -24,15 +24,15 @@
                             <br />[[tl.owner.displayName]]
                             <br />[[formatDate(tl.modified)]]
                         </div>
-                        <div ng-show="canManageTimeline(tl)" class="bottom-locked eleven vertical-spacing-twice">
-                            <input type="checkbox" data-ng-model="tl.selected" class="right-magnet cell" />
-                        </div>
                     </div>
                 </div>
+                <span ng-show="canManageTimeline(tl)">
+                    <check-tool ng-model="tl.selected" ng-click="$event.stopPropagation()" ></check-tool>
+                </span>
             </section>
         </div>
     </div>
-    
+
    	<!-- Allows to display a confirm dialog before deleting a mindmap -->
     <div ng-if="display.confirmDeleteTimelines">
         <lightbox show="display.confirmDeleteTimelines" on-close="cancelRemoveMindmap()">
@@ -44,7 +44,7 @@
             </div>
         </lightbox>
     </div>
-   
+
     <div ng-if="display.showPanel">
 		<lightbox show="display.showPanel" on-close="display.showPanel = false;">
 			<share-panel app-prefix="'timelinegenerator'" resources="timeline"></share-panel>
@@ -74,7 +74,3 @@
         </div>
     </div>
 </section>
-
-
-
-
