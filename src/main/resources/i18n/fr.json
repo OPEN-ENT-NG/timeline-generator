@@ -11,6 +11,7 @@
 	"timelinegenerator.timeline.headline": "Titre",
 	"timelinegenerator.timeline.text": "Descriptif",
 	"timelinegenerator.timeline.modification.saved" : "Modification de la frise chronologique enregistrée",
+	"timelinegenerator.event" : "Evènement",
 	"timelinegenerator.event.add.image": "Ajouter une image",
 	"timelinegenerator.event.add.video": "Ajouter une vidéo",
 	"timelinegenerator.event.unlocked": "Evènement de la timeline débloqué",

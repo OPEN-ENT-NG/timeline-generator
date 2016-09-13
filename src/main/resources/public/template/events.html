@@ -17,15 +17,15 @@
 				<th></th>
 				<th ng-click="switchSortBy('headline')" ng-class="{'order-by-reversed': (sort.predicate === 'headline' && sort.reverse === false),
 					'order-by': (sort.predicate === 'headline' && sort.reverse === true)}">
-					Evènement
+                    <i18n>timelinegenerator.event</i18n>
 				</th>
 				<th ng-click="switchSortBy('startDate')" ng-class="{'order-by-reversed': (sort.predicate === 'startDate' && sort.reverse === false),
 					'order-by': (sort.predicate === 'startDate' && sort.reverse === true)}">
-					Date de début
+					<i18n>timelinegenerator.event.startdate</i18n>
 				</th>
 				<th ng-click="switchSortBy('endDate')" ng-class="{'order-by-reversed': (sort.predicate === 'endDate' && sort.reverse === false),
 					'order-by': (sort.predicate === 'endDate' && sort.reverse === true)}">
-					Date de fin
+                    <i18n>timelinegenerator.event.enddate</i18n>
 				</th>
 			</tr>
 		</thead>
