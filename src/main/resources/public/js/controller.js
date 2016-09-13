@@ -369,7 +369,7 @@ function TimelineGeneratorController($scope, template, model, lang, date, route)
      * Display date in French format
      */ 
     $scope.formatDate = function(dateObject){
-        return moment(dateObject.$date).lang('fr').calendar();
+        return moment(dateObject.$date).lang(currentLanguage).calendar();
     };
 
     /**

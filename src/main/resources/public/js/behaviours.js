@@ -347,7 +347,7 @@ Behaviours.register('timelinegenerator', {
 					                height:     '600',
 					                source:     timeline,
 					                embed_id:   'timeline',
-					                lang: 'fr',
+					                lang: currentLanguage,
 					                css: '/timelinegenerator/public/css/timeline/timeline.css',
 					                js: '/timelinegenerator/public/js/timeline-min.js'
 			            		});
