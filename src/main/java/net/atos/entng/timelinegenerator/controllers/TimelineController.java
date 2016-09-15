@@ -143,11 +143,9 @@ public class TimelineController extends MongoDbControllerHelper {
                     }
 
                     JsonObject params = new JsonObject();
-                    params.putString("profilUri", getScheme(request) + "://" + getHost(request) +
-                    		"/userbook/annuaire#" + user.getUserId() + "#" + user.getType());
+                    params.putString("profilUri", "/userbook/annuaire#" + user.getUserId() + "#" + user.getType());
                     params.putString("username", user.getUsername());
-                    params.putString("timelineUri", getScheme(request) + "://" + getHost(request) +
-                    		"/timelinegenerator#/view/" + id);
+                    params.putString("timelineUri", "/timelinegenerator#/view/" + id);
                     params.putString("resourceUri", params.getString("timelineUri"));
 
                     shareJsonSubmit(request, "timelinegenerator.share", false, params, "headline");
