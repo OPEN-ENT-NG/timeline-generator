@@ -1,7 +1,5 @@
 console.log('timelinegenerator behaviours loaded');
 
-loader.loadFile('/timelinegenerator/public/js/storyjs-embed.js');
-
 model.momentDateFormat = {
 	"year" : "YYYY",
 	"month": "MM/YYYY",
@@ -334,36 +332,38 @@ Behaviours.register('timelinegenerator', {
 			controller: {
 				init: function(){
 					var scope = this;
-					http().get('/timelinegenerator/timeline/' + this.source._id).done(function(timeline){
-						scope.source = new timelineNamespace.Timeline(timeline);
-						scope.source.events.sync(function() {
+					http().get('/timelinegenerator/public/js/storyjs-embed.js').done(function(){
+						http().get('/timelinegenerator/timeline/' + this.source._id).done(function(timeline){
+							scope.source = new timelineNamespace.Timeline(timeline);
+							scope.source.events.sync(function() {
 
-							// Hack to display more than one timeline in the same page
-							// https://github.com/NUKnightLab/TimelineJS/issues/591
-							var injectedScript = function(){
-								createStoryJS({
-					                type:       'timeline',
-					                width:      '100%',
-					                height:     '600',
-					                source:     timeline,
-					                embed_id:   'timeline',
-					                lang: 'fr',
-					                css: '/timelinegenerator/public/css/timeline/timeline.css',
-					                js: '/timelinegenerator/public/js/timeline-min.js'
-			            		});
-							};
-							var innerDoc = $('#' + scope.source._id)[0].contentWindow.document;
-							innerDoc.open();
-							innerDoc.write("<html><head><title></title><base target='_parent' /></head><body><div id='timeline'></div>"+
-							    "<script src='/infra/public/js/jquery-1.10.2.min.js'></script>" +
-							    "<script src='/timelinegenerator/public/js/storyjs-embed.js'></script>" +
+								// Hack to display more than one timeline in the same page
+								// https://github.com/NUKnightLab/TimelineJS/issues/591
+								var injectedScript = function(){
+									createStoryJS({
+										type:       'timeline',
+										width:      '100%',
+										height:     '600',
+										source:     timeline,
+										embed_id:   'timeline',
+										lang: 'fr',
+										css: '/timelinegenerator/public/css/timeline/timeline.css',
+										js: '/timelinegenerator/public/js/timeline-min.js'
+									});
+								};
+								var innerDoc = $('#' + scope.source._id)[0].contentWindow.document;
+								innerDoc.open();
+								innerDoc.write("<html><head><title></title><base target='_parent' /></head><body><div id='timeline'></div>"+
+									"<script src='/infra/public/js/jquery-1.10.2.min.js'></script>" +
+									"<script src='/timelinegenerator/public/js/storyjs-embed.js'></script>" +
 
-							    "<script>var timeline = "+ JSON.stringify(scope.source.toTimelineJsJSON()) + ";</script>" +
-							    "<script>var injectedScript= "+ injectedScript + ";injectedScript();</script>" +
-							    "</body></html>");
-							innerDoc.close();
-							
-						});
+									"<script>var timeline = "+ JSON.stringify(scope.source.toTimelineJsJSON()) + ";</script>" +
+									"<script>var injectedScript= "+ injectedScript + ";injectedScript();</script>" +
+									"</body></html>");
+								innerDoc.close();
+								
+							});
+						}.bind(this));
 					}.bind(this));
 				},
 				initSource: function(){
