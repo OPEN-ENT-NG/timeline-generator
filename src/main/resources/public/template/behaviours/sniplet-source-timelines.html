@@ -1,6 +1,11 @@
+<div class="open-source">
+	<button ng-click="showPickTimeline = true"><i18n>sniplet.add.timeline</i18n></button>
+</div>
 
-<ul ng-repeat="timeline in timelines" class="thought-out-actions">
-	<li ng-click="setSource(timeline)">
-		<h2>[[timeline.title]]</h2>
-	</li>
-</ul>
+<lightbox show="showPickTimeline">
+	<ul ng-repeat="timeline in timelines" class="thought-out-actions">
+		<li ng-click="setSource(timeline)">
+			<h2>[[timeline.title]]</h2>
+		</li>
+	</ul>
+</lightbox>
