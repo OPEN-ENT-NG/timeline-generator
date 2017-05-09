@@ -1,15 +1,22 @@
 <div class="twelve cell">
-	<div class="contextual-buttons eight cell vertical-spacing right-magnet">
-		<section class="tabs cell twelve right-magnet">
-			<header class="cell right-magnet selected" style="background: transparent;"><span class="no-style ng-scope"><i18n>timelinegenerator.mode.table</i18n></span></header>
-			<header class="right-magnet"><span class="cell">&nbsp;|&nbsp;</span></header>
-			<header ng-click="openTimelineViewer(timeline)" class="cell right-magnet" style="padding-left: 30px"><span class="no-style ng-scope"><i18n>timelinegenerator.mode.timeline</i18n></span></header>
-			<behaviour name="contrib" resource="timeline">
-    	        <button ng-click="newEvent()" class="cell right-magnet"><i18n>timelinegenerator.event.new</i18n></button>
-	        </behaviour>
+
+	<div class="flex-row justify-end align-center contextual-buttons eight cell vertical-spacing right-magnet">
+
+		<behaviour name="contrib" resource="timeline" class="horizontal-spacing">
+			<button ng-click="newEvent()" class="cell right-magnet no-margin"><i18n>timelinegenerator.event.new</i18n></button>
+		</behaviour>
+
+		<section class="tabs heading-tabs" style="margin-bottom: 0px!important">
+			<header class="horizontal-spacing-twice selected">
+				<span class="no-style ng-scope"><i18n>timelinegenerator.mode.table</i18n></span>
+			</header>
+			<header ng-click="openTimelineViewer(timeline)"
+				class="horizontal-spacing-twice">
+				<span class="no-style ng-scope"><i18n>timelinegenerator.mode.timeline</i18n></span>
+			</header>
   		</section>
 	</div>
-	
+
 	<div class="row vertical-spacing"></div>
 	<table class="twelve list-view">
 		<thead>
@@ -44,23 +51,23 @@
 					</td>
 
 					<td ng-if="timeline.myRights.contrib" ng-click="editEvent(event, $event)">
-						<a ng-if="event.dateFormat == 'year'">[[moment(event.startDate).years()]]</a>						
+						<a ng-if="event.dateFormat == 'year'">[[moment(event.startDate).years()]]</a>
 						<a ng-if="event.dateFormat == 'month'">[[moment(event.startDate).format('MM')]]/[[moment(event.startDate).years()]]</a>
 						<a ng-if="event.dateFormat == 'day'">[[event.startDate | date:'dd/MM/yyyy']]</a>
 					</td>
 					<td ng-if="!timeline.myRights.contrib">
-						<span ng-if="event.dateFormat == 'year'">[[moment(event.startDate).years()]]</span>						
+						<span ng-if="event.dateFormat == 'year'">[[moment(event.startDate).years()]]</span>
 						<span ng-if="event.dateFormat == 'month'">[[moment(event.startDate).format('MM')]]/[[moment(event.startDate).years()]]</span>
 						<span ng-if="event.dateFormat == 'day'">[[event.startDate | date:'dd/MM/yyyy']]</span>
 					</td>
 
 					<td ng-if="timeline.myRights.contrib && event.endDate" ng-click="editEvent(event, $event)">
-						<a ng-if="event.dateFormat == 'year'">[[moment(event.endDate).years()]]</a>						
+						<a ng-if="event.dateFormat == 'year'">[[moment(event.endDate).years()]]</a>
 						<a ng-if="event.dateFormat == 'month'">[[moment(event.endDate).format('MM')]]/[[moment(event.endDate).years()]]</a>
 						<a ng-if="event.dateFormat == 'day'">[[event.endDate | date:'dd/MM/yyyy']]</a>
 					</td>
 					<td ng-if="!timeline.myRights.contrib && event.endDate">
-						<span ng-if="event.dateFormat == 'year'">[[moment(event.endDate).years()]]</span>						
+						<span ng-if="event.dateFormat == 'year'">[[moment(event.endDate).years()]]</span>
 						<span ng-if="event.dateFormat == 'month'">[[moment(event.endDate).format('MM')]]/[[moment(event.endDate).years()]]</span>
 						<span ng-if="event.dateFormat == 'day'">[[event.endDate | date:'dd/MM/yyyy']]</span>
 					</td>
