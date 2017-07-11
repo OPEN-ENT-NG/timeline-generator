@@ -3,6 +3,8 @@
 </div>
 
 <lightbox show="showPickTimeline">
+	<h2><i18n>sniplet.add.timeline</i18n></h2>
+	<div class="info" ng-if="timelines.length === 0"><i18n>timelinegenerator.sniplet.list.empty</i18n></div>
 	<ul ng-repeat="timeline in timelines" class="thought-out-actions">
 		<li ng-click="setSource(timeline)">
 			<h2>[[timeline.title]]</h2>
