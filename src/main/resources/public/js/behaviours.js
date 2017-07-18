@@ -327,8 +327,8 @@ Behaviours.register('timelinegenerator', {
 	},
 	sniplets: {
 		timelines: {
-			title: 'Frise chronologique',
-			description: 'Permet d\'ajouter des frises chronologiques sur votre page',
+			title: 'timelinegenerator.sniplet.title',
+			description: 'timelinegenerator.sniplet.desc',
 			controller: {
 				init: function(){
 					var scope = this;
