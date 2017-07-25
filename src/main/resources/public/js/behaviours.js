@@ -334,9 +334,12 @@ Behaviours.register('timelinegenerator', {
 					var scope = this;
 					http().get('/timelinegenerator/public/js/storyjs-embed.js').done(function(){
 						http().get('/timelinegenerator/timeline/' + this.source._id).done(function(timeline){
+							http().get('/userbook/preference/language').done(function(response){
+								 scope.userLanguage = response.preference.split(':')[1].split('\"', 2)[1];
+							});
 							scope.source = new timelineNamespace.Timeline(timeline);
 							scope.source.events.sync(function() {
-
+								
 								// Hack to display more than one timeline in the same page
 								// https://github.com/NUKnightLab/TimelineJS/issues/591
 								var injectedScript = function(){
@@ -346,9 +349,9 @@ Behaviours.register('timelinegenerator', {
 										height:     '600',
 										source:     timeline,
 										embed_id:   'timeline',
-										lang: 'fr',
-										css: '/timelinegenerator/public/css/timeline/timeline.css',
-										js: '/timelinegenerator/public/js/timeline-min.js'
+										lang:	 	userLanguage,
+										css: 		'/timelinegenerator/public/css/timeline/timeline.css',
+										js: 		'/timelinegenerator/public/js/timeline-min.js'
 									});
 								};
 								var innerDoc = $('#' + scope.source._id)[0].contentWindow.document;
@@ -358,6 +361,7 @@ Behaviours.register('timelinegenerator', {
 									"<script src='/timelinegenerator/public/js/storyjs-embed.js'></script>" +
 
 									"<script>var timeline = "+ JSON.stringify(scope.source.toTimelineJsJSON()) + ";</script>" +
+									"<script>var userLanguage = '" + scope.userLanguage + "';</script>" +
 									"<script>var injectedScript= "+ injectedScript + ";injectedScript();</script>" +
 									"</body></html>");
 								innerDoc.close();
