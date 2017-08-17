@@ -34,7 +34,7 @@ module.directive('datePickerTimeline', function($compile){
                 }
                 $element.val($scope.ngModel.format(model.momentDateFormat[$scope.eventDateFormat]));
             });
-            loader.asyncLoad('/calendar/public/js/bootstrap-datepicker.js', function(){
+            loader.asyncLoad('/infra/public/js/bootstrap-datepicker.js', function(){
                 $element.datepicker({
                         dates: {
                             months: moment.months(),
