@@ -1,27 +1,22 @@
-routes.define(function($routeProvider) {
-    $routeProvider.when('/view/:timelineId', {
-        action : 'goToTimeline'
-    }).when('/timeline/:timelineId/:eventId', {
-        action : 'goToEvent'
-    }).otherwise({
-        action : 'mainPage'
-    });
-});
+import { moment, Behaviours, ng, template, idiom as lang } from 'entcore'
+import { timelineNamespace } from './model'
 
-function TimelineGeneratorController($scope, template, model, lang, date, route) {
+declare let currentLanguage: any;
+
+export const timelineGeneratorController = ng.controller('TimelineGeneratorController', ['$scope', 'model', 'route', ($scope, model, route) => {
     $scope.notFound = false;
 	$scope.template = template;
     $scope.timelines = model.timelines;
-    $scope.model = model;
+    $scope.model = timelineNamespace;
     $scope.display = {};
     $scope.me = model.me;
-    $scope.date = date;
+    $scope.date = moment;
     $scope.moment = moment;
     $scope.searchbar = {};
     $scope.previewMode = false;
     $scope.lang = lang;
 
-    $scope.editedEvent = new Event();
+    $scope.editedEvent = new timelineNamespace.Event();
 
     $scope.sort = {
         predicate: 'headline',
@@ -118,14 +113,14 @@ function TimelineGeneratorController($scope, template, model, lang, date, route)
     };
 
     $scope.newTimeline = function(){
-		$scope.timeline = new Timeline();
+		$scope.timeline = new timelineNamespace.Timeline();
         template.close('main');
 		template.open('timelines', 'edit-timeline');
         $scope.selectedTimeline = true;
 	};
 
     $scope.newEvent = function(){
-        $scope.event = new Event();
+        $scope.event = new timelineNamespace.Event();
         $scope.event.dateFormat = "day";
         $scope.event.startDate = moment();
         $scope.event.endDate = moment();
@@ -418,4 +413,4 @@ function TimelineGeneratorController($scope, template, model, lang, date, route)
         }
         return timeline.icon + '?thumbnail=120x120';
     };
-}
+}]);

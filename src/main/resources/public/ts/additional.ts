@@ -1,4 +1,8 @@
-module.directive('datePickerTimeline', function($compile){
+import { module, model, moment, loader, ng } from 'entcore'
+
+declare let $: any;
+
+export const datePickerTimeline = ng.directive('datePickerTimeline', ($compile) => {
     return {
         scope: {
             ngModel: '=',

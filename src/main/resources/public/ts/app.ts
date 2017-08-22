@@ -1,10 +1,23 @@
+import { routes, ng, model, http, loader, Behaviours, _, Collection, notify } from 'entcore'
+import { timelineNamespace } from './model'
+import { timelineGeneratorController } from './controller'
+import { datePickerTimeline } from './additional'
 
+routes.define(function($routeProvider) {
+    $routeProvider.when('/view/:timelineId', {
+        action : 'goToTimeline'
+    }).when('/timeline/:timelineId/:eventId', {
+        action : 'goToEvent'
+    }).otherwise({
+        action : 'mainPage'
+    });
+});
 
+ng.controllers.push(timelineGeneratorController);
+ng.directives.push(datePickerTimeline);
 
 model.build = function(){
-	loader.loadFile('/timelinegenerator/public/js/additional.js');
-	this.makeModel(Behaviours.applicationsBehaviours.timelinegenerator.timelineNamespace.Timeline);
-	this.makeModel(Behaviours.applicationsBehaviours.timelinegenerator.timelineNamespace.Event);
+	this.makeModels(Behaviours.applicationsBehaviours.timelinegenerator.timelineNamespace);
 
 	this.collection(Behaviours.applicationsBehaviours.timelinegenerator.timelineNamespace.Timeline, {
 		sync: function(callback){
