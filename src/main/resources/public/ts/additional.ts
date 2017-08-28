@@ -1,4 +1,4 @@
-import { module, model, moment, loader, ng } from 'entcore'
+import { module, model, moment, loader, ng, http } from 'entcore'
 
 declare let $: any;
 
@@ -38,7 +38,7 @@ export const datePickerTimeline = ng.directive('datePickerTimeline', ($compile) 
                 }
                 $element.val($scope.ngModel.format(model.momentDateFormat[$scope.eventDateFormat]));
             });
-            loader.asyncLoad('/infra/public/js/bootstrap-datepicker.js', function(){
+            http().get('/infra/public/js/bootstrap-datepicker.js').done(function(){
                 $element.datepicker({
                         dates: {
                             months: moment.months(),
