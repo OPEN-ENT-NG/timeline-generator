@@ -17,9 +17,7 @@
 
 
 <div class="row toggle-buttons-spacer" >
-	<sniplet source="cell.media.source.source" application="timelinegenerator" template="timelines" ng-if="timeline.events.length() > 0">
+    <sniplet source="cell.media.source.source" application="timelinegenerator" 
+        template="timelines">
 	</sniplet>
-	<div ng-if="timeline.events.length() === 0">
-		<i18n>timelinegenerator.no.event.created.in.timeline</i18n>
-	</div>
 </div>

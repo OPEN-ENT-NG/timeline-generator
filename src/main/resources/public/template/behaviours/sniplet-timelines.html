@@ -1,5 +1,14 @@
-<div class="row">
+<!-- <div class="row">
 	<div class="twelve cell">
 		<iframe style="height:600px; width:100%;" class="timeline-js" id="[[source._id]]"></iframe>
+	</div>
+</div> -->
+
+<div class="row">
+	<div ng-show="source.events.length() > 0" class="twelve cell">
+		<iframe style="height:600px; width:100%;" class="timeline-js" id="[[source._id]]"></iframe>
+	</div>
+	<div ng-if="source.events.length() === 0">
+		<i18n>timelinegenerator.no.event.created.in.timeline</i18n>
 	</div>
 </div>
