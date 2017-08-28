@@ -4,7 +4,6 @@ import { timelineNamespace } from './model'
 declare let $: any;
 declare let createStoryJS: any;
 declare let userLanguage: any;
-declare let timelineIcon: any;
 
 let Event = timelineNamespace.Event;
 
@@ -100,7 +99,7 @@ Behaviours.register('timelinegenerator', {
 	loadResources: function(callback) {
 		http().get('/timelinegenerator/timelines').done(function(timelines){
             this.resources = _.map(timelines, function(timeline) {
-                timelineIcon = timeline.icon;
+                let timelineIcon = timeline.icon;
                 if (!timelineIcon) {
                     timelineIcon = "/img/illustrations/timeline-default.png";
                 }
