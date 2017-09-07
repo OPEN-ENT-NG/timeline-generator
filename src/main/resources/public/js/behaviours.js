@@ -335,7 +335,10 @@ Behaviours.register('timelinegenerator', {
 					http().get('/timelinegenerator/public/js/storyjs-embed.js').done(function(){
 						http().get('/timelinegenerator/timeline/' + this.source._id).done(function(timeline){
 							http().get('/userbook/preference/language').done(function(response){
-								 scope.userLanguage = response.preference.split(':')[1].split('\"', 2)[1];
+								if (!response.preference)
+									scope.userLanguage = navigator.language || navigator.userLanguage;
+								else
+									scope.userLanguage = response.preference.split(':')[1].split('\"', 2)[1];
 							});
 							scope.source = new timelineNamespace.Timeline(timeline);
 							scope.source.events.sync(function() {
