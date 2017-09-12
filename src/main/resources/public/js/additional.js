@@ -91,9 +91,9 @@ module.directive('datePickerTimeline', function($compile){
                 $scope.$parent.$apply();
             });
 
-            $element.on('$destroy', function() {
+            $element.on('remove', function() {
                 if($element.datepicker)
-                    $element.datepicker('destroy');
+                    $element.datepicker('remove');
             });
         }
     };
