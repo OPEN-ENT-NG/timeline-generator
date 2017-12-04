@@ -34,3 +34,7 @@ developer.id
 **/dist
 **/.DS_Store
 **/view/*.html
+node_modules
+rev-manifest.json
+src/main/resources/public/js/behaviours.js
+src/main/resources/view

@@ -96,26 +96,26 @@ Behaviours.register('timelinegenerator', {
         return workflow;
     },
 
-	loadResources: function(callback) {
-		http().get('/timelinegenerator/timelines').done(function(timelines){
-            this.resources = _.map(timelines, function(timeline) {
-                let timelineIcon = timeline.icon;
-                if (!timelineIcon) {
-                    timelineIcon = "/img/illustrations/timeline-default.png";
-                }
-                return {
-                    title : timeline.headline,
-                    ownerName : timeline.owner.displayName,
-                    owner : timeline.owner.userId,
-                    icon : timelineIcon,
-                    path : '/timelinegenerator#/view/' + timeline._id,
-                    _id : timeline._id
-                };
-            });
-            if(typeof callback === 'function'){
-                callback(this.resources);
-            }
-		}.bind(this));
+	loadResources: async function() {
+		return new Promise((resolve, reject) => {
+			http().get('/timelinegenerator/timelines').done(function(timelines){
+				this.resources = _.map(timelines, function(timeline) {
+					let timelineIcon = timeline.icon;
+					if (!timelineIcon) {
+						timelineIcon = "/img/illustrations/timeline-default.png";
+					}
+					return {
+						title : timeline.headline,
+						ownerName : timeline.owner.displayName,
+						owner : timeline.owner.userId,
+						icon : timelineIcon,
+						path : '/timelinegenerator#/view/' + timeline._id,
+						_id : timeline._id
+					};
+				});
+				resolve(this.resources);
+			}.bind(this));
+		});
 	},
 	sniplets: {
 		timelines: {
@@ -128,7 +128,7 @@ Behaviours.register('timelinegenerator', {
 						http().get('/timelinegenerator/timeline/' + this.source._id).done(function(timeline){
 							http().get('/userbook/preference/language').done(function(response){
 								if (!response.preference)
-									scope.userLanguage = navigator.language || navigator.userLanguage;
+									scope.userLanguage = navigator.language || (navigator as any).userLanguage;
 								else
 									scope.userLanguage = response.preference.split(':')[1].split('\"', 2)[1];
 							});
@@ -166,7 +166,7 @@ Behaviours.register('timelinegenerator', {
 					}.bind(this));
 				},
 				initSource: function(){
-					Behaviours.applicationsBehaviours.timelinegenerator.loadResources(function(resources){
+					Behaviours.applicationsBehaviours.timelinegenerator.loadResources.then(function(resources){
 						this.timelines = resources;
 						this.$apply('timelines');
 					}.bind(this));
