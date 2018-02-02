@@ -217,9 +217,9 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
 
      $scope.editEvent = function(timelineEvent, event){
         $scope.event = timelineEvent;
-        $scope.event.startDate = moment($scope.event.startDate, model.momentDateFormat[$scope.event.dateFormat]);
+        $scope.event.startDate = moment($scope.event.startDate);
         var endDate = $scope.event.endDate;
-        $scope.event.endDate = moment($scope.event.endDate, model.momentDateFormat[$scope.event.dateFormat]);
+        $scope.event.endDate = moment($scope.event.endDate);
 
         if (endDate) {
 

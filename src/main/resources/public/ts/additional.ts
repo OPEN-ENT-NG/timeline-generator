@@ -33,6 +33,9 @@ export const datePickerTimeline = ng.directive('datePickerTimeline', ($compile) 
                 var minViewMode = 'days';
             }
             $scope.$watch('ngModel', function(newVal){
+                if($element.is(':focus')){
+                    return;
+                }
                 if ($scope.ngModel === undefined || $scope.ngModel === null) {
                     $scope.ngModel = moment().startOf('day');
                 }
