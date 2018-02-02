@@ -8,7 +8,12 @@ var sourcemaps = require('gulp-sourcemaps');
 var argv = require('yargs').argv;
 var fs = require('fs');
 
+var dev = false;
+
 gulp.task('drop-cache', function(){
+    if(dev){
+        return;
+    }
      return gulp.src(['./src/main/resources/public/dist'], { read: false })
 		.pipe(clean());
 });
@@ -58,6 +63,7 @@ function getModName(fileContent){
 }
 
 gulp.task('watch', () => {
+    dev = true;
     var springboard = argv.springboard;
     if(!springboard){
         springboard = '../springboard-open-ent/';
