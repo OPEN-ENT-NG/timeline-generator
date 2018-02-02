@@ -57,13 +57,7 @@ export const datePickerTimeline = ng.directive('datePickerTimeline', ($compile) 
                     .on('changeDate', function(){
                         setTimeout(function(){
                             var newMoment = moment($element.val(), model.momentDateFormat[$scope.eventDateFormat]);
-                            if ($scope.ngModel) {
-                                $scope.ngModel.dayOfYear(newMoment.dayOfYear());
-                                $scope.ngModel.month(newMoment.month());
-                                $scope.ngModel.year(newMoment.year());
-                            } else {
-                                $scope.ngModel = newMoment;
-                            }
+                            $scope.ngModel = newMoment;
                             $scope.$apply('ngModel');
                             $scope.$parent.$eval($scope.ngChange);
                             $scope.$parent.$apply();
@@ -84,13 +78,7 @@ export const datePickerTimeline = ng.directive('datePickerTimeline', ($compile) 
 
             $element.on('change', function(){
                 var newMoment = moment($element.val(), model.momentDateFormat[$scope.eventDateFormat]);
-                if ($scope.ngModel) {
-                    $scope.ngModel.dayOfYear(newMoment.dayOfYear());
-                    $scope.ngModel.month(newMoment.month());
-                    $scope.ngModel.year(newMoment.year());
-                } else {
-                    $scope.ngModel = newMoment;
-                }
+                $scope.ngModel = newMoment;
                 var elementValue = $scope.ngModel.format(model.momentDateFormat[$scope.eventDateFormat]);
                 $element.datepicker('setValue', elementValue);
                 $scope.$apply('ngModel');
