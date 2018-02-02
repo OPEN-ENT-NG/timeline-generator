@@ -96,7 +96,7 @@ Behaviours.register('timelinegenerator', {
         return workflow;
     },
 
-	loadResources: async function() {
+	loadResources: function() {
 		return new Promise((resolve, reject) => {
 			http().get('/timelinegenerator/timelines').done(function(timelines){
 				this.resources = _.map(timelines, function(timeline) {
@@ -166,7 +166,7 @@ Behaviours.register('timelinegenerator', {
 					}.bind(this));
 				},
 				initSource: function(){
-					Behaviours.applicationsBehaviours.timelinegenerator.loadResources.then(function(resources){
+					Behaviours.applicationsBehaviours.timelinegenerator.loadResources().then(function(resources){
 						this.timelines = resources;
 						this.$apply('timelines');
 					}.bind(this));
