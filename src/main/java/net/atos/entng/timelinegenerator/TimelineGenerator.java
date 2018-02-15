@@ -41,7 +41,7 @@ public class TimelineGenerator extends BaseServer {
 	final CrudService eventService = new EventServiceMongoImpl(TIMELINE_GENERATOR_EVENT_COLLECTION);
 	
 	@Override
-	public void start() {
+	public void start() throws Exception {
 		final MongoDbConf conf = MongoDbConf.getInstance();
 		conf.setCollection(TIMELINE_GENERATOR_COLLECTION);
 		conf.setResourceIdLabel("id");

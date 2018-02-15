@@ -21,9 +21,9 @@ package net.atos.entng.timelinegenerator;
 
 import org.entcore.common.mongodb.MongoDbResult;
 import org.entcore.common.service.impl.MongoDbRepositoryEvents;
-import org.vertx.java.core.Handler;
-import org.vertx.java.core.json.JsonArray;
-import org.vertx.java.core.json.JsonObject;
+import io.vertx.core.Handler;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -51,7 +51,7 @@ public class TimelineGeneratorRepositoryEvents extends MongoDbRepositoryEvents {
 
         final String[] groupIds = new String[groups.size()];
         for (int i = 0; i < groups.size(); i++) {
-            JsonObject j = groups.get(i);
+            JsonObject j = groups.getJsonObject(i);
             groupIds[i] = j.getString("group");
         }
 
@@ -82,7 +82,7 @@ public class TimelineGeneratorRepositoryEvents extends MongoDbRepositoryEvents {
 
         final String[] usersIds = new String[users.size()];
         for (int i = 0; i < users.size(); i++) {
-            JsonObject j = users.get(i);
+            JsonObject j = users.getJsonObject(i);
             usersIds[i] = j.getString("id");
         }
         /*
@@ -130,7 +130,7 @@ public class TimelineGeneratorRepositoryEvents extends MongoDbRepositoryEvents {
         // no manager found
         JsonObject matcher = MongoQueryBuilder.build(QueryBuilder.start("shared." + TimelineGenerator.MANAGE_RIGHT_ACTION).notEquals(true).or(deletedUsers, ownerIsDeleted));
         // return only calendar identifiers
-        JsonObject projection = new JsonObject().putNumber("_id", 1);
+        JsonObject projection = new JsonObject().put("_id", 1);
 
         mongo.find(TimelineGenerator.TIMELINE_GENERATOR_COLLECTION, matcher, null, projection, MongoDbResult.validResultsHandler(new Handler<Either<String, JsonArray>>() {
             @Override
@@ -143,7 +143,7 @@ public class TimelineGeneratorRepositoryEvents extends MongoDbRepositoryEvents {
                     }
                     final String[] timelineIds = new String[timelines.size()];
                     for (int i = 0; i < timelines.size(); i++) {
-                        JsonObject j = timelines.get(i);
+                        JsonObject j = timelines.getJsonObject(i);
                         timelineIds[i] = j.getString("_id");
                     }
                     cleanTimelines(usersIds, timelineIds);

@@ -26,9 +26,9 @@ import net.atos.entng.timelinegenerator.services.EventService;
 
 import org.entcore.common.service.impl.MongoDbCrudService;
 import org.entcore.common.user.UserInfos;
-import org.vertx.java.core.Handler;
-import org.vertx.java.core.json.JsonArray;
-import org.vertx.java.core.json.JsonObject;
+import io.vertx.core.Handler;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 
 import com.mongodb.QueryBuilder;
 
@@ -48,7 +48,7 @@ public class EventServiceMongoImpl extends MongoDbCrudService implements EventSe
     public void list(String timelineId, UserInfos user, final Handler<Either<String, JsonArray>> handler) {
         // Query
         QueryBuilder query = QueryBuilder.start("timeline").is(timelineId);
-        JsonObject sort = new JsonObject().putNumber("modified", -1);
+        JsonObject sort = new JsonObject().put("modified", -1);
 
         // Projection
         JsonObject projection = new JsonObject();
@@ -59,12 +59,12 @@ public class EventServiceMongoImpl extends MongoDbCrudService implements EventSe
     @Override
     public void create(String timelineId, JsonObject body, UserInfos user, Handler<Either<String, JsonObject>> handler) {
         // Clean data
-        body.removeField("_id");
-        body.removeField("timeline");
+        body.remove("_id");
+        body.remove("timeline");
 
         // Prepare data
         JsonObject now = MongoDb.now();
-        body.putObject("owner", new JsonObject().putString("userId", user.getUserId()).putString("displayName", user.getUsername())).putObject("created", now).putObject("modified", now).putString("timeline", timelineId);
+        body.put("owner", new JsonObject().put("userId", user.getUserId()).put("displayName", user.getUsername())).put("created", now).put("modified", now).put("timeline", timelineId);
 
         mongo.save(this.collection, body, validActionResultHandler(handler));
     }
@@ -88,12 +88,12 @@ public class EventServiceMongoImpl extends MongoDbCrudService implements EventSe
         query.put("timeline").is(timelineId);
 
         // Clean data
-        body.removeField("_id");
-        body.removeField("timeline");
+        body.remove("_id");
+        body.remove("timeline");
 
         // Modifier
         MongoUpdateBuilder modifier = new MongoUpdateBuilder();
-        for (String attr : body.getFieldNames()) {
+        for (String attr : body.fieldNames()) {
             modifier.set(attr, body.getValue(attr));
         }
         modifier.set("modified", MongoDb.now());
