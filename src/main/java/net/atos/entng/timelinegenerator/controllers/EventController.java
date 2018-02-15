@@ -22,9 +22,9 @@ package net.atos.entng.timelinegenerator.controllers;
 import net.atos.entng.timelinegenerator.helpers.EventHelper;
 
 import org.entcore.common.service.CrudService;
-import org.vertx.java.core.Handler;
-import org.vertx.java.core.http.HttpServerRequest;
-import org.vertx.java.core.json.JsonObject;
+import io.vertx.core.Handler;
+import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.json.JsonObject;
 
 import fr.wseduc.rs.Delete;
 import fr.wseduc.rs.Get;
