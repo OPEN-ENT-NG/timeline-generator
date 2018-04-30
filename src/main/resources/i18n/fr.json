@@ -45,7 +45,7 @@
     "timelinegenerator.mode.table": "Voir tableau",
     "timeline.or.page.notfound.or.unauthorized": "",
     "timeline.or.page.notfound.or.unauthorized": "La frise chronologique ou la page demandée n'existe pas, a été supprimée, ou vous n'avez pas les droits pour y accéder.",
-    "group.AdminLocal": "Tous les administrateurs locaux du groupe {0}.",
+    "group.AdminLocal": "Tous les administrateurs locaux de {0}.",
     "group.Personnel": "Tous les personnels du groupe {0}.",
     "group.Relative": "Tous les parents du groupe {0}.",
     "group.Student": "Tous les élèves du groupe {0}.",
@@ -67,5 +67,5 @@
     "sniplet.add.timeline": "Ajouter une frise chronologique",
     "timelinegenerator.sniplet.list.empty": "Vous n'avez pas encore créé de frise chronologique. Allez dans l'application <a href=\"/timelinegenerator\" target=\"_blank\">Frise chronologique</a> pour ajouter une frise.",
     "timelinegenerator.sniplet.title": "Frise chronologique",
-    "timelinegenerator.sniplet.desc": "Frise chronologique"
+    "timelinegenerator.sniplet.desc": "Permet d'ajouter des frises chronologiques sur votre page"
 }
