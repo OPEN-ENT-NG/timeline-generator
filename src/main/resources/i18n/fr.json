@@ -67,5 +67,6 @@
     "sniplet.add.timeline": "Ajouter une frise chronologique",
     "timelinegenerator.sniplet.list.empty": "Vous n'avez pas encore créé de frise chronologique. Allez dans l'application <a href=\"/timelinegenerator\" target=\"_blank\">Frise chronologique</a> pour ajouter une frise.",
     "timelinegenerator.sniplet.title": "Frise chronologique",
-    "timelinegenerator.sniplet.desc": "Frise chronologique"
+    "timelinegenerator.sniplet.desc": "Frise chronologique",
+    "timelinegenerator.push-notif.body": "{0} vous a partagé une frise chronologique"
 }

@@ -21,6 +21,7 @@ package net.atos.entng.timelinegenerator.controllers;
 
 import java.util.Map;
 
+import fr.wseduc.webutils.I18n;
 import net.atos.entng.timelinegenerator.TimelineGenerator;
 
 import org.entcore.common.events.EventStore;
@@ -147,6 +148,16 @@ public class TimelineController extends MongoDbControllerHelper {
                     params.put("username", user.getUsername());
                     params.put("timelineUri", "/timelinegenerator#/view/" + id);
                     params.put("resourceUri", params.getString("timelineUri"));
+                    JsonObject pushNotif = new JsonObject()
+                            .put("title", "timeline.push-notif.title")
+                            .put("body", I18n.getInstance()
+                                    .translate("timelinegenerator.push-notif.body",
+                                            getHost(request),
+                                            I18n.acceptLanguage(request),
+                                            user.getUsername()
+                                    ));
+
+                    params.put("pushNotif", pushNotif);
 
                     shareJsonSubmit(request, "timelinegenerator.share", false, params, "headline");
                 }
