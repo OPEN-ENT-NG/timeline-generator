@@ -181,6 +181,17 @@ public class TimelineController extends MongoDbControllerHelper {
 					params.put("timelineUri", "/timelinegenerator#/view/" + id);
 					params.put("resourceUri", params.getString("timelineUri"));
 
+                    JsonObject pushNotif = new JsonObject()
+                            .put("title", "timeline.push-notif.title")
+                            .put("body", I18n.getInstance()
+                                    .translate("timelinegenerator.push-notif.body",
+                                            getHost(request),
+                                            I18n.acceptLanguage(request),
+                                            user.getUsername()
+                                    ));
+
+                    params.put("pushNotif", pushNotif);
+
 					shareResource(request, "timelinegenerator.share", false, params, "headline");
 				}
 			}
