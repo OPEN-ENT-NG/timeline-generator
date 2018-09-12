@@ -21,6 +21,7 @@ package net.atos.entng.timelinegenerator.controllers;
 
 import java.util.Map;
 
+import fr.wseduc.webutils.I18n;
 import net.atos.entng.timelinegenerator.TimelineGenerator;
 
 import org.entcore.common.events.EventStore;
