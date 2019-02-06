@@ -19,6 +19,7 @@
 
 package net.atos.entng.timelinegenerator;
 
+import io.vertx.core.Vertx;
 import org.entcore.common.mongodb.MongoDbResult;
 import org.entcore.common.service.impl.MongoDbRepositoryEvents;
 import io.vertx.core.Handler;
@@ -35,11 +36,8 @@ import fr.wseduc.webutils.Either;
 
 public class TimelineGeneratorRepositoryEvents extends MongoDbRepositoryEvents {
 
-    @Override
-    public void exportResources(String exportId, String userId, JsonArray groups, String exportPath, String locale, String host, Handler<Boolean> handler) {
-        // TODO Auto-generated method stub
-        log.warn("[TimelineGeneratorRepositoryEvents] exportResources is not implemented");
-
+    public TimelineGeneratorRepositoryEvents(Vertx vertx) {
+        super(vertx);
     }
 
     @Override
