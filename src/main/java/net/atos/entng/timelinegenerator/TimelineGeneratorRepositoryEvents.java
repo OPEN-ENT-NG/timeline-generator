@@ -19,6 +19,8 @@
 
 package net.atos.entng.timelinegenerator;
 
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Vertx;
 import org.entcore.common.mongodb.MongoDbResult;
 import org.entcore.common.service.impl.MongoDbRepositoryEvents;
 import io.vertx.core.Handler;
@@ -33,13 +35,47 @@ import fr.wseduc.mongodb.MongoQueryBuilder;
 import fr.wseduc.mongodb.MongoUpdateBuilder;
 import fr.wseduc.webutils.Either;
 
+import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class TimelineGeneratorRepositoryEvents extends MongoDbRepositoryEvents {
 
-    @Override
-    public void exportResources(String exportId, String userId, JsonArray groups, String exportPath, String locale, String host, Handler<Boolean> handler) {
-        // TODO Auto-generated method stub
-        log.warn("[TimelineGeneratorRepositoryEvents] exportResources is not implemented");
+    public TimelineGeneratorRepositoryEvents(Vertx vertx) {
+        super(vertx);
+    }
 
+    protected void exportFiles(final JsonArray results, String exportPath, Set<String> usedFileName,
+                               final AtomicBoolean exported, final Handler<Boolean> handler) {
+        if (results.isEmpty()) {
+            exported.set(true);
+            log.info(title + " exported successfully to : " + exportPath);
+            handler.handle(exported.get());
+        } else {
+            JsonObject resources = results.getJsonObject(0);
+            String fileId = resources.getString("_id");
+            String fileName = resources.getString("headline");
+            if (fileName != null && fileName.contains("/")) {
+                fileName = fileName.replaceAll("/", "-");
+            }
+            if (!usedFileName.add(fileName)) {
+                fileName += "_" + fileId;
+            }
+            final String filePath = exportPath + File.separator + fileName;
+            vertx.fileSystem().writeFile(filePath, resources.toBuffer(), new Handler<AsyncResult<Void>>() {
+                @Override
+                public void handle(AsyncResult<Void> event) {
+                    if (event.succeeded()) {
+                        results.remove(0);
+                        exportFiles(results, exportPath, usedFileName, exported, handler);
+                    } else {
+                        log.error(title + " : Could not write file " + filePath, event.cause());
+                        handler.handle(exported.get());
+                    }
+                }
+            });
+        }
     }
 
     @Override
