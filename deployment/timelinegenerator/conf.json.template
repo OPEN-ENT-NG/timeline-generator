@@ -6,6 +6,7 @@
     "app-name" : "TimelineGenerator",
     "app-address" : "/timelinegenerator",
     "app-icon" : "timelinegenerator-large",
+    "app-type" : "END_USER",
     "host": "${host}",
     "ssl" : $ssl,
     "userbook-host": "${host}",
