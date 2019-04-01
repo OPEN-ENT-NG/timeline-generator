@@ -11,22 +11,21 @@
 
   <body ng-controller="TimelineGeneratorController">
     <portal ng-if="!notFound">
+        <infotip name="timelinegenerator-no-mobile" class="warning zero-desktop">
+          <strong><i18n>warning.no.mobile</i18n></strong>
+        </infotip>
       <div class="row">
         <div class="twelve cell">
-
           <div class="nine cell">
             <side-panel class="zero-mobile" ng-if="selectedTimeline">
                 <container template="side-panel"></container>
             </side-panel>
-            <app-title>
-                <h1>
-                    <i class="timelinegenerator"></i>
-                    <span ng-click="openMainPage()"><i18n>timelinegenerator.title</i18n></span>
-                    <span subtitle ng-if="selectedTimeline.headline && selectedTimeline.headline.trim().length > 0"> > [[timeline.headline]]</span>
-                </h1>
-            </app-title>
+              <h1>
+                  <i class="timelinegenerator"></i>
+                  <span ng-click="openMainPage()"><i18n>timelinegenerator.title</i18n></span>
+                  <span subtitle ng-if="selectedTimeline.headline && selectedTimeline.headline.trim().length > 0"> > [[timeline.headline]]</span>
+              </h1>
           </div>
-
           <div class="contextual-buttons three cell">
             <button workflow="timelinegenerator.create" ng-if="!timeline || !timeline._id" ng-click="newTimeline()" class="cell right-magnet">
                 <i18n>timelinegenerator.timeline.new</i18n>
@@ -39,7 +38,6 @@
     		<container template="main" class="flexible content cell"></container>
     		<container template="timelines" class="flexible navigation" ng-class="{ 'empty-neighbour': template.isEmpty('main'), 'filled-neighbour': !template.isEmpty('main') }"></container>
       </section>
-
     </portal>
     <div ng-if="notFound">
       <div ng-if="!me.userId" class="absolute">
