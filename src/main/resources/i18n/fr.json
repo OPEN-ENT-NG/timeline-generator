@@ -43,7 +43,6 @@
     "timelinegenerator.day": "Jour",
     "timelinegenerator.mode.timeline": "Voir frise",
     "timelinegenerator.mode.table": "Voir tableau",
-    "timeline.or.page.notfound.or.unauthorized": "",
     "timeline.or.page.notfound.or.unauthorized": "La frise chronologique ou la page demandée n'existe pas, a été supprimée, ou vous n'avez pas les droits pour y accéder.",
     "group.HeadTeacher": "Professeurs principaux de {0}.",
     "group.Func": "Personnels de fonction {0}.",
