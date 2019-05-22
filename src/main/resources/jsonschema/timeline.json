@@ -26,6 +26,9 @@
         },
         "owner": {
             "type": "object"
+        },
+        "trashed": {
+            "type": "boolean"
         }
     },
     "required": [

@@ -6,6 +6,7 @@ timelineNamespace.Event = function(){};
 
 timelineNamespace.Timeline = function(){
 	let timeline = this;
+	Object.defineProperty(this, "myRights",{get : function(){ return this.rights.myRights; }})
 	this.collection(Behaviours.applicationsBehaviours.timelinegenerator.timelineNamespace.Event, {
 	   sync: function(callback){
 		   http().get('/timelinegenerator/timeline/' + timeline._id + '/events').done(function(events){
@@ -146,8 +147,8 @@ timelineNamespace.Timeline.prototype = {
 			let eventDescription = event.text ? event.text : " ";
 			let eventData = {
 				"headline" : event.headline,
-				"startDate" : moment(event.startDate).format(model.timelineJSDateFormat[event.dateFormat]),
-				"endDate": moment(event.endDate).format(model.timelineJSDateFormat[event.dateFormat]),
+				"startDate" : moment(event.startDate).format((model as any).timelineJSDateFormat[event.dateFormat]),
+				"endDate": moment(event.endDate).format((model as any).timelineJSDateFormat[event.dateFormat]),
 				"text" : eventDescription,
 				"asset": event.asset
 			};
@@ -156,7 +157,7 @@ timelineNamespace.Timeline.prototype = {
 				eventData.asset.media = event.img ? window.location.protocol + "//" + window.location.host + event.img : event.video;
 			}
 			if (event.endDate) {
-				eventData.endDate = moment(event.endDate).format(model.timelineJSDateFormat[event.dateFormat]);
+				eventData.endDate = moment(event.endDate).format((model as any).timelineJSDateFormat[event.dateFormat]);
 			}
 			objectData.timeline.date.push(eventData);
 		});

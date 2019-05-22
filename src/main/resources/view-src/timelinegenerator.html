@@ -4,7 +4,14 @@
   <head>
 	<title>{{#i18n}}timelinegenerator.title{{/i18n}}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+    <style>
+        .chip .shared{
+          position: relative;
+          display: inline-block;
+          margin-left: 0;
+          left: 0;
+        }
+      </style>
     <script src="/timelinegenerator/public/dist/entcore/ng-app.js" id="context" type="text/javascript"></script>
     <script src="/timelinegenerator/public/dist/application.js" type="text/javascript"></script>
   </head>
@@ -27,7 +34,7 @@
               </h1>
           </div>
           <div class="contextual-buttons three cell">
-            <button workflow="timelinegenerator.create" ng-if="!timeline || !timeline._id" ng-click="newTimeline()" class="cell right-magnet">
+            <button ng-disabled="isTrashFolder()" workflow="timelinegenerator.create" ng-if="!timeline || !timeline._id" ng-click="newTimeline()" class="cell right-magnet">
                 <i18n>timelinegenerator.timeline.new</i18n>
             </button>
           </div>

@@ -1,5 +1,5 @@
 import { model, Behaviours, http, _, Collection, notify, moment } from 'entcore'
-import { timelineNamespace } from './model'
+import { timelineNamespace } from './models/model'
 
 declare let $: any;
 declare let createStoryJS: any;
@@ -9,25 +9,25 @@ let Event = timelineNamespace.Event;
 
 console.log('timelinegenerator behaviours loaded');
 
-model.momentDateFormat = {
+(model as any).momentDateFormat = {
 	"year" : "YYYY",
 	"month": "MM/YYYY",
 	"day": "DD/MM/YYYY"
 };
 
-model.timelineJSDateFormat = {
+(model as any).timelineJSDateFormat = {
 	"year": "YYYY",
 	"month": "YYYY,MM",
 	"day": "YYYY,MM,DD"
 };
 
-model.datePickerDateFormat = {
+(model as any).datePickerDateFormat = {
 	"year" : "yyyy",
 	"month": "mm/yyyy",
 	"day": "dd/mm/yyyy"
 };
 
-model.inputPlaceholderDateFormat = {
+(model as any).inputPlaceholderDateFormat = {
 	"year": "année",
 	"month": "mois/année",
 	"day": "jour/mois/année"
@@ -46,16 +46,31 @@ let timelineGeneratorBehaviours = {
 		}
 	},
 	workflow : {
+		createFolder:'net.atos.entng.timelinegenerator.controllers.FoldersController|add',
         create : 'net.atos.entng.timelinegenerator.controllers.TimelineController|createTimeline',
         view : 'net.atos.entng.timelinegenerator.controllers.TimelineController|view'
     },
 	viewRights: [ 'net-atos-entng-timelinegenerator-controllers-TimelineController|view' ]
 };
 
-console.log(timelineGeneratorBehaviours);
-
 Behaviours.register('timelinegenerator', {
 	behaviours:  timelineGeneratorBehaviours,
+	rights: {
+		resource: {
+			contrib: {
+				right: 'net-atos-entng-timelinegenerator-controllers-EventController|createEvent'
+			},
+			manage: {
+				right: 'net-atos-entng-timelinegenerator-controllers-TimelineController|updateTimeline'
+			},
+			manager: {
+				right: 'net-atos-entng-timelinegenerator-controllers-TimelineController|updateTimeline'
+			},
+			share: {
+				right: 'net-atos-entng-timelinegenerator-controllers-TimelineController|shareTimeline'
+			}
+		}
+	},
 	resourceRights: function(resource){
 		var rightsContainer = resource;
 		if(resource instanceof Event && resource.timeline){
@@ -179,7 +194,8 @@ Behaviours.register('timelinegenerator', {
 				},
 				copyRights: function(snipletResource, source){
 					source.timelines.forEach(function(timeline){
-						Behaviours.copyRights(snipletResource, timeline, timelineGeneratorBehaviours.viewRights, 'timeline');
+						const copyRights:any = Behaviours.copyRights;
+						copyRights(snipletResource, timeline, timelineGeneratorBehaviours.viewRights, 'timeline');
 					});
 				},
 				

@@ -1,4 +1,4 @@
-import { module, model, moment, loader, ng, http } from 'entcore'
+import { model, moment, ng, http } from 'entcore'
 
 declare let $: any;
 
@@ -18,7 +18,7 @@ export const datePickerTimeline = ng.directive('datePickerTimeline', ($compile) 
         restrict: 'E',
         template: '<input ng-transclude type="text" data-date-format="dd/mm/yyyy"  />',
         link: function($scope, $element, $attributes){
-            console.log(model.momentDateFormat);
+            console.log((model as any).momentDateFormat);
             if ($scope.eventDateFormat == 'year') {
                 var datePickerFormat = 'yyyy';
                 var viewMode = "years";
@@ -39,7 +39,7 @@ export const datePickerTimeline = ng.directive('datePickerTimeline', ($compile) 
                 if ($scope.ngModel === undefined || $scope.ngModel === null) {
                     $scope.ngModel = moment().startOf('day');
                 }
-                $element.val($scope.ngModel.format(model.momentDateFormat[$scope.eventDateFormat]));
+                $element.val($scope.ngModel.format((model as any).momentDateFormat[$scope.eventDateFormat]));
             });
             http().get('/infra/public/js/bootstrap-datepicker.js').done(function(){
                 $element.datepicker({
@@ -56,7 +56,7 @@ export const datePickerTimeline = ng.directive('datePickerTimeline', ($compile) 
                     })
                     .on('changeDate', function(){
                         setTimeout(function(){
-                            var newMoment = moment($element.val(), model.momentDateFormat[$scope.eventDateFormat]);
+                            var newMoment = moment($element.val(), (model as any).momentDateFormat[$scope.eventDateFormat]);
                             $scope.ngModel = newMoment;
                             $scope.$apply('ngModel');
                             $scope.$parent.$eval($scope.ngChange);
@@ -77,9 +77,9 @@ export const datePickerTimeline = ng.directive('datePickerTimeline', ($compile) 
             });
 
             $element.on('change', function(){
-                var newMoment = moment($element.val(), model.momentDateFormat[$scope.eventDateFormat]);
+                var newMoment = moment($element.val(), (model as any).momentDateFormat[$scope.eventDateFormat]);
                 $scope.ngModel = newMoment;
-                var elementValue = $scope.ngModel.format(model.momentDateFormat[$scope.eventDateFormat]);
+                var elementValue = $scope.ngModel.format((model as any).momentDateFormat[$scope.eventDateFormat]);
                 $element.datepicker('setValue', elementValue);
                 $scope.$apply('ngModel');
                 $scope.$parent.$eval($scope.ngChange);

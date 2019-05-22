@@ -20,6 +20,7 @@
 package net.atos.entng.timelinegenerator;
 
 import net.atos.entng.timelinegenerator.controllers.EventController;
+import net.atos.entng.timelinegenerator.controllers.FoldersController;
 import net.atos.entng.timelinegenerator.controllers.TimelineController;
 import net.atos.entng.timelinegenerator.events.TimelineGeneratorSearchingEvents;
 import net.atos.entng.timelinegenerator.services.impl.EventServiceMongoImpl;
@@ -58,6 +59,7 @@ public class TimelineGenerator extends BaseServer {
 
 		addController(new TimelineController(TIMELINE_GENERATOR_COLLECTION));
 		addController(new EventController(TIMELINE_GENERATOR_EVENT_COLLECTION, eventService));
+		addController(new FoldersController("timelinegeneratorFolders"));
 	}
 
 	

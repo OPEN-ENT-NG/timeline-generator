@@ -1,76 +1,236 @@
-<div class="twelve cell" workflow="timelinegenerator.view">
-    <div class="row rigid-grid">
-        <!-- Search bar -->
-        <div class="four cell">
-            <autocomplete
-                    workflow="timelinegenerator.view"
-                    options="searchbar.timelines"
-                    ng-change="openTl(selectedTimeline._id)"
-                    ng-model="selectedTimeline">
-            </autocomplete>
-        </div>
+<script type="text/ng-template" id="folder-tree">
+  <div ng-if="folder.contains(currentFolder)">
+      <li data-ng-repeat="folder in folder.children.all">
+          <a ng-class="{ selected: currentFolder === folder, opened: folder.contains(currentFolder) }"
+             ng-click="openFolder(folder)"
+             class="folder-list-item"
+             dragdrop="dropTo(folder, $originalEvent)">
+              <i class="arrow" ng-if="folder.children.all.length"></i> [[folder.name]]
+          </a>
+          <!-- ng-if="folder.contains(currentFolder)"-->
+          <ul ng-class="{ selected: folder.contains(currentFolder), closed: !folder.contains(currentFolder) }"
+              ng-include="'folder-tree'"></ul>
+      </li>
+  </div>
+</script>
+<!--TREE AND CONTENT-->
+<div class="row rigid-grid" workflow="timelinegenerator.view">
+  <section class="four cell">
+    <div class="margin-two row">
+      <input type="search" class="eleven cell" i18n-placeholder="search" ng-model="displayLib.searchTimelines" />
     </div>
-
-    <div class="fallen dominos">
-        <div class="item" ng-repeat="tl in timelines.all">
-            <section class="domino cyan">
-                <div class="top" ng-click="openTl(tl._id)">
-                    <img class="absolute" skin-src="[[getTimelineThumbnail(tl)]]" />
-                </div>
-                <div class="bottom">
-                    <div class="content">
-                        <div class="cell" ng-click="openTl(tl._id)">
-                            <strong>[[tl.headline]]</strong>
-                            <br />[[tl.owner.displayName]]
-                            <br />[[formatDate(tl.modified)]]
-                        </div>
-                    </div>
-                </div>
-                <span ng-show="canManageTimeline(tl)">
-                    <check-tool ng-model="tl.selected" ng-click="$event.stopPropagation()" ></check-tool>
-                </span>
-            </section>
-        </div>
-    </div>
-
-   	<!-- Allows to display a confirm dialog before deleting a mindmap -->
-    <div ng-if="display.confirmDeleteTimelines">
-        <lightbox show="display.confirmDeleteTimelines" on-close="cancelRemoveMindmap()">
-            <p><i18n>timelinegenerator.confirm.delete.timeline</i18n></p>
-            <p ng-repeat="timeline in timelines.selection()">[[timeline.headline]]</p>
-            <div class="row">
-                <button class="right-magnet" ng-click="removeSelectedTimelines()"><i18n>remove</i18n></button>
-                <input type="button" class="cancel right-magnet" i18n-value="cancel" ng-click="cancelRemoveTimelines()" />
+    <nav class="vertical" side-nav>
+      <ul>
+        <li>
+          <a ng-class="{ selected: currentFolder.name === 'root', opened: root.contains(currentFolder) }"
+            ng-click="openRoot()" dragdrop="dropTo('root', $originalEvent)">
+            <i class="arrow" ng-if="root.children.length"></i>
+            <i18n>projects.root</i18n>
+          </a>
+          <ul>
+            <div ng-if="root.contains(currentFolder)">
+              <li ng-repeat="folder in root.children.all">
+                <a ng-click="openFolder(folder)"
+                  ng-class="{ selected: currentFolder === folder, opened: folder.contains(currentFolder) }"
+                  dragdrop="dropTo(folder, $originalEvent)"><i class="arrow"
+                    ng-if="folder.children.all.length"></i>[[folder.name]]</a>
+                <ul ng-include="'folder-tree'"></ul>
+              </li>
             </div>
-        </lightbox>
+          </ul>
+        </li>
+        <li ng-click="openTrash()">
+          <a ng-class="{ selected: currentFolder.name === 'trash' }" dragdrop="dropTo('trash', $originalEvent)">
+            <i18n>folder.trash</i18n>
+          </a>
+        </li>
+      </ul>
+      <a class="classic-link" ng-disabled="isTrashFolder()" ng-click="lightbox('newFolder')" workflow="timelinegenerator.createFolder">
+        <i18n>timelinegenerator.folder.new</i18n>
+      </a>
+    </nav>
+  </section>
+  <section class="margin-four">
+    <!--FILTERS-->
+    <div class="twelve cell chips">
+      <label class="chip" ng-click="currentFolder.ressources.refreshFilters()"
+        ng-class="{ selected: filters.mine }">
+        <i class="mine" tooltip="filters.mine"></i>
+        <i18n>filters.mine</i18n>
+        <input type="checkbox" ng-model="filters.mine" />
+      </label>
+      <label class="chip" ng-click="currentFolder.ressources.refreshFilters()"
+        ng-class="{ selected: filters.shared }">
+        <i class="shared" tooltip="filters.sharedTimelines"></i>
+        <i18n>filters.sharedTimelines</i18n>
+        <input type="checkbox" ng-model="filters.shared" />
+      </label>
     </div>
-
-    <div ng-if="display.showPanel">
-		<lightbox show="display.showPanel" on-close="display.showPanel = false;">
-			<share-panel app-prefix="'timelinegenerator'" resources="timeline"></share-panel>
-		</lightbox>
-	</div>
+    <!--CONTENT-->
+    <div class="fallen dominos">
+      <div ng-repeat="folder in currentFolder.children.all | filter:searchFolder">
+        <explorer ng-model="folder.selected" on-open="openFolder(folder)" class="folder item">
+          <section class="domino" dragstart ng-model="folder._id" dragdrop="dropTo(folder, $originalEvent)">
+            <div class="top">
+              <i class="folder-large"></i>
+            </div>
+            <div class="bottom">
+              <div class="content">
+                <strong>[[folder.shortenedName]]</strong>
+              </div>
+            </div>
+          </section>
+        </explorer>
+      </div>
+      <div ng-repeat="timeline in currentFolder.ressources.filtered | filter:searchTimeline">
+        <explorer ng-model="timeline.selected" on-open="viewTimeline(timeline)" class="item">
+          <section class="domino" dragstart ng-model="timeline._id">
+            <div class="top">
+              <img skin-src="/img/illustrations/image-default.svg" ng-if="!timeline.icon" class="absolute">
+              <img image-lazy-load="timeline.icon" ng-if="timeline.icon" class="absolute" />
+            </div>
+            <div class="bottom">
+              <div class="content">
+                <strong class="block overflow-hd">[[timeline.shortenedTitle]]</strong>
+                <span class="cell-ellipsis block">[[timeline.owner.displayName]]</span>
+                <em class="smaller-text block">
+                  <i18n>modified.on</i18n>
+                </em>
+                <br />
+                <div class="icons">
+                  <!-- Il faut revoir les conditions du ng-if -->
+                  <i class="shared inline" ng-if="timeline.shared.length > 0" tooltip="tooltip.shared"></i>
+                  <i class="public" ng-if="timeline.visibility === 'PUBLIC'" tooltip="tooltip.public"></i>
+                  <i class="manage" ng-if="timeline.myRights.manage" tooltip="tooltip.manager"></i>
+                  <i class="edit" ng-if="!timeline.myRights.manage && timeline.myRights.contrib"
+                    tooltip="tooltip.update"></i>
+                  <i class="view" ng-if="!timeline.myRights.contrib" tooltip="tooltip.read"></i>
+                </div>
+              </div>
+            </div>
+          </section>
+        </explorer>
+      </div>
+    </div>
+  </section>
+</div>
+<!--TOASTER TRASH-->
+<div class="toggle-buttons" ng-if="isTrashFolder()" ng-class="{ hide: !hasSelectedElements() }">
+  <div class="row toggle">
+    <div>
+      <!-- Both-->
+      <button ng-click="restore()" ng-if="can('manage')">
+        <i18n>restore</i18n>
+      </button>
+      <button ng-click="lightbox('confirmRemove')" ng-if="can('manage')">
+        <i18n>remove</i18n>
+      </button>
+    </div>
+  </div>
+</div>
+<!-- TOASTER -->
+<div class="toggle-buttons" ng-if="!isTrashFolder()" ng-class="{ hide: !hasSelectedElements() }">
+  <div class="row toggle">
+    <!-- Both-->
+    <div>
+      <button ng-click="open(currentFolder.selection[0])" ng-if="hasOneElement()">
+        <i18n>open</i18n>
+      </button>
+    </div>
+    <div>
+      <!-- Exclusive to folders-->
+      <button ng-click="lightbox('renameFolder')" ng-if="hasOneFolder()">
+        <i18n>rename</i18n>
+      </button>
+    </div>
+    <div ng-if="!hasSelectedFolders()">
+      <!-- Exclusive to timelines-->
+      <resource-right name="manage" resource="currentFolder.selection">
+        <button class="zero-mobile" ng-click="shareTimeline()">
+          <i18n>share</i18n>
+        </button>
+      </resource-right>
+      <resource-right name="manage" resource="currentFolder.selection">
+        <button class="zero-mobile" ng-click="editTimeline()" ng-if="hasOneElement()">
+          <i18n>properties</i18n>
+        </button>
+      </resource-right>
+    </div>
+    <div>
+      <!-- Both -->
+      <button ng-click="lightbox('move')" workflow="timelinegenerator.createFolder">
+        <i18n>move</i18n>
+      </button>
+    </div>
+    <div>
+      <button ng-click="trashSelection()" ng-if="can('manage')">
+        <i18n>remove</i18n>
+      </button>
+    </div>
+  </div>
 </div>
 
-<!-- Lightbox : Thread share -->
-<section class="toggle-buttons" ng-class="{ hide: timelines.selection().length === 0 }">
-    <div class="toggle">
-        <div class="row">
-            <resource-right name="manage" resource="timelines.selection()" class="cell">
-                <button ng-if="timelines.selection().length === 1" ng-click="editTimeline(timelines.selection()[0], $event)">
-                    <i18n>properties</i18n>
-                </button>
-            </resource-right>
-            <resource-right name="manage" resource="timelines.selection()" class="cell">
-                <button ng-click="shareTimeline(timelines.selection(), $event)">
-                    <i18n>share</i18n>
-                </button>
-            </resource-right>
-            <resource-right name="manage" resource="timelines.selection()" class="cell">
-                <button ng-click="display.confirmDeleteTimelines = true">
-                    <i18n>remove</i18n>
-                </button>
-            </resource-right>
-        </div>
+<!--####################LIGHTBOXES#################-->
+<!--RENAME LIGHTBOX-->
+<lightbox show="displayLib.lightbox.renameFolder" on-close="lightbox('renameFolder')">
+  <h2>
+    <i18n>rename</i18n>
+  </h2>
+  <input type="text" class="twelve cell" ng-model="currentFolder.selection[0].name" i18n-placeholder="timelinegenerator.folder.placeholder" />
+  <div class="row">
+    <button class="right-magnet" ng-click="currentFolder.selection[0].save(); lightbox('renameFolder')">
+      <i18n>save</i18n>
+    </button>
+    <button class="cancel right-magnet" ng-click="lightbox('renameFolder')">
+      <i18n>cancel</i18n>
+    </button>
+  </div>
+</lightbox>
+<!--SHARE LIGHTBOX-->
+<div ng-if="displayLib.showShare">
+    <lightbox show="displayLib.showShare" on-close="displayLib.showShare = false">
+      <share-panel app-prefix="'timelinegenerator'" resources="currentFolder.selection"></share-panel>
+    </lightbox>
+</div>
+<!--NEW FOLDER LIGHTBOX-->
+<lightbox show="displayLib.lightbox.newFolder" on-close="lightbox('newFolder')">
+  <form ng-submit="createFolder()">
+    <h2>
+      <i18n>timelinegenerator.folder.new</i18n>
+    </h2>
+    <div class="row">
+      <input type="text" ng-model="folder.name" i18n-placeholder="timelinegenerator.folder.placeholder" required autofocus class="twelve cell" />
     </div>
-</section>
+    <div class="row">
+      <button class="right-magnet" ng-disabled="!folder.name.trim()">
+        <i18n>create</i18n>
+      </button>
+      <button type="button" class="cancel right-magnet" ng-click="lightbox('newFolder')">
+        <i18n>cancel</i18n>
+      </button>
+    </div>
+  </form>
+</lightbox>
+<!--MOVE LIGHTBOX-->
+<lightbox show="displayLib.lightbox.move" on-close="lightbox('move')">
+  <div ng-if="displayLib.lightbox.move">
+    <container template="library/move"></container>
+  </div>
+</lightbox>
+<!--REMOVE LIGHTBOX-->
+<lightbox show="displayLib.lightbox.confirmRemove" on-close="closeLightbox('confirmRemove')">
+  <h2>
+    <i18n>remove</i18n>
+  </h2>
+  <p>
+    <i18n>confirm.remove.elements</i18n>
+  </p>
+  <div class="row">
+    <button ng-click="removeSelection()" class="right-magnet">
+      <i18n>remove</i18n>
+    </button>
+    <button type="button" ng-click="closeLightbox('confirmRemove')" class="right-magnet cancel">
+      <i18n>cancel</i18n>
+    </button>
+  </div>
+</lightbox>

@@ -1,18 +1,77 @@
 import { moment, Behaviours, ng, template, idiom as lang } from 'entcore'
-import { timelineNamespace } from './model'
+import { timelineNamespace } from './models/model'
+import { LibraryDelegate, LibraryControllerScope } from './controllers/library';
+import { TimelineModel, EventModel, EventsModel, TimelinesModel } from './controllers/commons';
+import { Timeline as TimelineEntity } from './models/timeline';
+import { Folders, Folder } from './models/folder';
 
 declare let currentLanguage: any;
+export interface TimelineGeneratorControllerScope {
+    notFound: boolean
+    template: typeof template
+    timelines: TimelinesModel
+    model: typeof timelineNamespace
+    display: {
+        confirmDeleteEvents?: boolean
+    }
+    me: any
+    date: typeof moment
+    moment: typeof moment
+    previewMode: boolean
+    lang: typeof lang
+    editedEvent: EventModel
+    sort: {
+        predicate: string,
+        reverse: boolean
+    }
+    events: EventsModel
+    timeline: TimelineModel
+    selectedTimeline: boolean | TimelineModel
+    event: EventModel
+    openMainPage(): void
+    newTimeline(): void;
+    openTimelineViewer(timeline: TimelineModel): void
+    openTimeline(timeline: TimelineModel): void
+    newEvent(): void
+    setEventMediaType(event: EventModel): void
+    isTitleEmpty(title: string): boolean;
+    addEvent(): void
+    saveTimelineEdit(): void
+    cancelTimelineEdit(): void
+    saveEventEdit(): void
+    cancelEventEdit(): void
+    editTimeline(): void
+    editEvent(eventModel: EventModel, event: Event): void
+    shareTimeline(timeline: TimelineModel, event: Event): void
+    isTextEmpty(str: string): boolean
+    confirmRemoveSelectedEvents(): void
+    removeSelectedEvents(): void
+    cancelRemoveSubjects(): void
+    resetEventImage(event: EventModel): void;
+    resetEventVideo(event: EventModel): void
+    switchDateFormat(): void
+    resetEndDate(): void
+    setDateYear(date: { newDate: string, month(num: number), year(num: number | string) }): void
+    switchSortBy(predicate: string): void
+    resetSort(): void
+    formatDate(date: typeof moment): void
+    canManageTimeline(timeline: TimelineModel): boolean
+    openTl(id: string): void
+    getTimelineThumbnail(timeline: TimelineModel): void
+    //
+    $apply: any
+}
+export interface TimelineGeneratorControllerScopeWithDelegate extends TimelineGeneratorControllerScope, LibraryControllerScope {
 
-export const timelineGeneratorController = ng.controller('TimelineGeneratorController', ['$scope', 'model', 'route', ($scope, model, route) => {
+}
+export const timelineGeneratorController = ng.controller('TimelineGeneratorController', ['$scope', 'model', 'route', '$rootScope', '$location', ($scope: TimelineGeneratorControllerScopeWithDelegate, model, route, $rootScope, $location) => {
     $scope.notFound = false;
-	$scope.template = template;
-    $scope.timelines = model.timelines;
+    $scope.template = template;
     $scope.model = timelineNamespace;
     $scope.display = {};
     $scope.me = model.me;
     $scope.date = moment;
     $scope.moment = moment;
-    $scope.searchbar = {};
     $scope.previewMode = false;
     $scope.lang = lang;
 
@@ -24,102 +83,68 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
     };
 
     template.open('side-panel', 'timeline-side-panel');
-
+    //DELEGATE
+    LibraryDelegate($scope, $rootScope, $location);
     // Definition of actions
     route({
-        goToTimeline : function(params) {
+        goToTimeline: function (params) {
             template.open('timelines', 'timelines');
-
-            var findTimelineInModel = function() {
-            	return model.timelines.find(function(timeline) {
-                    return timeline._id === params.timelineId;
-                });
-            };
-            var openTlViewer = function() {
+            const _timeline = new TimelineEntity({ _id: params.timelineId as string } as any);
+            _timeline.sync().then(async () => {
+                $scope.timeline = new timelineNamespace.Timeline(_timeline);
+                $scope.timeline.behaviours()
                 $scope.notFound = false;
                 $scope.openTimelineViewer($scope.timeline);
-            };
-
-            $scope.timeline = findTimelineInModel();
-
-            if ($scope.timeline !== undefined) {
-            	openTlViewer();
-            }
-            else {
-                model.timelines.one('sync', function() {
-                    $scope.timeline = findTimelineInModel();
-                    if ($scope.timeline === undefined) {
-                        $scope.notFound = true;
-                        $scope.openMainPage();
-                        //template.open('error', '404');
-                    } else {
-                    	openTlViewer();
-                    }
-                });
-                model.timelines.sync();
-            }
+            }).catch(e => {
+                $scope.notFound = true;
+                $scope.openMainPage();
+            })
         },
-        goToEvent : function(params) {
+        goToEvent: function (params) {
         },
-        mainPage : function(params) {
-        	template.open('timelines', 'timelines');
+        mainPage: function (params) {
+            template.open('timelines', 'timelines');
         }
     });
 
-    $scope.hideAlmostAllButtons = function(timeline){
-        $scope.timelines.forEach(function(tl){
-            if(tl !== timeline){
-                tl.showButtons = false;
-            }
-        });
-    };
-
-    $scope.openMainPage = function(){
-		delete $scope.timeline;
+    $scope.openMainPage = function () {
+        delete $scope.timeline;
         delete $scope.selectedTimeline;
-        $scope.timelines.forEach(function(tl) {
-            tl.showButtons = false;
-        });
-		template.close('main');
+        template.close('main');
         template.open('timelines', 'timelines');
         window.location.hash = "";
-	};
+    };
 
-    $scope.openTimeline = function(timeline){
+    $scope.openTimeline = function (timeline) {
         $scope.timeline = $scope.selectedTimeline = timeline;
         $scope.events = timeline.events;
         $scope.previewMode = false;
-        $scope.timelines.forEach(function(tl) {
-            if (tl._id != timeline._id) {
-                tl.showButtons = false;
-            }
-        });
-        $scope.timeline.open(function(){
+        $scope.timeline.open(function () {
             template.close('main');
             template.open('timelines', 'events');
             $scope.$apply();
         });
     };
 
-     $scope.openTimelineViewer = function(timeline){
+    $scope.openTimelineViewer = function (timeline) {
         $scope.timeline = timeline;
         $scope.events = timeline.events;
         $scope.previewMode = true;
         Behaviours.applicationsBehaviours.timelinegenerator.sniplets.timelines.controller.source = timeline;
-        timeline.open(function(){
+        timeline.open(function () {
             template.close('main');
             template.open('timelines', 'read-timeline');
         });
     };
 
-    $scope.newTimeline = function(){
-		$scope.timeline = new timelineNamespace.Timeline();
+    $scope.newTimeline = function () {
+        $scope.timeline = new timelineNamespace.Timeline();
         template.close('main');
-		template.open('timelines', 'edit-timeline');
+        template.open('timelines', 'edit-timeline');
         $scope.selectedTimeline = true;
-	};
+    };
 
-    $scope.newEvent = function(){
+    $scope.newEvent = function () {
         $scope.event = new timelineNamespace.Event();
         $scope.event.dateFormat = "day";
         $scope.event.startDate = moment();
@@ -128,7 +153,7 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
         template.open('timelines', 'edit-event');
     };
 
-    $scope.addEvent = function(){
+    $scope.addEvent = function () {
         if ($scope.isTitleEmpty($scope.event.headline)) {
             $scope.event.headline = undefined;
             $scope.event.error = 'timelinegenerator.event.missing.headline';
@@ -140,7 +165,7 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
         }
 
         $scope.event.error = undefined;
-        $scope.timeline.addEvent($scope.event, function() {
+        $scope.timeline.addEvent($scope.event, function () {
             if ($scope.previewMode) {
                 $scope.openTimelineViewer($scope.timeline);
             } else {
@@ -149,46 +174,40 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
         });
     };
 
-	$scope.saveTimelineEdit = function(){
-		if ($scope.timeline._id) { // when editing a timeline
-			$scope.timeline.save(function(){
-				$scope.timelines.sync(function(){
-                    $scope.updateSearchBar();
-                    $scope.cancelTimelineEdit();
-				});
-
-			});
-		}
-		else { // when creating a timeline
-		    $scope.timeline.save(function(){
-                $scope.timelines.sync(function() {
-                    $scope.updateSearchBar();
-                    $scope.cancelTimelineEdit();
-                });
-			});
-		}
+    $scope.saveTimelineEdit = async function () {
+        const _timeline = Folders.root.findRessource($scope.timeline._id) || new TimelineEntity();
+        const isNew = !_timeline._id;
+        _timeline.fromOldModel($scope.timeline)
+        await _timeline.save();
+        if (isNew && $scope.currentFolder && $scope.currentFolder._id) {
+            await _timeline.moveTo($scope.currentFolder as Folder);
+        }
+        $scope.cancelTimelineEdit();
         template.close('main');
+        if ($scope.currentFolder) {
+            await $scope.currentFolder.sync();
+        }
+        $scope.$apply();
+    };
 
-	};
-
-    $scope.saveEventEdit = function(){
+    $scope.saveEventEdit = function () {
         if (!$scope.event.enableEndDate) {
             $scope.event.endDate = "";
         }
         if ($scope.event._id) { // when editing an event
-            $scope.event.save(function(){
+            $scope.event.save(function () {
                 template.close('main');
-                $scope.timeline.events.sync(function(){
+                $scope.timeline.events.sync(function () {
                     $scope.cancelEventEdit();
                 });
             });
         }
         else { // when creating an event
-           $scope.addEvent();
+            $scope.addEvent();
         }
     };
 
-    $scope.cancelEventEdit = function(){
+    $scope.cancelEventEdit = function () {
         $scope.event = undefined;
 
         if ($scope.previewMode) {
@@ -198,24 +217,20 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
         }
     };
 
-	$scope.cancelTimelineEdit = function(){
-		$scope.timeline = undefined;
-        $scope.timelines.forEach(function(tl) {
-            tl.showButtons = false;
-        });
-		template.close('main');
+    $scope.cancelTimelineEdit = function () {
+        $scope.timeline = undefined;
+        template.close('main');
         template.open('timelines', 'timelines');
-	};
-
-    $scope.editTimeline = function(timeline, event){
-        $scope.timeline = timeline;
-        event.stopPropagation();
-        template.open('timelines', 'edit-timeline');
-        $scope.selectedTimeline = true;
-
     };
 
-     $scope.editEvent = function(timelineEvent, event){
+    $scope.editTimeline = function () {
+        const json = $scope.currentFolder.selection[0].toJSON();
+        $scope.timeline = new timelineNamespace.Timeline(json);
+        template.open('timelines', 'edit-timeline');
+        $scope.selectedTimeline = true;
+    };
+
+    $scope.editEvent = function (timelineEvent, event) {
         $scope.event = timelineEvent;
         $scope.event.startDate = moment($scope.event.startDate);
         var endDate = $scope.event.endDate;
@@ -239,56 +254,32 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
         }
 
         $scope.setEventMediaType($scope.event);
-        event.stopPropagation();
+        event && event.stopPropagation();
         template.open('timelines', 'edit-event');
     };
 
-    $scope.setEventMediaType = function(event) {
-         if (event.video) {
+    $scope.setEventMediaType = function (event) {
+        if (event.video) {
             event.mediatype = 'video';
         } else {
             event.mediatype = 'img';
         }
     };
 
-    $scope.shareTimeline = function(timeline, event){
+    $scope.shareTimeline = function (timeline, event) {
         $scope.timeline = timeline;
-        $scope.display.showPanel = true;
-        event.stopPropagation();
+        $scope.displayLib.showShare = true;
+        event && event.stopPropagation();
     };
 
-    $scope.confirmRemoveTimeline = function(timeline, event){
-        $scope.timelines.deselectAll();
-        timeline.selected = true;
-        $scope.display.confirmDeleteTimelines = true;
-        event.stopPropagation();
-    };
-
-
-    $scope.removeSelectedTimelines = function() {
-        $scope.timelines.removeSelection(function(){
-            $scope.updateSearchBar();
-            $scope.display.confirmDeleteTimelines = undefined;
-        });
-
-        delete $scope.timeline;
-        delete $scope.selectedTimeline;
-        $scope.display.confirmDeleteTimelines = false;
-
-    };
-
-    $scope.cancelRemoveTimelines = function() {
-        $scope.display.confirmDeleteTimelines = undefined;
-    };
-
-    $scope.isTitleEmpty = function(str) {
+    $scope.isTitleEmpty = function (str) {
         if (str !== undefined && str.replace(/ |&nbsp;/g, '') !== "") {
             return false;
         }
         return true;
     };
 
-    $scope.isTextEmpty = function(str) {
+    $scope.isTextEmpty = function (str) {
         if (str !== undefined && str.replace(/<div class="ng-scope">|<\/div>|<br>|<p>|<\/p>|&nbsp;| /g, '') !== "") {
             return false;
         }
@@ -296,29 +287,29 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
     };
 
 
-    $scope.confirmRemoveSelectedEvents = function() {
+    $scope.confirmRemoveSelectedEvents = function () {
         $scope.display.confirmDeleteEvents = true;
     };
 
-    $scope.removeSelectedEvents = function() {
-        $scope.events.removeSelection(function(){
+    $scope.removeSelectedEvents = function () {
+        $scope.events.removeSelection(function () {
             $scope.display.confirmDeleteEvents = undefined;
         });
     };
 
-    $scope.cancelRemoveSubjects = function() {
+    $scope.cancelRemoveSubjects = function () {
         $scope.display.confirmDeleteEvents = undefined;
     };
 
-    $scope.resetEventImage = function(event) {
+    $scope.resetEventImage = function (event) {
         event.img = '';
     };
 
-    $scope.resetEventVideo = function(event) {
+    $scope.resetEventVideo = function (event) {
         event.video = '';
     };
 
-    $scope.switchDateFormat = function() {
+    $scope.switchDateFormat = function () {
         if ($scope.event.dateFormat == 'year') {
             $scope.event.startDate.newDate = $scope.event.startDate.years();
             $scope.event.endDate.newDate = $scope.event.endDate.years();
@@ -328,13 +319,13 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
         }
     };
 
-    $scope.resetEndDate = function() {
+    $scope.resetEndDate = function () {
         if (!$scope.event.enableEndDate) {
             $scope.event.endDate = undefined;
         }
     };
 
-    $scope.setDateYear = function(date) {
+    $scope.setDateYear = function (date) {
         if ($scope.event.dateFormat == 'month') {
             var splitted = date.newDate.split("/");
             date.month(parseInt(splitted[0]) - 1);
@@ -345,9 +336,9 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
     };
 
     // Sort
-    $scope.switchSortBy = function(predicate) {
+    $scope.switchSortBy = function (predicate) {
         if (predicate === $scope.sort.predicate) {
-            $scope.sort.reverse = ! $scope.sort.reverse;
+            $scope.sort.reverse = !$scope.sort.reverse;
         }
         else {
             $scope.sort.predicate = predicate;
@@ -355,7 +346,7 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
         }
     };
 
-    $scope.resetSort = function() {
+    $scope.resetSort = function () {
         $scope.sort.predicate = 'headline';
         $scope.sort.reverse = false;
     };
@@ -363,42 +354,21 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
     /**
      * Display date in French format
      */
-    $scope.formatDate = function(dateObject){
+    $scope.formatDate = function (dateObject) {
         return moment(dateObject.$date).lang(currentLanguage).calendar();
     };
 
     /**
      * Checks if a user is a manager
      */
-    $scope.canManageTimeline = function(timeline){
+    $scope.canManageTimeline = function (timeline) {
         return timeline.myRights.manage !== undefined;
     };
-
-
-    /**
-     * Update the search bar according server timelines
-     */
-    $scope.updateSearchBar = function() {
-        model.timelines.sync(function() {
-            $scope.searchbar.timelines = $scope.timelines.all.map(function(timeline) {
-                return {
-                    title : timeline.headline,
-                    _id : timeline._id,
-                    toString : function() {
-                                    return this.title;
-                               }
-                };
-            });
-        });
-    };
-
-    // Update search bar
-    $scope.updateSearchBar();
 
     /**
      * Opens a timeline from the search bar or the main page
      */
-    $scope.openTl = function(timelineId) {
+    $scope.openTl = function (timelineId) {
         window.location.hash = '/view/' + timelineId;
         $scope.selectedTimeline = true;
     };
@@ -407,8 +377,8 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
     /**
      * Retrieve the timeline thumbnail if there is one
      */
-    $scope.getTimelineThumbnail = function(timeline){
-        if(!timeline.icon || timeline.icon === ''){
+    $scope.getTimelineThumbnail = function (timeline) {
+        if (!timeline.icon || timeline.icon === '') {
             return '/img/illustrations/image-default.svg';
         }
         return timeline.icon + '?thumbnail=120x120';
