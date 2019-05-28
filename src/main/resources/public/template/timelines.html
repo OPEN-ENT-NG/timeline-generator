@@ -61,7 +61,7 @@
       </label>
       <label class="chip" ng-click="currentFolder.ressources.refreshFilters()"
         ng-class="{ selected: filters.shared }">
-        <i class="shared" tooltip="filters.sharedTimelines"></i>
+        <i class="ic-share" tooltip="filters.sharedTimelines"></i>
         <i18n>filters.sharedTimelines</i18n>
         <input type="checkbox" ng-model="filters.shared" />
       </label>
@@ -98,8 +98,7 @@
                 </em>
                 <br />
                 <div class="icons">
-                  <!-- Il faut revoir les conditions du ng-if -->
-                  <i class="shared inline" ng-if="timeline.shared.length > 0" tooltip="tooltip.shared"></i>
+                  <i class="ic-share inline" ng-if="timeline.shared.length > 0" tooltip="tooltip.shared"></i>
                   <i class="public" ng-if="timeline.visibility === 'PUBLIC'" tooltip="tooltip.public"></i>
                   <i class="manage" ng-if="timeline.myRights.manage" tooltip="tooltip.manager"></i>
                   <i class="edit" ng-if="!timeline.myRights.manage && timeline.myRights.contrib"
