@@ -121,11 +121,13 @@ export class Timeline extends Model<Timeline> implements Selectable, Shareable {
         await http.delete('/timelinegenerator/timeline/' + this._id);
     }
     async restore(){
-        this.trashed = false;
-        await this.save();
-        const shouldUnlink = await this.isParentTrashed();
-        if(shouldUnlink){
-            await this.unlinkParent();
+        if(this.owner.userId==model.me.userId || this.myRights.manage){
+            this.trashed = false;
+            await this.save();
+            const shouldUnlink = await this.isParentTrashed();
+            if(shouldUnlink){
+                await this.unlinkParent();
+            }
         }
     }
     async unlinkParent(){
@@ -146,9 +148,14 @@ export class Timeline extends Model<Timeline> implements Selectable, Shareable {
         return false;
     }
     async toTrash() {
-        this.trashed = true;
-        await this.save();
-        Folders.trash.sync();
+        if(this.owner.userId==model.me.userId || this.myRights.manage){
+            this.trashed = true;
+            await this.save();
+            Folders.trash.sync();
+        }else{
+            //shared ressources are moved to root
+            await this.unlinkParent();
+        }
     }
     async moveTo(target: Folder | string) {
         const origins = await Folders.findFoldersContaining(this);
