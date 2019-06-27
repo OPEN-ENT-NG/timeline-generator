@@ -243,7 +243,7 @@ export function LibraryDelegate($scope: LibraryControllerScope, $rootScope, $loc
     };
 
     $scope.restore = async () => {
-        await Folders.trash.restoreSelection();
+        await $scope.currentFolder.restoreSelection();
         $scope.$apply();
     };
 

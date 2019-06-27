@@ -4,6 +4,13 @@ import { Mix, Provider, Selection, Selectable, Eventer } from 'entcore-toolkit';
 import { _ } from 'entcore';
 import { Timeline, Timelines } from './timeline';
 
+//=== Utils
+function uniq<T> (arrArg : T[]) {
+    return arrArg.filter((elem, pos, arr) => {
+        return arr.indexOf(elem) == pos;
+    });
+}
+//
 export class BaseFolder implements Selectable {
     private _ressources: Timelines;
     selected: boolean;
@@ -166,6 +173,24 @@ class HierarchicalFolder extends BaseFolder {
     detachRessource(id: string) {
         this.ressourceIds = this.ressourceIds.filter(r => r != id);
     }
+
+    async restoreSelection(): Promise<void> {
+        //get folders and resources recursively
+        const uniqFolders: Folder[] = uniq(this.selection.filter(f=> f instanceof Folder)//only folders
+                                    .map(f => f as Folder)//cast to folder
+                                    );//return array
+        const uniqResources : Timeline[] = uniq(this.selection.filter(f=> f instanceof Timeline) as Timeline[]);
+        // restore folders FIRST (resource are unlink if parent still trashed)
+        for (let item of uniqFolders) {
+            await item.restore();
+        }
+        // restore resources
+        for (let item of uniqResources) {
+            await item.restore();
+            
+        }
+        await this.sync();
+    }
 }
 
 export class Folder extends HierarchicalFolder implements Shareable {
@@ -213,12 +238,35 @@ export class Folder extends HierarchicalFolder implements Shareable {
             ressourceIds: this.ressourceIds
         }
     }
-
+    async restore(){
+        this.trashed = false;
+        await this.save();
+        const ressources = await Folders.ressources();
+        const folders = await Folders.folders();
+        const parent = folders.find(f=>f._id==this.parentId);
+        const shouldUnlink = parent && parent.trashed;
+        if(shouldUnlink){
+            await this.moveTo("root")
+        }
+        //restore children
+        const children = folders.filter(f=>f.parentId==this._id);
+        for(let child of children){
+            await child.restore();
+        }
+        //restore attached ressources
+        const cRes = ressources.filter(res=>this.ressourceIds.indexOf(res._id)>-1); 
+        for(let res of cRes){
+            await res.restore();
+        }
+    }
     async toTrash(): Promise<void> {
         this.trashed = true;
         await this.ressources.toTrash();
-        await Folders.trash.sync();
         await this.saveChanges();
+        for(let child of this.children.all){
+            await child.toTrash();
+        }
+        await Folders.trash.sync();
         await this.sync();
     }
 
@@ -319,14 +367,6 @@ export class Trash extends HierarchicalFolder {
         this.ressources.deselectAll();
         this.children.deselectAll();
         await Folders.trash.sync();
-    }
-
-    async restoreSelection(): Promise<void> {
-        for (let item of this.selection) {
-            item.trashed = false;
-            await item.save();
-        }
-        await this.sync();
     }
 }
 

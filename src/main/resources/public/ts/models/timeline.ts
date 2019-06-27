@@ -120,6 +120,31 @@ export class Timeline extends Model<Timeline> implements Selectable, Shareable {
         Folders.unprovide(this);
         await http.delete('/timelinegenerator/timeline/' + this._id);
     }
+    async restore(){
+        this.trashed = false;
+        await this.save();
+        const shouldUnlink = await this.isParentTrashed();
+        if(shouldUnlink){
+            await this.unlinkParent();
+        }
+    }
+    async unlinkParent(){
+        const origins = await Folders.findFoldersContaining(this);
+        const promises = origins.map(async origin => {
+            origin.detachRessource(this._id);
+            await origin.save();
+        });
+        await Promise.all(promises);
+    }
+    async isParentTrashed(){
+        const origins = await Folders.findFoldersContaining(this);
+        for(let or of origins){
+            if(or.trashed){
+                return true;
+            }
+        }
+        return false;
+    }
     async toTrash() {
         this.trashed = true;
         await this.save();
