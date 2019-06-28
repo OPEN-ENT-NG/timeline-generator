@@ -3,7 +3,7 @@ import { timelineNamespace } from './models/model'
 import { LibraryDelegate, LibraryControllerScope } from './controllers/library';
 import { TimelineModel, EventModel, EventsModel, TimelinesModel } from './controllers/commons';
 import { Timeline as TimelineEntity } from './models/timeline';
-import { Folders, Folder } from './models/folder';
+import { Folders, Folder, Filters } from './models/folder';
 
 declare let currentLanguage: any;
 export interface TimelineGeneratorControllerScope {
@@ -187,6 +187,10 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
         if ($scope.currentFolder) {
             await $scope.currentFolder.sync();
         }
+        if(isNew){
+			Filters.mine = true;//enable filter to see the new scrapbook
+            $scope.currentFolder.ressources.refreshFilters();
+		}
         $scope.$apply();
     };
 
