@@ -19,9 +19,15 @@
 
 package net.atos.entng.timelinegenerator.controllers;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import com.mongodb.QueryBuilder;
+import fr.wseduc.mongodb.MongoQueryBuilder;
 import fr.wseduc.webutils.I18n;
+import io.vertx.core.json.JsonArray;
 import net.atos.entng.timelinegenerator.TimelineGenerator;
 
 import org.entcore.common.events.EventStore;
@@ -199,5 +205,33 @@ public class TimelineController extends MongoDbControllerHelper {
 		});
 	}
 
+	private void cleanFolders(String id, UserInfos user, List<String> recipientIds){
+		//owner style keep the reference to the ressource
+		JsonArray jsonRecipients = new JsonArray(recipientIds).add(user.getUserId());
+		JsonObject query = MongoQueryBuilder.build(QueryBuilder.start("ressourceIds").is(id).and("owner.userId").notIn(jsonRecipients));
+		JsonObject update = new JsonObject().put("$pull", new JsonObject().put("ressourceIds", new JsonObject().put("$nin",jsonRecipients)));
+		mongo.update("timelinegeneratorFolders", query, update, message -> {
+			JsonObject body = message.body();
+			if (!"ok".equals(body.getString("status"))) {
+				String err = body.getString("error", body.getString("message", "unknown cleanFolder Error"));
+				log.error("[cleanFolders] failed to clean folder because of: "+err);
+			}
+		});
+	}
+
+	public void doShareSucceed(HttpServerRequest request, String id, UserInfos user,JsonObject sharePayload, JsonObject result, boolean sendNotify){
+		super.doShareSucceed(request, id, user, sharePayload, result, sendNotify);
+		Set<String> userIds = sharePayload.getJsonObject("users").getMap().keySet();
+		Set<String> groupIds = sharePayload.getJsonObject("users").getMap().keySet();
+		UserUtils.getUserIdsForGroupIds(groupIds,user.getUserId(),this.eb, founded->{
+			if(founded.succeeded()){
+				List<String> userToKeep = new ArrayList<>(userIds);
+				userToKeep.addAll(founded.result());
+				cleanFolders(id, user, userToKeep);
+			}else{
+				log.error("[doShareSucceed] failed to found recipient because:",founded.cause());
+			}
+		});
+	}
 
 }
