@@ -27,11 +27,13 @@
             <side-panel class="zero-mobile" ng-if="selectedTimeline">
                 <container template="side-panel"></container>
             </side-panel>
-              <h1>
+            <app-title>  
+			  <h1>
                   <i class="timelinegenerator"></i>
                   <span ng-click="openMainPage()"><i18n>timelinegenerator.title</i18n></span>
                   <span subtitle ng-if="selectedTimeline.headline && selectedTimeline.headline.trim().length > 0"> > [[timeline.headline]]</span>
               </h1>
+			</app-title>
           </div>
           <div class="contextual-buttons three cell">
             <button ng-disabled="isTrashFolder()" workflow="timelinegenerator.create" ng-if="!timeline || !timeline._id" ng-click="newTimeline()" class="cell right-magnet">
