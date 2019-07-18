@@ -23,6 +23,9 @@ import net.atos.entng.timelinegenerator.controllers.EventController;
 import net.atos.entng.timelinegenerator.controllers.FoldersController;
 import net.atos.entng.timelinegenerator.controllers.TimelineController;
 import net.atos.entng.timelinegenerator.events.TimelineGeneratorSearchingEvents;
+import net.atos.entng.timelinegenerator.services.EventService;
+import net.atos.entng.timelinegenerator.services.TimelineService;
+import net.atos.entng.timelinegenerator.services.impl.DefaultTimelineService;
 import net.atos.entng.timelinegenerator.services.impl.EventServiceMongoImpl;
 
 import org.entcore.common.http.BaseServer;
@@ -57,7 +60,11 @@ public class TimelineGenerator extends BaseServer {
 			setSearchingEvents(new TimelineGeneratorSearchingEvents(new MongoDbSearchService(TIMELINE_GENERATOR_COLLECTION)));
 		}
 
-		addController(new TimelineController(TIMELINE_GENERATOR_COLLECTION));
+		final TimelineService timelineService = new DefaultTimelineService();
+		TimelineController timelineController = new TimelineController(TIMELINE_GENERATOR_COLLECTION);
+		timelineController.setTimelineService(timelineService);
+		timelineController.setEventService((EventService) eventService);
+		addController(timelineController);
 		addController(new EventController(TIMELINE_GENERATOR_EVENT_COLLECTION, eventService));
 		addController(new FoldersController("timelinegeneratorFolders"));
 	}
