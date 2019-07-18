@@ -30,6 +30,8 @@ import fr.wseduc.webutils.I18n;
 import io.vertx.core.json.JsonArray;
 import net.atos.entng.timelinegenerator.TimelineGenerator;
 
+import net.atos.entng.timelinegenerator.services.EventService;
+import net.atos.entng.timelinegenerator.services.TimelineService;
 import org.entcore.common.events.EventStore;
 import org.entcore.common.events.EventStoreFactory;
 import org.entcore.common.mongodb.MongoDbControllerHelper;
@@ -51,11 +53,16 @@ import fr.wseduc.security.ActionType;
 import fr.wseduc.security.SecuredAction;
 import fr.wseduc.webutils.request.RequestUtils;
 
+import static org.entcore.common.http.response.DefaultResponseHandler.leftToResponse;
+
 
 public class TimelineController extends MongoDbControllerHelper {
 
 	// Used for module "statistics"
 	private EventStore eventStore;
+	private TimelineService timelineService;
+	private EventService eventService;
+
 	private enum TimelineGeneratorEvent { ACCESS }
 
 
@@ -126,6 +133,37 @@ public class TimelineController extends MongoDbControllerHelper {
 	@SecuredAction(value = "timelinegenerator.manager", type = ActionType.RESOURCE)
 	public void deleteTimeline(HttpServerRequest request) {
 		delete(request);
+	}
+
+	@Get("/timeline/:id/print")
+	@SecuredAction(value = "timelinegenerator.read", type = ActionType.RESOURCE)
+	public void print(HttpServerRequest request) {
+		final String id = request.params().get("id");
+		UserUtils.getUserInfos(eb, request, user -> {
+			if (user != null) {
+				timelineService.retrieve(id, user, eTimeline -> {
+					if (eTimeline.isRight()) {
+						eventService.list(id, user, eEvents -> {
+							if (eEvents.isRight()) {
+								final JsonObject timelineWithEvents =
+										eTimeline.right().getValue().put("events", eEvents.right().getValue());
+								if ("json".equals(request.params().get("format"))) {
+									renderJson(request, timelineWithEvents);
+								} else {
+									renderView(request, timelineWithEvents, "print.html", null);
+								}
+							} else {
+								leftToResponse(request, eEvents.left());
+							}
+						});
+					} else {
+						leftToResponse(request, eTimeline.left());
+					}
+				});
+			} else {
+				unauthorized(request, "invalid.user");
+			}
+		});
 	}
 
 	@Get("/share/json/:id")
@@ -234,6 +272,14 @@ public class TimelineController extends MongoDbControllerHelper {
 				}
 			});
 		}
+	}
+
+	public void setTimelineService(TimelineService timelineService) {
+		this.timelineService = timelineService;
+	}
+
+	public void setEventService(EventService eventService) {
+		this.eventService = eventService;
 	}
 
 }
