@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ng-controller="TimelineGeneratorController"  ng-class="{print: printMode}">
 
   <head>
 	<title>{{#i18n}}timelinegenerator.title{{/i18n}}</title>
@@ -16,8 +16,8 @@
     <script src="/timelinegenerator/public/dist/application.js" type="text/javascript"></script>
   </head>
 
-  <body ng-controller="TimelineGeneratorController">
-    <portal ng-if="!notFound">
+  <body>
+    <portal ng-if="!notFound && !printMode">
         <infotip name="timelinegenerator-no-mobile" class="warning zero-desktop">
           <strong><i18n>warning.no.mobile</i18n></strong>
         </infotip>
@@ -48,6 +48,9 @@
     		<container template="timelines" class="flexible navigation" ng-class="{ 'empty-neighbour': template.isEmpty('main'), 'filled-neighbour': !template.isEmpty('main') }"></container>
       </section>
     </portal>
+    <div ng-if="printMode">
+        <container template="timelines" class="flexible navigation" ng-class="{ 'empty-neighbour': template.isEmpty('main'), 'filled-neighbour': !template.isEmpty('main') }"></container>
+    </div>
     <div ng-if="notFound">
       <div ng-if="!me.userId" class="absolute">
           <default-styles>
