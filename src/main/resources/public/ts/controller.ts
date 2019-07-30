@@ -8,6 +8,7 @@ import { Folders, Folder, Filters } from './models/folder';
 declare let currentLanguage: any;
 export interface TimelineGeneratorControllerScope {
     notFound: boolean
+    printMode: boolean
     template: typeof template
     timelines: TimelinesModel
     model: typeof timelineNamespace
@@ -32,6 +33,7 @@ export interface TimelineGeneratorControllerScope {
     openMainPage(): void
     newTimeline(): void;
     openTimelineViewer(timeline: TimelineModel): void
+    openTimelinePrinter(timeline: TimelineModel): void
     openTimeline(timeline: TimelineModel): void
     newEvent(): void
     setEventMediaType(event: EventModel): void
@@ -68,6 +70,7 @@ export interface TimelineGeneratorControllerScopeWithDelegate extends TimelineGe
 export const timelineGeneratorController = ng.controller('TimelineGeneratorController', ['$scope', 'model', 'route', '$rootScope', '$location', ($scope: TimelineGeneratorControllerScopeWithDelegate, model, route, $rootScope, $location) => {
     $scope.notFound = false;
     $scope.template = template;
+    $scope.printMode = false;
     $scope.model = timelineNamespace;
     $scope.display = {};
     $scope.me = model.me;
@@ -101,6 +104,20 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
                 $scope.openMainPage();
             })
             $scope.display.isEditingInfos = false;
+        },
+        print: function (params) {
+            template.open('timelines', 'timelines');
+            const _timeline = new TimelineEntity({ _id: params.timelineId as string } as any);
+            _timeline.sync().then(async () => {
+                $scope.timeline = new timelineNamespace.Timeline(_timeline);
+                $scope.timeline.behaviours()
+                $scope.notFound = false;
+                $scope.printMode = true;
+                $scope.openTimelinePrinter($scope.timeline);
+            }).catch(e => {
+                $scope.notFound = true;
+                $scope.openMainPage();
+            })
         },
         goToEvent: function (params) {
         },
@@ -141,6 +158,17 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
             template.open('timelines', 'read-timeline');
         });
         $scope.display.isEditingInfos = false;
+    };
+
+    $scope.openTimelinePrinter = function (timeline) {
+        $scope.timeline = timeline;
+        $scope.events = timeline.events;
+        $scope.previewMode = true;
+        Behaviours.applicationsBehaviours.timelinegenerator.sniplets.timelines.controller.source = timeline;
+        timeline.open(function () {
+            template.close('main');
+            template.open('timelines', 'print-timeline');
+        });
     };
 
     $scope.newTimeline = function () {

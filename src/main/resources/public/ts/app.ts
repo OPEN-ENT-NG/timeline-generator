@@ -6,6 +6,8 @@ import { datePickerTimeline } from './additional'
 routes.define(function($routeProvider) {
     $routeProvider.when('/view/:timelineId', {
         action : 'goToTimeline'
+    }).when('/print/:timelineId', {
+        action : 'print'
     }).when('/timeline/:timelineId/:eventId', {
         action : 'goToEvent'
     }).otherwise({

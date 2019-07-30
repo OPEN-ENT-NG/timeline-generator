@@ -29,6 +29,8 @@ export interface LibraryControllerScope {
     restore(): void;
     move(): void;
     open(timeline: Timeline): void;
+    print(timeline: Timeline): void;
+    isTimeline(item: Timeline | Folder): item is Timeline;
     openRoot(): void;
     openTrash(): void;
     lightbox(name: string, data?: any): void;
@@ -191,6 +193,15 @@ export function LibraryDelegate($scope: LibraryControllerScope, $rootScope, $loc
         else {
             $scope.openFolder(item);
         }
+    };
+
+    $scope.isTimeline = (item: Timeline | Folder): item is Timeline => {
+        return item instanceof Timeline;
+    };
+
+    $scope.print = (item: Timeline) => {
+        $location.path('/print');
+        window.open(`/timelinegenerator#/print/${item._id}/`, '_blank');
     };
 
     $scope.dropTo = async (targetItem: string | Folder, $originalEvent) => {

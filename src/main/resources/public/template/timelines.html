@@ -198,6 +198,13 @@
         <i18n>open</i18n>
       </button>
     </div>
+
+    <div>
+      <button ng-click="print(currentFolder.selection[0])" ng-if="hasOneElement() && isTimeline(currentFolder.selection[0])">
+        <i18n>print</i18n>
+      </button>
+    </div>
+
     <div>
       <!-- Exclusive to folders-->
       <button ng-click="lightbox('renameFolder')" ng-if="hasOneFolder()">
