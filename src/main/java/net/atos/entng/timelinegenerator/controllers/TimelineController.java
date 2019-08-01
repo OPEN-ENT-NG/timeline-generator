@@ -32,8 +32,11 @@ import net.atos.entng.timelinegenerator.TimelineGenerator;
 
 import net.atos.entng.timelinegenerator.services.EventService;
 import net.atos.entng.timelinegenerator.services.TimelineService;
+import org.entcore.common.appregistry.LibraryUtils;
 import org.entcore.common.events.EventStore;
 import org.entcore.common.events.EventStoreFactory;
+import org.entcore.common.http.filter.OwnerOnly;
+import org.entcore.common.http.filter.ResourceFilter;
 import org.entcore.common.mongodb.MongoDbControllerHelper;
 import org.entcore.common.user.UserInfos;
 import org.entcore.common.user.UserUtils;
@@ -164,6 +167,12 @@ public class TimelineController extends MongoDbControllerHelper {
 				unauthorized(request, "invalid.user");
 			}
 		});
+	}
+	@Post("/:id/library")
+	@ResourceFilter(OwnerOnly.class)
+	@SecuredAction("timelinegenerator.publish")
+	public void publishToLibrary(final HttpServerRequest request) {
+		LibraryUtils.share(eb, request);
 	}
 
 	@Get("/share/json/:id")
