@@ -223,6 +223,11 @@
           <i18n>properties</i18n>
         </button>
       </resource-right>
+      <resource-right name="manage" resource="currentFolder.selection">
+        <button class="zero-mobile" workflow="timelinegenerator.publish" library item="[[currentFolder.selection[0]._id]]" ng-if="hasOneElement()">
+          <i18n>publish.to.bpr</i18n>
+        </button>
+      </resource-right>
     </div>
     <div>
       <!-- Both -->

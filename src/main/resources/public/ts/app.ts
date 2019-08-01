@@ -3,6 +3,12 @@ import { timelineNamespace } from './models/model'
 import { timelineGeneratorController } from './controller'
 import { datePickerTimeline } from './additional'
 
+ng.configs.push(ng.config(['libraryServiceProvider', function(libraryServiceProvider) {
+    libraryServiceProvider.setApplicationShareToLibraryEndpointFn(function(id: string) {
+        return `/timelinegenerator/${id}/library`;
+    });
+}]));
+
 routes.define(function($routeProvider) {
     $routeProvider.when('/view/:timelineId', {
         action : 'goToTimeline'
