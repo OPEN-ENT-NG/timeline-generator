@@ -7,9 +7,9 @@
   <body>
     <h1 class="text upper-title app-title">
       <i class="timelinegenerator"></i>
-      <i18n>timelinegenerator.title</i18n>
+      [[timeline.headline]]
+      <div ng-if="timeline.text" class="small-text left-spacing-twice horizontal-spacing" ng-bind-html="timeline.text"></div>
     </h1>
-    <h2>[[timeline.headline]] - <span ng-if="timeline.text" class="small-text" ng-bind-html="timeline.text"></span></h2>
 
     <section class="print--timeline top-spacing-four">
       <article class="clearfix" ng-repeat="ev in timeline.events.all">
