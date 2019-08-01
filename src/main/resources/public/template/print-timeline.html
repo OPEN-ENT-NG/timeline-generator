@@ -1,5 +1,23 @@
-<h1>[[timeline.headline]]</h1>
+<!DOCTYPE html>
+<html class="print">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <h1 class="text upper-title app-title">
+      <i class="timelinegenerator"></i>
+      <i18n>timelinegenerator.title</i18n>
+    </h1>
+    <h2>[[timeline.headline]] - <span ng-if="timeline.text" class="small-text" ng-bind-html="timeline.text"></span></h2>
 
-<ul>
-    <li ng-repeat="ev in timeline.events.all">[[ev.headline]]: <img ng-src="[[ev.img]]"/></li>
-</ul>
+    <section class="print--timeline top-spacing-four">
+      <article class="clearfix" ng-repeat="ev in timeline.events.all">
+        <h4>[[ev.startDate]] <span ng-if="">- [[ev.endDate]]</span></h4>
+        <h3>[[ev.headline]]</h3>
+        <img ng-if="ev.img" ng-src="[[ev.img]]"/>
+        <div ng-bind-html="ev.text"></div>
+      </article>
+    </section>
+  </body>
+</html>
