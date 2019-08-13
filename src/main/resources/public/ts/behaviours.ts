@@ -49,7 +49,7 @@ let timelineGeneratorBehaviours = {
 		createFolder:'net.atos.entng.timelinegenerator.controllers.FoldersController|add',
         create: 'net.atos.entng.timelinegenerator.controllers.TimelineController|createTimeline',
         view: 'net.atos.entng.timelinegenerator.controllers.TimelineController|view',
-        publish: 'net.atos.entng.timelinegenerator.controllers.TimelineController|publishToLibrary'
+        publish: 'net.atos.entng.timelinegenerator.controllers.TimelineController|publish'
     },
 	viewRights: [ 'net-atos-entng-timelinegenerator-controllers-TimelineController|view' ]
 };
