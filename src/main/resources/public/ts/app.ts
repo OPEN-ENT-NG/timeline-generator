@@ -1,29 +1,35 @@
-import { routes, ng, model, http,  Behaviours, _ } from 'entcore'
-import { timelineNamespace } from './models/model'
-import { timelineGeneratorController } from './controller'
-import { datePickerTimeline } from './additional'
+import { Behaviours, model, ng, routes } from 'entcore';
+import { timelineGeneratorController } from './controller';
+import { datePickerTimeline } from './additional';
+import { LibraryResourceInformation, LibraryServiceProvider } from "entcore/types/src/ts/library/library.service";
+import { Timeline } from "./models/timeline";
 
-ng.configs.push(ng.config(['libraryServiceProvider', function(libraryServiceProvider) {
-    libraryServiceProvider.setApplicationShareToLibraryEndpointFn(function(id: string) {
+ng.configs.push(ng.config(['libraryServiceProvider', function (libraryServiceProvider: LibraryServiceProvider<Timeline>) {
+    libraryServiceProvider.setPublishUrlGetterFromId(function (id: string) {
         return `/timelinegenerator/${id}/library`;
     });
+    libraryServiceProvider.setInvokableResourceInformationGetterFromResource(function () {
+        return function (resource: Timeline): { id: string, resourceInformation: LibraryResourceInformation } {
+            return {id: resource._id, resourceInformation: {title: resource.title, cover: resource.icon}};
+        };
+    })
 }]));
 
-routes.define(function($routeProvider) {
+routes.define(function ($routeProvider) {
     $routeProvider.when('/view/:timelineId', {
-        action : 'goToTimeline'
+        action: 'goToTimeline'
     }).when('/print/:timelineId', {
-        action : 'print'
+        action: 'print'
     }).when('/timeline/:timelineId/:eventId', {
-        action : 'goToEvent'
+        action: 'goToEvent'
     }).otherwise({
-        action : 'mainPage'
+        action: 'mainPage'
     });
 });
 
 ng.controllers.push(timelineGeneratorController);
 ng.directives.push(datePickerTimeline);
 
-model.build = function(){
-	this.makeModels(Behaviours.applicationsBehaviours.timelinegenerator.timelineNamespace);
+model.build = function () {
+    this.makeModels(Behaviours.applicationsBehaviours.timelinegenerator.timelineNamespace);
 };
