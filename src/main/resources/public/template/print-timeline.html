@@ -12,8 +12,11 @@
     </h1>
 
     <section class="print--timeline top-spacing-four">
-      <article class="clearfix" ng-repeat="ev in timeline.events.all">
-        <h4>[[ev.startDate]] <span ng-if="">- [[ev.endDate]]</span></h4>
+      <article class="clearfix" ng-repeat="ev in timeline.events.all | orderBy: 'startDate'">
+
+        <h4 ng-if="ev.dateFormat == 'year'">[[moment(ev.startDate).years()]]<span ng-if="ev.endDate"> - [[moment(ev.endDate).years()]]</span></h4>
+        <h4 ng-if="ev.dateFormat == 'month'">[[moment(ev.startDate).format('MM')]]/[[moment(ev.startDate).years()]]<span ng-if="ev.endDate"> - [[moment(ev.endDate).format('MM')]]/[[moment(ev.endDate).years()]]</span></h4>
+        <h4 ng-if="ev.dateFormat == 'day'">[[ev.startDate | date:'dd/MM/yyyy']]<span ng-if="ev.endDate"> - [[ev.endDate | date:'dd/MM/yyyy']]</span> </h4>
         <h3>[[ev.headline]]</h3>
         <img ng-if="ev.img" ng-src="[[ev.img]]"/>
         <div ng-bind-html="ev.text"></div>
