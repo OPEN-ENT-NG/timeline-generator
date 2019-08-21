@@ -14,6 +14,9 @@ ng.configs.push(ng.config(['libraryServiceProvider', function (libraryServicePro
         };
     })
 }]));
+ng.configs.push(ng.config(['$sceProvider', function ($sceProvider: any) {
+    $sceProvider.enabled(false);
+}]));
 
 routes.define(function ($routeProvider) {
     $routeProvider.when('/view/:timelineId', {
