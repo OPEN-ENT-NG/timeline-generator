@@ -13,6 +13,7 @@ export interface TimelineGeneratorControllerScope {
     model: typeof timelineNamespace
     display: {
         confirmDeleteEvents?: boolean
+        isEditingInfos?: boolean
     }
     me: any
     date: typeof moment
@@ -99,11 +100,13 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
                 $scope.notFound = true;
                 $scope.openMainPage();
             })
+            $scope.display.isEditingInfos = false;
         },
         goToEvent: function (params) {
         },
         mainPage: function (params) {
             template.open('timelines', 'timelines');
+            $scope.display.isEditingInfos = false;
         }
     });
 
@@ -113,6 +116,7 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
         template.close('main');
         template.open('timelines', 'timelines');
         window.location.hash = "";
+        $scope.display.isEditingInfos = false;
     };
 
     $scope.openTimeline = function (timeline) {
@@ -124,6 +128,7 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
             template.open('timelines', 'events');
             $scope.$apply();
         });
+        $scope.display.isEditingInfos = false;
     };
 
     $scope.openTimelineViewer = function (timeline) {
@@ -135,6 +140,7 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
             template.close('main');
             template.open('timelines', 'read-timeline');
         });
+        $scope.display.isEditingInfos = false;
     };
 
     $scope.newTimeline = function () {
@@ -142,6 +148,7 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
         template.close('main');
         template.open('timelines', 'edit-timeline');
         $scope.selectedTimeline = true;
+        $scope.display.isEditingInfos = false;
     };
 
     $scope.newEvent = function () {
@@ -151,6 +158,7 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
         $scope.event.endDate = moment();
         $scope.setEventMediaType($scope.event);
         template.open('timelines', 'edit-event');
+        $scope.display.isEditingInfos = false;
     };
 
     $scope.addEvent = function () {
@@ -172,6 +180,7 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
                 $scope.openTimeline($scope.timeline);
             }
         });
+        $scope.display.isEditingInfos = false;
     };
 
     $scope.saveTimelineEdit = async function () {
@@ -225,6 +234,7 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
         $scope.timeline = undefined;
         template.close('main');
         template.open('timelines', 'timelines');
+        $scope.display.isEditingInfos = false;
     };
 
     $scope.editTimeline = function () {
@@ -232,6 +242,7 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
         $scope.timeline = new timelineNamespace.Timeline(json);
         template.open('timelines', 'edit-timeline');
         $scope.selectedTimeline = true;
+        $scope.display.isEditingInfos = true;
     };
 
     $scope.editEvent = function (timelineEvent, event) {
@@ -260,6 +271,7 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
         $scope.setEventMediaType($scope.event);
         event && event.stopPropagation();
         template.open('timelines', 'edit-event');
+        $scope.display.isEditingInfos = false;
     };
 
     $scope.setEventMediaType = function (event) {

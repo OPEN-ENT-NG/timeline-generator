@@ -3,6 +3,7 @@ import { Rights, Shareable, model, idiom } from 'entcore';
 import { Mix, Provider, Selection, Selectable, Eventer } from 'entcore-toolkit';
 import { _ } from 'entcore';
 import { Timeline, Timelines } from './timeline';
+import { Subject } from 'rxjs';
 
 //=== Utils
 function uniq<T> (arrArg : T[]) {
@@ -376,6 +377,15 @@ export class Trash extends HierarchicalFolder {
 export class Folders {
     private static _ressourceProvider: Provider<Timeline>;
     private static _folderProvider: Provider<Folder>;
+
+    private static cacheLength: {
+        ressource: number,
+        folders: number
+    } = {
+            ressource: 0,
+            folders: 0
+        }
+
     static get ressourceProvider() {
         if (Folders._ressourceProvider == null) {
             Folders._ressourceProvider = new Provider<Timeline>('/timelinegenerator/timelines', Timeline);
@@ -401,11 +411,16 @@ export class Folders {
             ressources = await this.ressourceProvider.data();
         }
 
+        Folders.cacheLength.ressource = ressources.length;
+        Folders.onChange.next(!ressources.length && !Folders.cacheLength.folders); // ICI
+
         return ressources;
     }
 
     static async folders(): Promise<Folder[]> {
         let folders: Folder[] = await this.folderProvider.data();
+        Folders.cacheLength.folders = folders.length;
+        Folders.onChange.next(!folders.length && !Folders.cacheLength.ressource); // ICI
         return folders;
     }
 
@@ -436,6 +451,7 @@ export class Folders {
 
     static root: Root = new Root();
     static trash: Trash = new Trash();
+    static onChange = new Subject();
 }
 
 export class Filters {

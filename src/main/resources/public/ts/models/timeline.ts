@@ -113,12 +113,15 @@ export class Timeline extends Model<Timeline> implements Selectable, Shareable {
             Folders.root.ressources.all.push(this);
             Folders.root.ressources.refreshFilters();
             Folder.eventer.trigger('refresh');
+
+            Folders.onChange.next(!((await Folders.ressources()).length || (await Folders.folders()).length)); // ICI
         }
         Timeline.eventer.trigger('save');
     }
     async  remove() {
         Folders.unprovide(this);
         await http.delete('/timelinegenerator/timeline/' + this._id);
+        Folders.onChange.next(!((await Folders.ressources()).length || (await Folders.folders()).length)); // ICI
     }
     async restore(){
         if(this.owner.userId==model.me.userId || this.myRights.manage){

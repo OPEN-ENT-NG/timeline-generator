@@ -14,7 +14,7 @@
   </div>
 </script>
 <!--TREE AND CONTENT-->
-<div class="row rigid-grid" workflow="timelinegenerator.view">
+<div class="row rigid-grid" workflow="timelinegenerator.view" ng-if="!empty">
   <section class="four cell">
     <div class="margin-two row">
       <input type="search" class="eleven cell" i18n-placeholder="search" ng-model="displayLib.searchTimelines" />
@@ -52,7 +52,7 @@
   </section>
   <section class="margin-four">
     <!--FILTERS-->
-    <div class="twelve cell chips">
+    <div class="twelve cell chips" ng-if="!empty">
       <label class="chip" ng-click="currentFolder.ressources.refreshFilters()"
         ng-class="{ selected: filters.mine }">
         <i class="mine" tooltip="filters.mine"></i>
@@ -65,6 +65,38 @@
         <i18n>filters.sharedTimelines</i18n>
         <input type="checkbox" ng-model="filters.shared" />
       </label>
+      <!-- Empty screen Création -->
+      <div class="twelve emptyscreen" ng-if="!isTrashFolder() && hasFiltersActive() && !currentFolder.ressources.all.length && !currentFolder.children.all.length" workflow="timelinegenerator.create">
+        <h2 class="emptyscreen-header"><i18n>empty.timeline.creation.title</i18n></h2>
+        <img class="emptyscreen-image__mini" src="/timelinegenerator/public/img/empty-timeline.svg">
+        <p class="emptyscreen-footer">
+          <i18n>empty.timeline.creation</i18n>
+        </p>
+        <a class="button" ng-disabled="isTrashFolder()" workflow="timelinegenerator.create" ng-if="!timeline || !timeline._id" ng-click="newTimeline()"><i18n>timelinegenerator.timeline.new</i18n></a>
+      </div>
+      <!-- Empty screen Consultation -->
+      <div class="twelve emptyscreen" ng-if="!isTrashFolder() && hasFiltersActive() && !currentFolder.ressources.all.length && !currentFolder.children.all.length" workflow-not="timelinegenerator.create">
+        <h2 class="emptyscreen-header"><i18n>empty.timeline.consultation.title</i18n></h2>
+        <img class="emptyscreen-image__mini" src="/timelinegenerator/public/img/empty-timeline.svg">
+        <p class="emptyscreen-footer">
+          <i18n>empty.timeline.consultation</i18n>
+        </p>
+      </div>
+      <!-- Si les filtres sont tous désactivés -->
+      <div class="emptyscreen" ng-if="!display.isEditingInfos && !empty && !hasFiltersActive()">
+        <h2 class="emptyscreen-header"><i18n>empty.filters.title</i18n></h2>
+        <img class="emptyscreen-image__mini" src="/assets/themes/entcore-css-lib/images/empty-filters.svg">
+        <p class="emptyscreen-footer">
+          <i18n>empty.filters</i18n>
+        </p>
+      </div>
+      <!-- Si la corbeille est vide -->
+      <div class="emptyscreen" ng-if="hasFiltersActive() && !display.isEditingInfos && !empty && isTrashFolder() && !currentFolder.ressources.all.length && !currentFolder.children.all.length">
+        <img class="emptyscreen-image" src="/assets/themes/entcore-css-lib/images/empty-trash.svg">
+        <p class="emptyscreen-footer">
+          <i18n>empty.trash2</i18n>
+        </p>
+      </div>
     </div>
     <!--CONTENT-->
     <div class="fallen dominos">
@@ -113,6 +145,36 @@
     </div>
   </section>
 </div>
+
+<!-- Empty screen Création -->
+<div class="twelve emptyscreen"
+  ng-if="empty"
+  workflow="timelinegenerator.create">
+  <h2 class="emptyscreen-header">
+    <i18n>empty.timeline.creation.title</i18n>
+  </h2>
+  <img class="emptyscreen-image__mini" src="/timelinegenerator/public/img/empty-timeline.svg">
+  <p class="emptyscreen-footer">
+    <i18n>empty.timeline.creation</i18n>
+  </p>
+  <a class="button" ng-disabled="isTrashFolder() && !empty" workflow="timelinegenerator.create" ng-if="!timeline || !timeline._id"
+    ng-click="newTimeline()">
+    <i18n>timelinegenerator.timeline.new</i18n>
+  </a>
+</div>
+<!-- Empty screen Consultation -->
+<div class="twelve emptyscreen"
+  ng-if="empty"
+  workflow-not="timelinegenerator.create">
+  <h2 class="emptyscreen-header">
+    <i18n>empty.timeline.consultation.title</i18n>
+  </h2>
+  <img class="emptyscreen-image__mini" src="/timelinegenerator/public/img/empty-timeline.svg">
+  <p class="emptyscreen-footer">
+    <i18n>empty.timeline.consultation</i18n>
+  </p>
+</div>
+
 <!--TOASTER TRASH-->
 <div class="toggle-buttons" ng-if="isTrashFolder()" ng-class="{ hide: !hasSelectedElements() }">
   <div class="row toggle">

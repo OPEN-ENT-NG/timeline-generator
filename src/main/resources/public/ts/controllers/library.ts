@@ -47,6 +47,8 @@ export interface LibraryControllerScope {
     dropTo(targetItem: string | Folder, $originalEvent): void;
     removeTimeline(): void;
     isTrashFolder(): boolean;
+    hasFiltersActive(): boolean;
+    empty: boolean;
     //
     $apply: any
 }
@@ -256,4 +258,14 @@ export function LibraryDelegate($scope: LibraryControllerScope, $rootScope, $loc
         $scope.displayLib.data = data;
         $scope.displayLib.lightbox[lightboxName] = false;
     };
+
+    $scope.hasFiltersActive = () => {
+        return $scope.filters.mine || $scope.filters.shared
+    }
+
+    $scope.empty = true;
+    Folders.onChange.subscribe((isEmpty: boolean) => {
+        $scope.empty = isEmpty;
+    });
+
 }
