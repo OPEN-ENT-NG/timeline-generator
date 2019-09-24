@@ -5,9 +5,6 @@ import { LibraryResourceInformation, LibraryServiceProvider } from "entcore/type
 import { Timeline } from "./models/timeline";
 
 ng.configs.push(ng.config(['libraryServiceProvider', function (libraryServiceProvider: LibraryServiceProvider<Timeline>) {
-    libraryServiceProvider.setPublishUrlGetterFromId(function (id: string) {
-        return `/timelinegenerator/${id}/library`;
-    });
     libraryServiceProvider.setInvokableResourceInformationGetterFromResource(function () {
         return function (resource: Timeline): { id: string, resourceInformation: LibraryResourceInformation } {
             return {id: resource._id, resourceInformation: {title: resource.title, cover: resource.icon}};
