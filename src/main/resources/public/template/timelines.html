@@ -198,13 +198,6 @@
         <i18n>open</i18n>
       </button>
     </div>
-
-    <div>
-      <button ng-click="print(currentFolder.selection[0])" ng-if="hasOneElement() && isTimeline(currentFolder.selection[0])">
-        <i18n>print</i18n>
-      </button>
-    </div>
-
     <div>
       <!-- Exclusive to folders-->
       <button ng-click="lightbox('renameFolder')" ng-if="hasOneFolder()">
@@ -214,13 +207,13 @@
     <div ng-if="!hasSelectedFolders()">
       <!-- Exclusive to timelines-->
       <resource-right name="manage" resource="currentFolder.selection">
-        <button class="zero-mobile" ng-click="shareTimeline()">
-          <i18n>share</i18n>
+        <button class="zero-mobile" ng-click="editTimeline()" ng-if="hasOneElement()">
+          <i18n>properties</i18n>
         </button>
       </resource-right>
       <resource-right name="manage" resource="currentFolder.selection">
-        <button class="zero-mobile" ng-click="editTimeline()" ng-if="hasOneElement()">
-          <i18n>properties</i18n>
+        <button class="zero-mobile" ng-click="shareTimeline()">
+          <i18n>share</i18n>
         </button>
       </resource-right>
       <resource-right name="manage" resource="currentFolder.selection">
@@ -233,6 +226,11 @@
       <!-- Both -->
       <button ng-click="lightbox('move')" workflow="timelinegenerator.createFolder">
         <i18n>move</i18n>
+      </button>
+    </div>
+    <div>
+      <button ng-click="print(currentFolder.selection[0])" ng-if="hasOneElement() && isTimeline(currentFolder.selection[0])">
+        <i18n>print</i18n>
       </button>
     </div>
     <div>
