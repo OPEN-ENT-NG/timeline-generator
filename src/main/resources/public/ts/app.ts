@@ -1,16 +1,26 @@
 import { Behaviours, model, ng, routes } from 'entcore';
 import { timelineGeneratorController } from './controller';
 import { datePickerTimeline } from './additional';
-import { LibraryResourceInformation, LibraryServiceProvider } from "entcore/types/src/ts/library/library.service";
+import { LibraryServiceProvider } from "entcore/types/src/ts/library/library.service";
 import { Timeline } from "./models/timeline";
+import { IdAndLibraryResourceInformation } from 'entcore/types/src/ts/library/library.types';
 
 ng.configs.push(ng.config(['libraryServiceProvider', function (libraryServiceProvider: LibraryServiceProvider<Timeline>) {
     libraryServiceProvider.setInvokableResourceInformationGetterFromResource(function () {
-        return function (resource: Timeline): { id: string, resourceInformation: LibraryResourceInformation } {
-            return {id: resource._id, resourceInformation: {title: resource.title, cover: resource.icon}};
+        return function (resource: Timeline): IdAndLibraryResourceInformation {
+            return {
+                id: resource._id, 
+                resourceInformation: {
+                    title: resource.title, 
+                    cover: resource.icon,
+                    application: "TimelineGenerator",
+                    pdfUri: `/timelinegenerator#/print/${resource._id}`
+                }
+            };
         };
-    })
+    });
 }]));
+
 ng.configs.push(ng.config(['$sceProvider', function ($sceProvider: any) {
     $sceProvider.enabled(false);
 }]));
