@@ -21,6 +21,7 @@ package net.atos.entng.timelinegenerator;
 
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Vertx;
+import io.vertx.core.eventbus.Message;
 import org.entcore.common.mongodb.MongoDbResult;
 import org.entcore.common.service.impl.MongoDbRepositoryEvents;
 import io.vertx.core.Handler;
@@ -37,13 +38,18 @@ import fr.wseduc.webutils.Either;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 public class TimelineGeneratorRepositoryEvents extends MongoDbRepositoryEvents {
 
     public TimelineGeneratorRepositoryEvents(Vertx vertx) {
         super(vertx);
+
+        this.collectionNameToImportPrefixMap.put(TimelineGenerator.TIMELINE_GENERATOR_COLLECTION, "timeline_");
+        this.collectionNameToImportPrefixMap.put(TimelineGenerator.TIMELINE_GENERATOR_EVENT_COLLECTION, "event_");
     }
 
     protected void exportFiles(final JsonArray results, String exportPath, Set<String> usedFileName,
@@ -76,6 +82,89 @@ public class TimelineGeneratorRepositoryEvents extends MongoDbRepositoryEvents {
                 }
             });
         }
+    }
+
+    @Override
+    public void exportResources(JsonArray resourcesIds, String exportId, String userId, JsonArray groups, String exportPath,
+                                String locale, String host, Handler<Boolean> handler) {
+
+        QueryBuilder findByAuthor = QueryBuilder.start("owner.userId").is(userId);
+        QueryBuilder findByShared = QueryBuilder.start().or(
+                QueryBuilder.start("shared.userId").is(userId).get(),
+                QueryBuilder.start("shared.groupId").in(groups).get()
+        );
+        QueryBuilder findByAuthorOrShared = QueryBuilder.start().or(findByAuthor.get(),findByShared.get());
+
+        JsonObject query;
+
+        if(resourcesIds == null)
+            query = MongoQueryBuilder.build(findByAuthorOrShared);
+        else {
+            QueryBuilder limitToResources = findByAuthorOrShared.and(
+                    QueryBuilder.start("_id").in(resourcesIds).get()
+            );
+            query = MongoQueryBuilder.build(limitToResources);
+        }
+
+        final AtomicBoolean exported = new AtomicBoolean(false);
+
+        Map<String, String> prefixMap = this.collectionNameToImportPrefixMap;
+
+        mongo.find(TimelineGenerator.TIMELINE_GENERATOR_COLLECTION, query, new Handler<Message<JsonObject>>() {
+            @Override
+            public void handle(Message<JsonObject> event) {
+                JsonArray results = event.body().getJsonArray("results");
+                if ("ok".equals(event.body().getString("status")) && results != null) {
+                    results.forEach(elem -> {
+                        JsonObject timeline = ((JsonObject) elem);
+                        timeline.put("headline", prefixMap.get(TimelineGenerator.TIMELINE_GENERATOR_COLLECTION) + timeline.getString("headline"));
+                    });
+
+                    final Set<String> ids = results.stream().map(res -> ((JsonObject)res).getString("_id")).collect(Collectors.toSet());
+                    QueryBuilder findByTimelineId = QueryBuilder.start("timeline").in(ids);
+                    JsonObject query2 = MongoQueryBuilder.build(findByTimelineId);
+
+                    mongo.find(TimelineGenerator.TIMELINE_GENERATOR_EVENT_COLLECTION, query2, new Handler<Message<JsonObject>>() {
+                        @Override
+                        public void handle(Message<JsonObject> event2) {
+                            JsonArray results2 = event2.body().getJsonArray("results");
+                            if ("ok".equals(event2.body().getString("status")) && results2 != null) {
+                                results2.forEach(elem ->
+                                {
+                                    JsonObject event = ((JsonObject) elem);
+                                    event.put("headline", prefixMap.get(TimelineGenerator.TIMELINE_GENERATOR_EVENT_COLLECTION) + event.getString("headline"));
+                                });
+
+                                createExportDirectory(exportPath, locale, new Handler<String>() {
+                                    @Override
+                                    public void handle(String path) {
+                                        if (path != null) {
+                                            exportDocumentsDependancies(results.addAll(results2), path, new Handler<Boolean>() {
+                                                @Override
+                                                public void handle(Boolean bool) {
+                                                    exportFiles(results, path, new HashSet<String>(), exported, handler);
+                                                }
+                                            });
+                                        }
+                                        else {
+                                            handler.handle(exported.get());
+                                        }
+                                    }
+                                });
+                            }
+                            else {
+                                log.error("Blog : Could not proceed query " + query2.encode(), event2.body().getString("message"));
+                                handler.handle(exported.get());
+                            }
+                        }
+                    });
+                }
+                else {
+                    log.error("Blog : Could not proceed query " + query.encode(), event.body().getString("message"));
+                    handler.handle(exported.get());
+                }
+            }
+        });
     }
 
     @Override
