@@ -271,7 +271,7 @@ export function LibraryDelegate($scope: LibraryControllerScope, $rootScope, $loc
     };
 
     $scope.hasFiltersActive = () => {
-        return $scope.filters.mine || $scope.filters.shared
+        return $scope.filters.mine && $scope.filters.shared
     }
 
     $scope.empty = true;

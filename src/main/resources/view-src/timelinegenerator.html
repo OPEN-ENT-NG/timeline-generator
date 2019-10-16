@@ -36,7 +36,7 @@
 			</app-title>
           </div>
           <div class="contextual-buttons three cell">
-            <button ng-disabled="isTrashFolder() || empty" workflow="timelinegenerator.create" ng-if="!empty && (!timeline || !timeline._id)" ng-click="newTimeline()" class="cell right-magnet">
+            <button ng-hide="isTrashFolder()" workflow="timelinegenerator.create" ng-if="!empty && (!timeline || !timeline._id)" ng-click="newTimeline()" class="cell right-magnet">
                 <i18n>timelinegenerator.timeline.new</i18n>
             </button>
           </div>

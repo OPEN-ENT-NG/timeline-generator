@@ -45,7 +45,8 @@
           </a>
         </li>
       </ul>
-      <a class="classic-link" ng-disabled="isTrashFolder()" ng-click="lightbox('newFolder')" workflow="timelinegenerator.createFolder">
+      <a class="classic-link" ng-hide="isTrashFolder()" ng-click="lightbox('newFolder')"
+        workflow="timelinegenerator.createFolder">
         <i18n>timelinegenerator.folder.new</i18n>
       </a>
     </nav>
@@ -53,45 +54,74 @@
   <section class="margin-four">
     <!--FILTERS-->
     <div class="twelve cell chips" ng-if="!empty">
-      <label class="chip" ng-click="currentFolder.ressources.refreshFilters()"
-        ng-class="{ selected: filters.mine }">
+      <label class="chip" ng-click="currentFolder.ressources.refreshFilters()" ng-class="{ selected: filters.mine }"
+        ng-if="!empty && (currentFolder.ressources.all.length || currentFolder.children.arr.length)">
         <i class="mine" tooltip="filters.mine"></i>
         <i18n>filters.mine</i18n>
         <input type="checkbox" ng-model="filters.mine" />
       </label>
-      <label class="chip" ng-click="currentFolder.ressources.refreshFilters()"
-        ng-class="{ selected: filters.shared }">
+      <label class="chip" ng-click="currentFolder.ressources.refreshFilters()" ng-class="{ selected: filters.shared }"
+        ng-if="!empty && (currentFolder.ressources.all.length || currentFolder.children.arr.length)">
         <i class="ic-share" tooltip="filters.sharedTimelines"></i>
         <i18n>filters.sharedTimelines</i18n>
         <input type="checkbox" ng-model="filters.shared" />
       </label>
       <!-- Empty screen Création -->
-      <div class="twelve emptyscreen" ng-if="!isTrashFolder() && hasFiltersActive() && !currentFolder.ressources.all.length && !currentFolder.children.all.length" workflow="timelinegenerator.create">
-        <h2 class="emptyscreen-header"><i18n>empty.timeline.creation.title</i18n></h2>
+      <div class="twelve emptyscreen"
+        ng-if="!isTrashFolder() && hasFiltersActive() && !currentFolder.ressources.all.length && !currentFolder.children.all.length"
+        workflow="timelinegenerator.create">
+        <h2 class="emptyscreen-header">
+          <i18n>empty.timeline.creation.title</i18n>
+        </h2>
         <img class="emptyscreen-image__mini" src="/timelinegenerator/public/img/empty-timeline.svg">
         <p class="emptyscreen-footer">
           <i18n>empty.timeline.creation</i18n>
         </p>
-        <a class="button" ng-disabled="isTrashFolder()" workflow="timelinegenerator.create" ng-if="!timeline || !timeline._id" ng-click="newTimeline()"><i18n>timelinegenerator.timeline.new</i18n></a>
+        <a class="button" ng-disabled="isTrashFolder()" workflow="timelinegenerator.create"
+          ng-if="!timeline || !timeline._id" ng-click="newTimeline()">
+          <i18n>timelinegenerator.timeline.new</i18n>
+        </a>
       </div>
       <!-- Empty screen Consultation -->
-      <div class="twelve emptyscreen" ng-if="!isTrashFolder() && hasFiltersActive() && !currentFolder.ressources.all.length && !currentFolder.children.all.length" workflow-not="timelinegenerator.create">
-        <h2 class="emptyscreen-header"><i18n>empty.timeline.consultation.title</i18n></h2>
+      <div class="twelve emptyscreen"
+        ng-if="!isTrashFolder() && hasFiltersActive() && !currentFolder.ressources.all.length && !currentFolder.children.all.length"
+        workflow-not="timelinegenerator.create">
+        <h2 class="emptyscreen-header">
+          <i18n>empty.timeline.consultation.title</i18n>
+        </h2>
         <img class="emptyscreen-image__mini" src="/timelinegenerator/public/img/empty-timeline.svg">
         <p class="emptyscreen-footer">
           <i18n>empty.timeline.consultation</i18n>
         </p>
       </div>
+      <!-- Si la recherche n'a rien donné -->
+      <div class="emptyscreen" ng-if="displayLib.searchTimelines &&
+                  (filteredFolders = (currentFolder.children.all | filter:searchFolder)).length == 0 &&
+                  (filteredTimelines = (currentFolder.ressources.all | filter:searchTimeline)).length == 0">
+        <h2 class="emptyscreen-header">
+          <i18n>empty.search.title</i18n>
+        </h2>
+        <img class="emptyscreen-image__mini" src="/assets/themes/entcore-css-lib/images/empty-search.svg">
+        <p class="emptyscreen-footer">
+          <i18n>empty.search</i18n>
+        </p>
+      </div>
       <!-- Si les filtres sont tous désactivés -->
-      <div class="emptyscreen" ng-if="!display.isEditingInfos && !empty && !hasFiltersActive()">
-        <h2 class="emptyscreen-header"><i18n>empty.filters.title</i18n></h2>
+      <div class="emptyscreen"
+        ng-if="!display.isEditingInfos && !empty && !hasFiltersActive() &&
+        !currentFolder.ressources.filtered.length && !currentFolder.children.all.length &&
+        !(displayLib.searchTimelines && filteredFolders.length == 0 && filteredTimelines.length == 0 )">
+        <h2 class="emptyscreen-header">
+          <i18n>empty.filters.title</i18n>
+        </h2>
         <img class="emptyscreen-image__mini" src="/assets/themes/entcore-css-lib/images/empty-filters.svg">
         <p class="emptyscreen-footer">
           <i18n>empty.filters</i18n>
         </p>
       </div>
       <!-- Si la corbeille est vide -->
-      <div class="emptyscreen" ng-if="hasFiltersActive() && !display.isEditingInfos && !empty && isTrashFolder() && !currentFolder.ressources.all.length && !currentFolder.children.all.length">
+      <div class="emptyscreen"
+        ng-if="hasFiltersActive() && !display.isEditingInfos && !empty && isTrashFolder() && !currentFolder.ressources.all.length && !currentFolder.children.all.length">
         <img class="emptyscreen-image" src="/assets/themes/entcore-css-lib/images/empty-trash.svg">
         <p class="emptyscreen-footer">
           <i18n>empty.trash2</i18n>
@@ -147,9 +177,7 @@
 </div>
 
 <!-- Empty screen Création -->
-<div class="twelve emptyscreen"
-  ng-if="empty"
-  workflow="timelinegenerator.create">
+<div class="twelve emptyscreen" ng-if="empty" workflow="timelinegenerator.create">
   <h2 class="emptyscreen-header">
     <i18n>empty.timeline.creation.title</i18n>
   </h2>
@@ -157,15 +185,13 @@
   <p class="emptyscreen-footer">
     <i18n>empty.timeline.creation</i18n>
   </p>
-  <a class="button" ng-disabled="isTrashFolder() && !empty" workflow="timelinegenerator.create" ng-if="!timeline || !timeline._id"
-    ng-click="newTimeline()">
+  <a class="button" ng-disabled="isTrashFolder() && !empty" workflow="timelinegenerator.create"
+    ng-if="!timeline || !timeline._id" ng-click="newTimeline()">
     <i18n>timelinegenerator.timeline.new</i18n>
   </a>
 </div>
 <!-- Empty screen Consultation -->
-<div class="twelve emptyscreen"
-  ng-if="empty"
-  workflow-not="timelinegenerator.create">
+<div class="twelve emptyscreen" ng-if="empty" workflow-not="timelinegenerator.create">
   <h2 class="emptyscreen-header">
     <i18n>empty.timeline.consultation.title</i18n>
   </h2>
@@ -217,7 +243,8 @@
         </button>
       </resource-right>
       <resource-right name="manage" resource="currentFolder.selection">
-        <button class="zero-mobile" workflow="timelinegenerator.publish" library-resource="currentFolder.selection[0]" ng-if="hasOneElement()">
+        <button class="zero-mobile" workflow="timelinegenerator.publish" library-resource="currentFolder.selection[0]"
+          ng-if="hasOneElement()">
           <i18n>bpr.publish</i18n>
         </button>
       </resource-right>
@@ -229,7 +256,8 @@
       </button>
     </div>
     <div>
-      <button ng-click="print(currentFolder.selection[0])" ng-if="hasOneElement() && isTimeline(currentFolder.selection[0])">
+      <button ng-click="print(currentFolder.selection[0])"
+        ng-if="hasOneElement() && isTimeline(currentFolder.selection[0])">
         <i18n>print</i18n>
       </button>
     </div>
@@ -247,7 +275,8 @@
   <h2>
     <i18n>rename</i18n>
   </h2>
-  <input type="text" class="twelve cell" ng-model="currentFolder.selection[0].name" i18n-placeholder="timelinegenerator.folder.placeholder" />
+  <input type="text" class="twelve cell" ng-model="currentFolder.selection[0].name"
+    i18n-placeholder="timelinegenerator.folder.placeholder" />
   <div class="row">
     <button class="right-magnet" ng-click="currentFolder.selection[0].save(); lightbox('renameFolder')">
       <i18n>save</i18n>
@@ -259,9 +288,9 @@
 </lightbox>
 <!--SHARE LIGHTBOX-->
 <div ng-if="displayLib.showShare">
-    <lightbox show="displayLib.showShare" on-close="displayLib.showShare = false">
-      <share-panel app-prefix="'timelinegenerator'" resources="currentFolder.selection"></share-panel>
-    </lightbox>
+  <lightbox show="displayLib.showShare" on-close="displayLib.showShare = false">
+    <share-panel app-prefix="'timelinegenerator'" resources="currentFolder.selection"></share-panel>
+  </lightbox>
 </div>
 <!--NEW FOLDER LIGHTBOX-->
 <lightbox show="displayLib.lightbox.newFolder" on-close="lightbox('newFolder')">
@@ -270,7 +299,8 @@
       <i18n>timelinegenerator.folder.new</i18n>
     </h2>
     <div class="row">
-      <input type="text" ng-model="folder.name" i18n-placeholder="timelinegenerator.folder.placeholder" required autofocus class="twelve cell" />
+      <input type="text" ng-model="folder.name" i18n-placeholder="timelinegenerator.folder.placeholder" required
+        autofocus class="twelve cell" />
     </div>
     <div class="row">
       <button class="right-magnet" ng-disabled="!folder.name.trim()">
