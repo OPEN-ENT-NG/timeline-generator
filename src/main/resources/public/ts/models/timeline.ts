@@ -118,6 +118,34 @@ export class Timeline extends Model<Timeline> implements Selectable, Shareable {
         }
         Timeline.eventer.trigger('save');
     }
+    async  duplicate()
+    {
+        notify.info("duplicate.start");
+        try
+        {
+            let dup = await http.post("/archive/duplicate", { application: "timelinegenerator", resourceId: this._id });
+
+            notify.info("duplicate.done");
+
+            let t:Timeline = this.copy(true);
+            t._id = dup.data["duplicateId"];
+
+            await t.sync();
+            await t.rights.fromBehaviours();
+            //update root
+            Folders.provideRessource(t);
+            Folders.root.ressources.all.push(t);
+            Folders.root.ressources.refreshFilters();
+            Folder.eventer.trigger('refresh');
+
+            // No comprendo
+            Folders.onChange.next(!((await Folders.ressources()).length || (await Folders.folders()).length)); // ICI
+        }
+        catch (error)
+        {
+            notify.error("duplicate.done");
+        }
+    }
     async  remove() {
         Folders.unprovide(this);
         await http.delete('/timelinegenerator/timeline/' + this._id);
@@ -178,10 +206,13 @@ export class Timeline extends Model<Timeline> implements Selectable, Shareable {
             }
         }
     }
-    copy(): Timeline {
+    copy(faithfulCopy:boolean = false): Timeline {
         let data = JSON.parse(JSON.stringify(this));
-        data.published = undefined;
-        data.title = "Copie_" + data.title;
+        if(faithfulCopy == false)
+        {
+            data.published = undefined;
+            data.title = "Copie_" + data.title;
+        }
         return Mix.castAs(Timeline, data);
     }
 

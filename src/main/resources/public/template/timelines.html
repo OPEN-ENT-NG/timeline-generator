@@ -237,6 +237,11 @@
           <i18n>properties</i18n>
         </button>
       </resource-right>
+      <!--<resource-right name="manage" workflow="timelinegenerator.create" resource="currentFolder.selection">-->
+        <button class="zero-mobile" workflow="timelinegenerator.create" ng-click="duplicateTimeline()" ng-if="hasOneElement()">
+          <i18n>duplicate</i18n>
+        </button>
+      <!--</resource-right>-->
       <resource-right name="manage" resource="currentFolder.selection">
         <button class="zero-mobile" ng-click="shareTimeline()">
           <i18n>share</i18n>

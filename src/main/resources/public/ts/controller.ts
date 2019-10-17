@@ -36,6 +36,7 @@ export interface TimelineGeneratorControllerScope {
     openTimelinePrinter(timeline: TimelineModel): void
     openTimeline(timeline: TimelineModel): void
     newEvent(): void
+    duplicateTimeline(): void
     setEventMediaType(event: EventModel): void
     isTitleEmpty(title: string): boolean;
     addEvent(): void
@@ -187,6 +188,12 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
         $scope.setEventMediaType($scope.event);
         template.open('timelines', 'edit-event');
         $scope.display.isEditingInfos = false;
+    };
+
+    $scope.duplicateTimeline = function()
+    {
+        let t:TimelineEntity = ($scope.currentFolder.selection[0] as TimelineEntity);
+        t.duplicate();
     };
 
     $scope.addEvent = function () {
