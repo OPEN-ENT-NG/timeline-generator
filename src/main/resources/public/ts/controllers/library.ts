@@ -200,8 +200,7 @@ export function LibraryDelegate($scope: LibraryControllerScope, $rootScope, $loc
     };
 
     $scope.print = (item: Timeline) => {
-        $location.path('/print');
-        window.open(`/timelinegenerator#/print/${item._id}/`, '_blank');
+        window.open(`/timelinegenerator/print#/print/${item._id}/`, '_blank');
     };
 
     $scope.dropTo = async (targetItem: string | Folder, $originalEvent) => {

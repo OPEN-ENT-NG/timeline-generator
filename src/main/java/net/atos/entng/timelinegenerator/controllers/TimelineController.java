@@ -88,6 +88,12 @@ public class TimelineController extends MongoDbControllerHelper {
 		eventStore.createAndStoreEvent(TimelineGeneratorEvent.ACCESS.name(), request);
 	}
 
+	@Get("/print")
+	@SecuredAction("timelinegenerator.print")
+	public void printView(HttpServerRequest request) {
+        renderView(request, new JsonObject(), "timelinegenerator-print.html", null);
+	}
+
 	@Get("/timelines")
 	@SecuredAction("timelinegenerator.list")
 	public void listTimelines(HttpServerRequest request) {

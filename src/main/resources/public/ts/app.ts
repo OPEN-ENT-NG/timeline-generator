@@ -14,7 +14,7 @@ ng.configs.push(ng.config(['libraryServiceProvider', function (libraryServicePro
                     title: resource.title, 
                     cover: resource.icon,
                     application: "TimelineGenerator",
-                    pdfUri: `/timelinegenerator#/print/${resource._id}`
+                    pdfUri: `/timelinegenerator/print#/print/${resource._id}`
                 }
             };
         };

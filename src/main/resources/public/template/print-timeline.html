@@ -1,26 +1,17 @@
-<!DOCTYPE html>
-<html class="print">
-  <head>
-    <meta charset="utf-8">
-    <title></title>
-  </head>
-  <body>
-    <h1 class="text upper-title app-title">
-      <i class="timelinegenerator"></i>
-      [[timeline.headline]]
-      <div ng-if="timeline.text" class="small-text left-spacing-twice horizontal-spacing" ng-bind-html="timeline.text"></div>
-    </h1>
+  <h1 class="text upper-title app-title">
+    <i class="timelinegenerator"></i>
+    [[timeline.headline]]
+    <div ng-if="timeline.text" class="small-text left-spacing-twice horizontal-spacing" ng-bind-html="timeline.text"></div>
+  </h1>
 
-    <section class="print--timeline top-spacing-four">
-      <article class="clearfix" ng-repeat="ev in timeline.events.all | orderBy: 'startDate'">
+  <section class="print--timeline top-spacing-four">
+    <article class="clearfix" ng-repeat="ev in timeline.events.all | orderBy: 'startDate'">
 
-        <h4 ng-if="ev.dateFormat == 'year'">[[moment(ev.startDate).years()]]<span ng-if="ev.endDate"> - [[moment(ev.endDate).years()]]</span></h4>
-        <h4 ng-if="ev.dateFormat == 'month'">[[moment(ev.startDate).format('MM')]]/[[moment(ev.startDate).years()]]<span ng-if="ev.endDate"> - [[moment(ev.endDate).format('MM')]]/[[moment(ev.endDate).years()]]</span></h4>
-        <h4 ng-if="ev.dateFormat == 'day'">[[ev.startDate | date:'dd/MM/yyyy']]<span ng-if="ev.endDate"> - [[ev.endDate | date:'dd/MM/yyyy']]</span> </h4>
-        <h3>[[ev.headline]]</h3>
-        <img ng-if="ev.img" ng-src="[[ev.img]]"/>
-        <div ng-bind-html="ev.text"></div>
-      </article>
-    </section>
-  </body>
-</html>
+      <h4 ng-if="ev.dateFormat == 'year'">[[moment(ev.startDate).years()]]<span ng-if="ev.endDate"> - [[moment(ev.endDate).years()]]</span></h4>
+      <h4 ng-if="ev.dateFormat == 'month'">[[moment(ev.startDate).format('MM')]]/[[moment(ev.startDate).years()]]<span ng-if="ev.endDate"> - [[moment(ev.endDate).format('MM')]]/[[moment(ev.endDate).years()]]</span></h4>
+      <h4 ng-if="ev.dateFormat == 'day'">[[ev.startDate | date:'dd/MM/yyyy']]<span ng-if="ev.endDate"> - [[ev.endDate | date:'dd/MM/yyyy']]</span> </h4>
+      <h3>[[ev.headline]]</h3>
+      <img ng-if="ev.img" ng-src="[[ev.img]]"/>
+      <div ng-bind-html="ev.text"></div>
+    </article>
+  </section>

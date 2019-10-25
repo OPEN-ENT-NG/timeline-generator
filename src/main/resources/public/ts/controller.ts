@@ -169,6 +169,7 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
         timeline.open(function () {
             template.close('main');
             template.open('timelines', 'print-timeline');
+            setTimeout(()=>window.print(),1000);
         });
     };
 
