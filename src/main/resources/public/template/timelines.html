@@ -68,7 +68,7 @@
       </label>
       <!-- Empty screen Création -->
       <div class="twelve emptyscreen"
-        ng-if="!isTrashFolder() && hasFiltersActive() && !currentFolder.ressources.all.length && !currentFolder.children.all.length"
+        ng-if="!isTrashFolder() && hasFiltersActive() && !currentFolder.ressources.all.length && !currentFolder.children.all.length && currentFolder === root"
         workflow="timelinegenerator.create">
         <h2 class="emptyscreen-header">
           <i18n>empty.timeline.creation.title</i18n>
@@ -84,10 +84,38 @@
       </div>
       <!-- Empty screen Consultation -->
       <div class="twelve emptyscreen"
-        ng-if="!isTrashFolder() && hasFiltersActive() && !currentFolder.ressources.all.length && !currentFolder.children.all.length"
+        ng-if="!isTrashFolder() && hasFiltersActive() && !currentFolder.ressources.all.length && !currentFolder.children.all.length && currentFolder === root"
         workflow-not="timelinegenerator.create">
         <h2 class="emptyscreen-header">
           <i18n>empty.timeline.consultation.title</i18n>
+        </h2>
+        <img class="emptyscreen-image__mini" src="/timelinegenerator/public/img/empty-timeline.svg">
+        <p class="emptyscreen-footer">
+          <i18n>empty.timeline.consultation</i18n>
+        </p>
+      </div>
+      <!-- Empty screen Subfolder Création -->
+      <div class="twelve emptyscreen"
+        ng-if="!isTrashFolder() && hasFiltersActive() && !currentFolder.ressources.all.length && !currentFolder.children.all.length && currentFolder !== root"
+        workflow="timelinegenerator.create">
+        <h2 class="emptyscreen-header">
+          <i18n>empty.timeline.subfolder.title</i18n>
+        </h2>
+        <img class="emptyscreen-image__mini" src="/timelinegenerator/public/img/empty-timeline.svg">
+        <p class="emptyscreen-footer">
+          <i18n>empty.timeline.creation</i18n>
+        </p>
+        <a class="button" ng-disabled="isTrashFolder()" workflow="timelinegenerator.create" ng-if="!timeline || !timeline._id"
+          ng-click="newTimeline()">
+          <i18n>timelinegenerator.timeline.new</i18n>
+        </a>
+      </div>
+      <!-- Empty screen Subfolder Consultation -->
+      <div class="twelve emptyscreen"
+        ng-if="!isTrashFolder() && hasFiltersActive() && !currentFolder.ressources.all.length && !currentFolder.children.all.length && currentFolder !== root"
+        workflow-not="timelinegenerator.create">
+        <h2 class="emptyscreen-header">
+          <i18n>empty.timeline.subfolder.title</i18n>
         </h2>
         <img class="emptyscreen-image__mini" src="/timelinegenerator/public/img/empty-timeline.svg">
         <p class="emptyscreen-footer">
