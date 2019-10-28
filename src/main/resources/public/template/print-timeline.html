@@ -12,6 +12,7 @@
       <h4 ng-if="ev.dateFormat == 'day'">[[ev.startDate | date:'dd/MM/yyyy']]<span ng-if="ev.endDate"> - [[ev.endDate | date:'dd/MM/yyyy']]</span> </h4>
       <h3>[[ev.headline]]</h3>
       <img ng-if="ev.img" ng-src="[[ev.img]]"/>
+      <iframe ng-if="ev.video" ng-src="[[ev.video]]" allowfullscreen frameborder="0"></iframe>
       <div ng-bind-html="ev.text"></div>
     </article>
   </section>
