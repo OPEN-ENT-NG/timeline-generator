@@ -1,4 +1,4 @@
-import { moment, Behaviours, ng, template, idiom as lang } from 'entcore'
+import { moment, Behaviours, ng, template, idiom as lang, embedderService } from 'entcore'
 import { timelineNamespace } from './models/model'
 import { LibraryDelegate, LibraryControllerScope } from './controllers/library';
 import { TimelineModel, EventModel, EventsModel, TimelinesModel } from './controllers/commons';
@@ -30,6 +30,7 @@ export interface TimelineGeneratorControllerScope {
     timeline: TimelineModel
     selectedTimeline: boolean | TimelineModel
     event: EventModel
+    safeApply(fn?:any);
     openMainPage(): void
     newTimeline(): void;
     openTimelineViewer(timeline: TimelineModel): void
@@ -68,7 +69,7 @@ export interface TimelineGeneratorControllerScope {
 export interface TimelineGeneratorControllerScopeWithDelegate extends TimelineGeneratorControllerScope, LibraryControllerScope {
 
 }
-export const timelineGeneratorController = ng.controller('TimelineGeneratorController', ['$scope', 'model', 'route', '$rootScope', '$location', ($scope: TimelineGeneratorControllerScopeWithDelegate, model, route, $rootScope, $location) => {
+export const timelineGeneratorController = ng.controller('TimelineGeneratorController', ['$scope', 'model', 'route', '$rootScope', '$location', '$sce', ($scope: TimelineGeneratorControllerScopeWithDelegate, model, route, $rootScope, $location, $sce) => {
     $scope.notFound = false;
     $scope.template = template;
     $scope.printMode = false;
@@ -127,6 +128,16 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
             $scope.display.isEditingInfos = false;
         }
     });
+    $scope.safeApply = function (fn) {
+        const phase = this.$root.$$phase;
+        if (phase == '$apply' || phase == '$digest') {
+            if (fn && (typeof (fn) === 'function')) {
+                fn();
+            }
+        } else {
+            this.$apply(fn);
+        }
+    };
 
     $scope.openMainPage = function () {
         delete $scope.timeline;
@@ -166,10 +177,16 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
         $scope.events = timeline.events;
         $scope.previewMode = true;
         Behaviours.applicationsBehaviours.timelinegenerator.sniplets.timelines.controller.source = timeline;
-        timeline.open(function () {
+        timeline.open(async function () {
+            for(const ev of timeline.events.all){
+                if(ev.video){
+                    ev.videoHtml = await embedderService.getHtmlForUrl(ev.video, true);
+                    ev.videoHtmlTrusted = $sce.trustAsHtml(ev.videoHtml);
+                }
+            }
             template.close('main');
             template.open('timelines', 'print-timeline');
-            setTimeout(()=>window.print(),1000);
+            setTimeout(()=>window.print(),2500);
         });
     };
 

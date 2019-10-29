@@ -24,6 +24,7 @@ export type TimelinesModel = {
 	removeSelection(cb: () => void): void
 }
 export type EventsModel = {
+	all:EventModel[]
 	sync(finish?: () => void): void;
 	forEach(cb?: (value: TimelineModel, key?: number) => void): void;
 	removeSelection(cb: () => void): void
@@ -38,6 +39,8 @@ export type EventModel = {
 	startDate: any//Moment
 	endDate: any//moment
 	video: string
+	videoHtml?: string;
+	videoHtmlTrusted? : string;
 	mediatype: "video" | "img"
 	save(finish?: () => void): void;
 	sync(finish?: () => void): void;
