@@ -126,10 +126,10 @@
       <!-- Si la corbeille est vide -->
       <div class="emptyscreen"
         ng-if="hasFiltersActive() && !display.isEditingInfos && !empty && isTrashFolder() && !currentFolder.ressources.all.length && !currentFolder.children.all.length">
-        <img class="emptyscreen-image" src="/assets/themes/entcore-css-lib/images/empty-trash.svg">
-        <p class="emptyscreen-footer">
+        <h2 class="emptyscreen-header">
           <i18n>empty.trash2</i18n>
-        </p>
+        </h2>
+        <img class="emptyscreen-image" src="/assets/themes/entcore-css-lib/images/empty-trash.svg">
       </div>
     </div>
     <!--CONTENT-->
