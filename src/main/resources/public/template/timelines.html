@@ -66,60 +66,35 @@
         <i18n>filters.sharedTimelines</i18n>
         <input type="checkbox" ng-model="filters.shared" />
       </label>
+
       <!-- Empty screen Création -->
       <div class="twelve emptyscreen"
-        ng-if="!isTrashFolder() && hasFiltersActive() && !currentFolder.ressources.all.length && !currentFolder.children.all.length && currentFolder === root"
+        ng-if="!isTrashFolder() && hasFiltersActive() && !currentFolder.ressources.all.length && !currentFolder.children.all.length"
         workflow="timelinegenerator.create">
         <h2 class="emptyscreen-header">
-          <i18n>empty.timeline.creation.title</i18n>
+          <i18n ng-if="currentFolder === root">empty.timeline.creation.title</i18n>
+          <i18n ng-if="currentFolder !== root">empty.timeline.subfolder.title</i18n>
         </h2>
         <img class="emptyscreen-image__mini" src="/timelinegenerator/public/img/empty-timeline.svg">
         <p class="emptyscreen-footer">
-          <i18n>empty.timeline.creation</i18n>
+          <i18n ng-if="currentFolder === root">empty.timeline.creation</i18n>
         </p>
-        <a class="button" ng-disabled="isTrashFolder()" workflow="timelinegenerator.create"
+        <a class="button" ng-hide="isTrashFolder()" workflow="timelinegenerator.create"
           ng-if="!timeline || !timeline._id" ng-click="newTimeline()">
           <i18n>timelinegenerator.timeline.new</i18n>
         </a>
       </div>
       <!-- Empty screen Consultation -->
       <div class="twelve emptyscreen"
-        ng-if="!isTrashFolder() && hasFiltersActive() && !currentFolder.ressources.all.length && !currentFolder.children.all.length && currentFolder === root"
+        ng-if="!isTrashFolder() && hasFiltersActive() && !currentFolder.ressources.all.length && !currentFolder.children.all.length"
         workflow-not="timelinegenerator.create">
         <h2 class="emptyscreen-header">
-          <i18n>empty.timeline.consultation.title</i18n>
+          <i18n ng-if="currentFolder === root">empty.timeline.consultation.title</i18n>
+          <i18n ng-if="currentFolder !== root">empty.timeline.subfolder.title</i18n>
         </h2>
         <img class="emptyscreen-image__mini" src="/timelinegenerator/public/img/empty-timeline.svg">
         <p class="emptyscreen-footer">
-          <i18n>empty.timeline.consultation</i18n>
-        </p>
-      </div>
-      <!-- Empty screen Subfolder Création -->
-      <div class="twelve emptyscreen"
-        ng-if="!isTrashFolder() && hasFiltersActive() && !currentFolder.ressources.all.length && !currentFolder.children.all.length && currentFolder !== root"
-        workflow="timelinegenerator.create">
-        <h2 class="emptyscreen-header">
-          <i18n>empty.timeline.subfolder.title</i18n>
-        </h2>
-        <img class="emptyscreen-image__mini" src="/timelinegenerator/public/img/empty-timeline.svg">
-        <p class="emptyscreen-footer">
-          <i18n>empty.timeline.creation</i18n>
-        </p>
-        <a class="button" ng-disabled="isTrashFolder()" workflow="timelinegenerator.create" ng-if="!timeline || !timeline._id"
-          ng-click="newTimeline()">
-          <i18n>timelinegenerator.timeline.new</i18n>
-        </a>
-      </div>
-      <!-- Empty screen Subfolder Consultation -->
-      <div class="twelve emptyscreen"
-        ng-if="!isTrashFolder() && hasFiltersActive() && !currentFolder.ressources.all.length && !currentFolder.children.all.length && currentFolder !== root"
-        workflow-not="timelinegenerator.create">
-        <h2 class="emptyscreen-header">
-          <i18n>empty.timeline.subfolder.title</i18n>
-        </h2>
-        <img class="emptyscreen-image__mini" src="/timelinegenerator/public/img/empty-timeline.svg">
-        <p class="emptyscreen-footer">
-          <i18n>empty.timeline.consultation</i18n>
+          <i18n ng-if="currentFolder === root">empty.timeline.consultation</i18n>
         </p>
       </div>
       <!-- Si la recherche n'a rien donné -->
@@ -159,7 +134,7 @@
     <!--CONTENT-->
     <div class="fallen dominos">
       <div ng-repeat="folder in currentFolder.children.all | filter:searchFolder">
-        <explorer ng-model="folder.selected" on-open="openFolder(folder)" class="folder item">
+        <explorer ng-model="folder.selected" on-open="!isTrashFolder() && openFolder(folder)" class="folder item">
           <section class="domino" dragstart ng-model="folder._id" dragdrop="dropTo(folder, $originalEvent)">
             <div class="top">
               <i class="folder-large"></i>
