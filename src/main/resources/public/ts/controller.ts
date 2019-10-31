@@ -178,12 +178,12 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
         $scope.previewMode = true;
         Behaviours.applicationsBehaviours.timelinegenerator.sniplets.timelines.controller.source = timeline;
         timeline.open(async function () {
-            for(const ev of timeline.events.all){
+            /*for(const ev of timeline.events.all){
                 if(ev.video){
                     ev.videoHtml = await embedderService.getHtmlForUrl(ev.video, true);
                     ev.videoHtmlTrusted = $sce.trustAsHtml(ev.videoHtml);
                 }
-            }
+            }*/
             template.close('main');
             template.open('timelines', 'print-timeline');
             setTimeout(()=>window.print(),2500);
