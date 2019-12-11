@@ -301,11 +301,17 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
     };
 
     $scope.editTimeline = function () {
+        $scope.forceToClose=true;
         const json = $scope.currentFolder.selection[0].toJSON();
         $scope.timeline = new timelineNamespace.Timeline(json);
         template.open('timelines', 'edit-timeline');
+        $scope.$apply();
         $scope.selectedTimeline = true;
         $scope.display.isEditingInfos = true;
+        setTimeout(function() {
+            $scope.forceToClose=false;
+            $scope.$apply();
+        }, 100);
     };
 
     $scope.editEvent = function (timelineEvent, event) {
