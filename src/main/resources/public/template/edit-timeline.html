@@ -1,5 +1,5 @@
-<article class="row">
-    <form name="form">
+<article class="row" ng-if="!forceToClose">
+    <form name="form" guard-root>
         <div class="rigid-grid row">
             <div class="two cell clip height-two">
                 <div class="absolute" loading-panel="upload-timeline-thumbnail">
@@ -7,22 +7,22 @@
                 </div>
             </div>
             <div class="margin-two height-seven">
-            	<div class="twelve cell horizontal-spacing">
-            	    <input type="text" ng-model="timeline.headline" class="twelve cell" i18n-placeholder="timelinegenerator.timeline.headline" required />
+                <div class="twelve cell horizontal-spacing">
+                    <input type="text" ng-model="timeline.headline" class="twelve cell" i18n-placeholder="timelinegenerator.timeline.headline" required input-guard/>
                     <div class="row">
                         <hr class="row" />
                     </div>
                     <label class="twelve cell"><i18n>timelinegenerator.timeline.text</i18n></label>
-                    <editor ng-model="timeline.text" class="twelve cell"></editor>
+                    <editor ng-model="timeline.text" class="twelve cell" input-guard></editor>
                     <div class="row">
                         <hr class="row" />
                     </div>
                 </div>
                 <div class="grid-add-row row">
-                    <button ng-click="saveTimelineEdit()" class="right-magnet" ng-disabled="form.$invalid">
+                    <button reset-guard="saveTimelineEdit()" class="right-magnet" ng-disabled="form.$invalid">
                         <i18n>save</i18n>
                     </button>
-                    <input type="button" class="button right-magnet cancel" ng-click="cancelTimelineEdit()" i18n-value="cancel">
+                    <input type="button" class="button right-magnet cancel" navigation-trigger="cancelTimelineEdit()" i18n-value="cancel">
                 </div>
             </div>
         </div>

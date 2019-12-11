@@ -1,4 +1,4 @@
-import { moment, Behaviours, ng, template, idiom as lang, embedderService } from 'entcore'
+import { moment, Behaviours, ng, template, idiom as lang, embedderService, navigationGuardService } from 'entcore'
 import { timelineNamespace } from './models/model'
 import { LibraryDelegate, LibraryControllerScope } from './controllers/library';
 import { TimelineModel, EventModel, EventsModel, TimelinesModel } from './controllers/commons';
@@ -30,6 +30,7 @@ export interface TimelineGeneratorControllerScope {
     timeline: TimelineModel
     selectedTimeline: boolean | TimelineModel
     event: EventModel
+    forceToClose:boolean
     safeApply(fn?:any);
     openMainPage(): void
     newTimeline(): void;
@@ -80,6 +81,7 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
     $scope.moment = moment;
     $scope.previewMode = false;
     $scope.lang = lang;
+    $scope.forceToClose=false;
 
     $scope.editedEvent = new timelineNamespace.Event();
 
@@ -237,6 +239,7 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
     };
 
     $scope.saveTimelineEdit = async function () {
+        $scope.forceToClose=true;
         const _timeline = Folders.root.findRessource($scope.timeline._id) || new TimelineEntity();
         const isNew = !_timeline._id;
         _timeline.fromOldModel($scope.timeline)
@@ -245,18 +248,20 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
             await _timeline.moveTo($scope.currentFolder as Folder);
         }
         $scope.cancelTimelineEdit();
-        template.close('main');
         if ($scope.currentFolder) {
             await $scope.currentFolder.sync();
         }
         if(isNew){
-			Filters.mine = true;//enable filter to see the new scrapbook
+            Filters.mine = true;//enable filter to see the new scrapbook
             $scope.currentFolder.ressources.refreshFilters();
-		}
+        }
+        $scope.forceToClose=false;
         $scope.$apply();
     };
 
     $scope.saveEventEdit = function () {
+        $scope.forceToClose=true;
+        $scope.$apply();
         if (!$scope.event.enableEndDate) {
             $scope.event.endDate = "";
         }
@@ -270,16 +275,21 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
         }
         else { // when creating an event
             $scope.addEvent();
+            $scope.forceToClose=false;
         }
     };
 
     $scope.cancelEventEdit = function () {
+        $scope.forceToClose=true;
+        $scope.$apply();
         $scope.event = undefined;
 
         if ($scope.previewMode) {
             $scope.openTimelineViewer($scope.timeline);
+            $scope.forceToClose=false;
         } else {
             $scope.openTimeline($scope.timeline);
+            $scope.forceToClose=false;
         }
     };
 
@@ -299,6 +309,7 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
     };
 
     $scope.editEvent = function (timelineEvent, event) {
+        $scope.forceToClose=true;
         $scope.event = timelineEvent;
         $scope.event.startDate = moment($scope.event.startDate);
         var endDate = $scope.event.endDate;
@@ -320,11 +331,18 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
         } else if ($scope.event.dateFormat == 'month') {
             $scope.event.startDate.newDate = $scope.event.startDate.format('MM') + '/' + $scope.event.startDate.years();
         }
-
-        $scope.setEventMediaType($scope.event);
-        event && event.stopPropagation();
-        template.open('timelines', 'edit-event');
-        $scope.display.isEditingInfos = false;
+        $scope.$apply();
+        setTimeout(function () {
+            template.open('timelines', 'edit-event');
+            $scope.display.isEditingInfos = false;
+            $scope.forceToClose=false;
+            $scope.$apply();
+            setTimeout(function () {
+                $scope.setEventMediaType($scope.event);
+                $scope.$apply();
+                event && event.stopPropagation();
+            }, 200);
+        }, 0);
     };
 
     $scope.setEventMediaType = function (event) {

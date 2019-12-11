@@ -1,4 +1,4 @@
-<div class="twelve cell">
+<div class="twelve cell" ng-if="!forceToClose">
 
 	<div class="flex-row justify-end align-center contextual-buttons eight cell vertical-spacing right-magnet">
 
@@ -11,69 +11,69 @@
 				<span class="no-style ng-scope"><i18n>timelinegenerator.mode.table</i18n></span>
 			</header>
 			<header ng-click="openTimelineViewer(timeline)"
-				class="horizontal-spacing-twice">
+					class="horizontal-spacing-twice">
 				<span class="no-style ng-scope"><i18n>timelinegenerator.mode.timeline</i18n></span>
 			</header>
-  		</section>
+		</section>
 	</div>
 
 	<div class="row vertical-spacing"></div>
 	<table class="twelve list-view">
 		<thead>
-			<tr>
-				<th></th>
-				<th ng-click="switchSortBy('headline')" ng-class="{'order-by-reversed': (sort.predicate === 'headline' && sort.reverse === false),
+		<tr>
+			<th></th>
+			<th ng-click="switchSortBy('headline')" ng-class="{'order-by-reversed': (sort.predicate === 'headline' && sort.reverse === false),
 					'order-by': (sort.predicate === 'headline' && sort.reverse === true)}">
-                    <i18n>timelinegenerator.event</i18n>
-				</th>
-				<th ng-click="switchSortBy('startDate')" ng-class="{'order-by-reversed': (sort.predicate === 'startDate' && sort.reverse === false),
+				<i18n>timelinegenerator.event</i18n>
+			</th>
+			<th ng-click="switchSortBy('startDate')" ng-class="{'order-by-reversed': (sort.predicate === 'startDate' && sort.reverse === false),
 					'order-by': (sort.predicate === 'startDate' && sort.reverse === true)}">
-					<i18n>timelinegenerator.event.startdate</i18n>
-				</th>
-				<th ng-click="switchSortBy('endDate')" ng-class="{'order-by-reversed': (sort.predicate === 'endDate' && sort.reverse === false),
+				<i18n>timelinegenerator.event.startdate</i18n>
+			</th>
+			<th ng-click="switchSortBy('endDate')" ng-class="{'order-by-reversed': (sort.predicate === 'endDate' && sort.reverse === false),
 					'order-by': (sort.predicate === 'endDate' && sort.reverse === true)}">
-                    <i18n>timelinegenerator.event.enddate</i18n>
-				</th>
-			</tr>
+				<i18n>timelinegenerator.event.enddate</i18n>
+			</th>
+		</tr>
 		</thead>
 		<tbody>
-			<tr ng-repeat="event in events.all | orderBy:sort.predicate:sort.reverse" ng-class="{ checked: event.selected }">
-				<td>
-					<behaviour name="contrib" resource="timeline">
-						<input type="checkbox" ng-model="event.selected" />
-					</behaviour>
-				</td>
-					<td ng-if="timeline.myRights.contrib" ng-click="editEvent(event, $event)">
-						<a>[[event.headline]]</a>
-					</td>
-					<td ng-if="!timeline.myRights.contrib">
-						[[event.headline]]
-					</td>
+		<tr ng-repeat="event in events.all | orderBy:sort.predicate:sort.reverse" ng-class="{ checked: event.selected }">
+			<td>
+				<behaviour name="contrib" resource="timeline">
+					<input type="checkbox" ng-model="event.selected" />
+				</behaviour>
+			</td>
+			<td ng-if="timeline.myRights.contrib" ng-click="editEvent(event, $event)">
+				<a>[[event.headline]]</a>
+			</td>
+			<td ng-if="!timeline.myRights.contrib">
+				[[event.headline]]
+			</td>
 
-					<td ng-if="timeline.myRights.contrib" ng-click="editEvent(event, $event)">
-						<a ng-if="event.dateFormat == 'year'">[[moment(event.startDate).years()]]</a>
-						<a ng-if="event.dateFormat == 'month'">[[moment(event.startDate).format('MM')]]/[[moment(event.startDate).years()]]</a>
-						<a ng-if="event.dateFormat == 'day'">[[event.startDate | date:'dd/MM/yyyy']]</a>
-					</td>
-					<td ng-if="!timeline.myRights.contrib">
-						<span ng-if="event.dateFormat == 'year'">[[moment(event.startDate).years()]]</span>
-						<span ng-if="event.dateFormat == 'month'">[[moment(event.startDate).format('MM')]]/[[moment(event.startDate).years()]]</span>
-						<span ng-if="event.dateFormat == 'day'">[[event.startDate | date:'dd/MM/yyyy']]</span>
-					</td>
+			<td ng-if="timeline.myRights.contrib" ng-click="editEvent(event, $event)">
+				<a ng-if="event.dateFormat == 'year'">[[moment(event.startDate).years()]]</a>
+				<a ng-if="event.dateFormat == 'month'">[[moment(event.startDate).format('MM')]]/[[moment(event.startDate).years()]]</a>
+				<a ng-if="event.dateFormat == 'day'">[[event.startDate | date:'dd/MM/yyyy']]</a>
+			</td>
+			<td ng-if="!timeline.myRights.contrib">
+				<span ng-if="event.dateFormat == 'year'">[[moment(event.startDate).years()]]</span>
+				<span ng-if="event.dateFormat == 'month'">[[moment(event.startDate).format('MM')]]/[[moment(event.startDate).years()]]</span>
+				<span ng-if="event.dateFormat == 'day'">[[event.startDate | date:'dd/MM/yyyy']]</span>
+			</td>
 
-					<td ng-if="timeline.myRights.contrib && event.endDate" ng-click="editEvent(event, $event)">
-						<a ng-if="event.dateFormat == 'year'">[[moment(event.endDate).years()]]</a>
-						<a ng-if="event.dateFormat == 'month'">[[moment(event.endDate).format('MM')]]/[[moment(event.endDate).years()]]</a>
-						<a ng-if="event.dateFormat == 'day'">[[event.endDate | date:'dd/MM/yyyy']]</a>
-					</td>
-					<td ng-if="!timeline.myRights.contrib && event.endDate">
-						<span ng-if="event.dateFormat == 'year'">[[moment(event.endDate).years()]]</span>
-						<span ng-if="event.dateFormat == 'month'">[[moment(event.endDate).format('MM')]]/[[moment(event.endDate).years()]]</span>
-						<span ng-if="event.dateFormat == 'day'">[[event.endDate | date:'dd/MM/yyyy']]</span>
-					</td>
-					<td ng-if="!event.endDate">
-					</td>
-			</tr>
+			<td ng-if="timeline.myRights.contrib && event.endDate" ng-click="editEvent(event, $event)">
+				<a ng-if="event.dateFormat == 'year'">[[moment(event.endDate).years()]]</a>
+				<a ng-if="event.dateFormat == 'month'">[[moment(event.endDate).format('MM')]]/[[moment(event.endDate).years()]]</a>
+				<a ng-if="event.dateFormat == 'day'">[[event.endDate | date:'dd/MM/yyyy']]</a>
+			</td>
+			<td ng-if="!timeline.myRights.contrib && event.endDate">
+				<span ng-if="event.dateFormat == 'year'">[[moment(event.endDate).years()]]</span>
+				<span ng-if="event.dateFormat == 'month'">[[moment(event.endDate).format('MM')]]/[[moment(event.endDate).years()]]</span>
+				<span ng-if="event.dateFormat == 'day'">[[event.endDate | date:'dd/MM/yyyy']]</span>
+			</td>
+			<td ng-if="!event.endDate">
+			</td>
+		</tr>
 		</tbody>
 
 	</table>
