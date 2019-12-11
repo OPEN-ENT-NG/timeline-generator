@@ -331,14 +331,17 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
         } else if ($scope.event.dateFormat == 'month') {
             $scope.event.startDate.newDate = $scope.event.startDate.format('MM') + '/' + $scope.event.startDate.years();
         }
-
-        $scope.setEventMediaType($scope.event);
         $scope.$apply();
-        event && event.stopPropagation();
         setTimeout(function () {
             template.open('timelines', 'edit-event');
             $scope.display.isEditingInfos = false;
             $scope.forceToClose=false;
+            $scope.$apply();
+            setTimeout(function () {
+                $scope.setEventMediaType($scope.event);
+                $scope.$apply();
+                event && event.stopPropagation();
+            }, 200);
         }, 0);
     };
 
