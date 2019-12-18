@@ -25,7 +25,7 @@
         <div class="twelve cell">
             <div class="nine cell">
                 <side-panel class="zero-mobile" ng-if="selectedTimeline">
-                    <container template="side-panel"></container>
+                    <container template="side-panel" guard-trigger-template></container>
                 </side-panel>
                 <app-title>
                     <h1>
@@ -44,8 +44,8 @@
         <div class="clear"></div>
     </div>
     <section id="timeline-content">
-        <container template="main" class="flexible content cell"></container>
-        <container template="timelines" class="flexible navigation" ng-class="{ 'empty-neighbour': template.isEmpty('main'), 'filled-neighbour': !template.isEmpty('main') }"></container>
+        <container template="main" class="flexible content cell" guard-trigger-template></container>
+        <container template="timelines" class="flexible navigation" ng-class="{ 'empty-neighbour': template.isEmpty('main'), 'filled-neighbour': !template.isEmpty('main') }" guard-trigger-template></container>
     </section>
 </portal>
 <div ng-if="printMode">
