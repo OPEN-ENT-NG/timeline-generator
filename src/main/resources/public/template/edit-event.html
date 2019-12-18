@@ -4,10 +4,10 @@
 	<h2 ng-if="!event._id"><i18n>timelinegenerator.event.new</i18n></h2>
 
 	<article class="twelve cell">
-		<div name="form" guard-root>
+		<div name="form">
 			<div class="row vertical-spacing">
 				<label class="two cell"><i18n>timelinegenerator.event.headline</i18n></label>
-				<input type="text" i18n-placeholder="timelinegenerator.event.placeholder" class="ten cell" ng-model="event.headline" required input-guard></input>
+				<input type="text" i18n-placeholder="timelinegenerator.event.placeholder" class="ten cell" ng-model="event.headline" required></input>
 			</div>
 
 			<div class="row vertical-spacing">
@@ -59,19 +59,20 @@
 					</div>
 				</div>
 			</div>
-
-			<div class="twelve cell">
-				<label class="two cell"><i18n>timelinegenerator.event.text</i18n></label>
-				<div class="ten cell">
-					<editor ng-model="event.text" input-guard></editor>
+			<div guard-root>
+				<div class="twelve cell">
+					<label class="two cell"><i18n>timelinegenerator.event.text</i18n></label>
+					<div class="ten cell">
+						<editor ng-model="event.text" input-guard></editor>
+					</div>
 				</div>
-			</div>
 
-			<div class="twelve cell warning" ng-if="event.error !== undefined" translate content="[[event.error]]">
-			</div>
+				<div class="twelve cell warning" ng-if="event.error !== undefined" translate content="[[event.error]]">
+				</div>
 
-			<button class="right-magnet" ng-class="" reset-guard="saveEventEdit()" ng-disabled="form.$invalid"><i18n>save</i18n></button>
-			<button class="cancel right-magnet" navigation-trigger="cancelEventEdit()"><i18n>cancel</i18n></button>
+				<button class="right-magnet" ng-class="" reset-guard="saveEventEdit()" ng-disabled="form.$invalid"><i18n>save</i18n></button>
+				<button class="cancel right-magnet" navigation-trigger="cancelEventEdit()"><i18n>cancel</i18n></button>
+			</div>
 		</div>
 	</article>
 </div>

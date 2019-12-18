@@ -236,6 +236,7 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
             }
         });
         $scope.display.isEditingInfos = false;
+        $scope.forceToClose=false;
     };
 
     $scope.saveTimelineEdit = async function () {
@@ -275,7 +276,6 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
         }
         else { // when creating an event
             $scope.addEvent();
-            $scope.forceToClose=false;
         }
     };
 
