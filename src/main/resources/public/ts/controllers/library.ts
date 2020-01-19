@@ -1,4 +1,4 @@
-import { ng, template, idiom, notify } from 'entcore';
+import { ng, template, idiom, notify, model, Behaviours } from 'entcore';
 import { Folders, Folder, Filters, BaseFolder, Root, Trash } from '../models/folder';
 import { Timeline } from '../models/timeline';
 import { _ } from 'entcore';
@@ -50,6 +50,7 @@ export interface LibraryControllerScope {
     removeTimeline(): void;
     isTrashFolder(): boolean;
     hasFiltersActive(): boolean;
+    displayLibraryIncentive(): boolean;
     empty: boolean;
     //
     $apply: any
@@ -277,5 +278,10 @@ export function LibraryDelegate($scope: LibraryControllerScope, $rootScope, $loc
     Folders.onChange.subscribe((isEmpty: boolean) => {
         $scope.empty = isEmpty;
     });
+
+    $scope.displayLibraryIncentive = function(): boolean {
+		return model.me.hasWorkflow(Behaviours.applicationsBehaviours.timelinegenerator.behaviours.workflow.publish)
+		&& $scope.root.myResourcesLength >= 5;
+	}
 
 }

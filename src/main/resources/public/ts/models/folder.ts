@@ -299,15 +299,20 @@ export class Folder extends HierarchicalFolder implements Shareable {
 }
 
 export class Root extends HierarchicalFolder {
+
+    myResourcesLength?: number;
+
     constructor() {
         super();
         this.name = 'root';
+        this.myResourcesLength = 0;
     }
 
     async sync(): Promise<void> {
         let ressources = await Folders.ressources();
         let folders = await Folders.folders();
         this.ressources.all = [];
+        this.myResourcesLength = 0;
         ressources.forEach((w) => {
             let inRoot = !w.trashed;
             folders.forEach((f) => {
@@ -315,6 +320,9 @@ export class Root extends HierarchicalFolder {
             });
             if (inRoot) {
                 this.ressources.all.push(w);
+            }
+            if (w.owner.userId == model.me.userId) {
+                this.myResourcesLength++;
             }
         });
 
