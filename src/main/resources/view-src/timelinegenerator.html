@@ -36,7 +36,12 @@
                 </app-title>
             </div>
             <div class="contextual-buttons three cell">
-                <button ng-hide="isTrashFolder() || !currentFolder.ressources.all.length && !currentFolder.children.all.length" workflow="timelinegenerator.create" ng-if="!empty && (!timeline || !timeline._id)" navigation-trigger="newTimeline()" class="cell right-magnet">
+                <button ng-if="(!timeline || !timeline._id)"
+                        ng-hide="!currentFolder.ressources.all.length && !currentFolder.children.all.length && !isTrashFolder()" 
+                        workflow="timelinegenerator.create" 
+                        navigation-trigger="newTimeline()" 
+                        class="cell right-magnet"
+                        ng-class="{'zero-mobile': isTrashFolder()}">
                     <i18n>timelinegenerator.timeline.new</i18n>
                 </button>
             </div>

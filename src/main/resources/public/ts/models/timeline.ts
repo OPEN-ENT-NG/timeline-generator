@@ -159,6 +159,7 @@ export class Timeline extends Model<Timeline> implements Selectable, Shareable {
             if(shouldUnlink){
                 await this.unlinkParent();
             }
+            Folders.onChange.next(!((await Folders.ressources()).length || (await Folders.folders()).length));
         }
     }
     async unlinkParent(){

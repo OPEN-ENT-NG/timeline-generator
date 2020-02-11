@@ -16,7 +16,8 @@
 <!--TREE AND CONTENT-->
 <div class="row rigid-grid" workflow="timelinegenerator.view" ng-if="!empty">
   <section class="four cell">
-    <div class="margin-two row">
+    <div class="margin-two row" 
+        ng-class="{'zero-mobile': !currentFolder.ressources.all.length && !currentFolder.children.all.length}">
       <input type="search" class="eleven cell" i18n-placeholder="search" ng-model="displayLib.searchTimelines" />
     </div>
     <nav class="vertical" side-nav>
@@ -49,6 +50,12 @@
         workflow="timelinegenerator.createFolder">
         <i18n>timelinegenerator.folder.new</i18n>
       </a>
+      <a class="button vertical-spacing-four zero-desktop" 
+          ng-if="isTrashFolder()" 
+          workflow="timelinegenerator.create"
+          ng-click="newTimeline()">
+          <i18n>timelinegenerator.timeline.new</i18n>
+        </a>
     </nav>
   </section>
   <section class="margin-four">
