@@ -91,5 +91,6 @@
     "tooltip.update": "Contributeur",
     "tooltip.read": "Lecteur",
     "timelinegenerator.folder.placeholder": "Nom du dossier",
-    "timelinegenerator.share.varyingrights": "Attention, vous allez modifier des droits de partage sur plusieurs frises : toutes les frises sélectionnées seront affectées, leurs partages respectifs actuels seront écrasés."
+    "timelinegenerator.share.varyingrights": "Attention, vous allez modifier des droits de partage sur plusieurs frises : toutes les frises sélectionnées seront affectées, leurs partages respectifs actuels seront écrasés.",
+    "timelinegenerator.library.prompt.title": "Frises chronologiques"
 }
