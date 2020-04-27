@@ -158,34 +158,34 @@
             </div>
           </section>
         </explorer>
-      </div>
-      <div ng-repeat="timeline in currentFolder.ressources.filtered | filter:searchTimeline">
-        <explorer ng-model="timeline.selected" on-open="viewTimeline(timeline)" class="item">
-          <section class="domino" dragstart ng-model="timeline._id">
-            <div class="top">
-              <img skin-src="/img/illustrations/image-default.svg" ng-if="!timeline.icon" class="absolute">
-              <img image-lazy-load="timeline.icon" ng-if="timeline.icon" class="absolute" />
-            </div>
-            <div class="bottom">
-              <div class="content">
-                <strong class="block overflow-hd">[[timeline.shortenedTitle]]</strong>
-                <span class="cell-ellipsis block">[[timeline.owner.displayName]]</span>
-                <em class="smaller-text block">
-                  <i18n>modified.on</i18n>
-                </em>
-                <br />
-                <div class="icons">
-                  <i class="ic-share inline" ng-if="timeline.shared.length > 0" tooltip="tooltip.shared"></i>
-                  <i class="public" ng-if="timeline.visibility === 'PUBLIC'" tooltip="tooltip.public"></i>
-                  <i class="manage" ng-if="timeline.myRights.manage" tooltip="tooltip.manager"></i>
-                  <i class="edit" ng-if="!timeline.myRights.manage && timeline.myRights.contrib"
-                    tooltip="tooltip.update"></i>
-                  <i class="view" ng-if="!timeline.myRights.contrib" tooltip="tooltip.read"></i>
+        <div ng-repeat="timeline in currentFolder.ressources.filtered | filter:searchTimeline">
+          <explorer ng-model="timeline.selected" on-open="viewTimeline(timeline)" class="item">
+            <section class="domino" dragstart ng-model="timeline._id">
+              <div class="top">
+                <img skin-src="/img/illustrations/image-default.svg" ng-if="!timeline.icon" class="absolute">
+                <img image-lazy-load="timeline.icon" ng-if="timeline.icon" class="absolute" />
+              </div>
+              <div class="bottom">
+                <div class="content">
+                  <strong class="block overflow-hd">[[timeline.shortenedTitle]]</strong>
+                  <span class="cell-ellipsis block">[[timeline.owner.displayName]]</span>
+                  <em class="smaller-text block">
+                    <i18n>modified.on</i18n>
+                  </em>
+                  <br />
+                  <div class="icons">
+                    <i class="ic-share inline" ng-if="timeline.shared.length > 0" tooltip="tooltip.shared"></i>
+                    <i class="public" ng-if="timeline.visibility === 'PUBLIC'" tooltip="tooltip.public"></i>
+                    <i class="manage" ng-if="timeline.myRights.manage" tooltip="tooltip.manager"></i>
+                    <i class="edit" ng-if="!timeline.myRights.manage && timeline.myRights.contrib"
+                      tooltip="tooltip.update"></i>
+                    <i class="view" ng-if="!timeline.myRights.contrib" tooltip="tooltip.read"></i>
+                  </div>
                 </div>
               </div>
-            </div>
-          </section>
-        </explorer>
+            </section>
+          </explorer>
+        </div>
       </div>
     </div>
   </section>
