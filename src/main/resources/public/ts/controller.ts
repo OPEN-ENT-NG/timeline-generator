@@ -181,9 +181,13 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
         Behaviours.applicationsBehaviours.timelinegenerator.sniplets.timelines.controller.source = timeline;
         timeline.open(async function () {
             for(const ev of timeline.events.all){
-                if(ev.video){
-                    ev.videoHtml = await embedderService.getHtmlForUrl(ev.video, true);
-                    ev.videoHtmlTrusted = $sce.trustAsHtml(ev.videoHtml);
+                try{
+                    if(ev.video){
+                        ev.videoHtml = await embedderService.getHtmlForUrl(ev.video, true);
+                        ev.videoHtmlTrusted = $sce.trustAsHtml(ev.videoHtml);
+                    }
+                }catch(e){
+                    console.error('[openTimelinePrinter] failed to parse video html', e)
                 }
             }
             template.close('main');
