@@ -476,7 +476,7 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
      */
     $scope.getTimelineThumbnail = function (timeline) {
         if (!timeline.icon || timeline.icon === '') {
-            return '/img/illustrations/image-default.svg';
+            return '/img/illustrations/timeline.svg';
         }
         return timeline.icon + '?thumbnail=120x120';
     };

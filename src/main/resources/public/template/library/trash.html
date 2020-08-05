@@ -18,7 +18,7 @@
         <explorer ng-model="timeline.selected" class="item" ng-repeat="timeline in currentFolder.ressources.filtered | filter:searchTimeline">
             <section class="domino" dragstart ng-model="timeline._id">
                 <div class="top">
-                    <img skin-src="/img/illustrations/image-default.svg" ng-if="!timeline.icon" class="absolute">
+                    <img skin-src="/img/illustrations/timeline.svg" ng-if="!timeline.icon" class="absolute">
                     <img image-lazy-load="timeline.icon" ng-if="timeline.icon" class="absolute" />
                 </div>
                 <div class="bottom">
