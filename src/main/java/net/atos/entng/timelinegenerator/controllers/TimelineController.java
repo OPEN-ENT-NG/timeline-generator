@@ -32,6 +32,7 @@ import net.atos.entng.timelinegenerator.TimelineGenerator;
 
 import net.atos.entng.timelinegenerator.services.EventService;
 import net.atos.entng.timelinegenerator.services.TimelineService;
+import org.entcore.common.events.EventHelper;
 import org.entcore.common.events.EventStore;
 import org.entcore.common.events.EventStoreFactory;
 import org.entcore.common.http.filter.OwnerOnly;
@@ -59,24 +60,23 @@ import static org.entcore.common.http.response.DefaultResponseHandler.leftToResp
 
 
 public class TimelineController extends MongoDbControllerHelper {
+	static final String RESOURCE_NAME = "timelinegenerator";
 
 	// Used for module "statistics"
-	private EventStore eventStore;
 	private TimelineService timelineService;
 	private EventService eventService;
-
-	private enum TimelineGeneratorEvent { ACCESS }
-
+	private final EventHelper eventHelper;
 
 	@Override
 	public void init(Vertx vertx, JsonObject config, RouteMatcher rm,
 			Map<String, fr.wseduc.webutils.security.SecuredAction> securedActions) {
 		super.init(vertx, config, rm, securedActions);
-		eventStore = EventStoreFactory.getFactory().getEventStore(TimelineGenerator.class.getSimpleName());
 	}
 
 	public TimelineController(String collection) {
 		super(collection);
+		final EventStore eventStore = EventStoreFactory.getFactory().getEventStore(TimelineGenerator.class.getSimpleName());
+		this.eventHelper = new EventHelper(eventStore);
 	}
 
 	@Get("")
@@ -85,7 +85,7 @@ public class TimelineController extends MongoDbControllerHelper {
 		renderView(request);
 
 		// Create event "access to application TimelineGenerator" and store it, for module "statistics"
-		eventStore.createAndStoreEvent(TimelineGeneratorEvent.ACCESS.name(), request);
+		eventHelper.onAccess(request);
 	}
 
 	@Get("/print")
@@ -120,7 +120,11 @@ public class TimelineController extends MongoDbControllerHelper {
 	    RequestUtils.bodyToJson(request, pathPrefix + "timeline", new Handler<JsonObject>() {
             @Override
             public void handle(JsonObject event) {
-                create(request);
+                create(request, r->{
+                	if(r.succeeded()){
+                		eventHelper.onCreateResource(request, RESOURCE_NAME);
+					}
+				});
             }
         });
 	}

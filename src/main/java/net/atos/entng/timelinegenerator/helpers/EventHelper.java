@@ -22,8 +22,13 @@ package net.atos.entng.timelinegenerator.helpers;
 import static org.entcore.common.http.response.DefaultResponseHandler.arrayResponseHandler;
 import static org.entcore.common.http.response.DefaultResponseHandler.defaultResponseHandler;
 import static org.entcore.common.http.response.DefaultResponseHandler.notEmptyResponseHandler;
+
+import fr.wseduc.webutils.Either;
+import net.atos.entng.timelinegenerator.TimelineGenerator;
 import net.atos.entng.timelinegenerator.services.EventService;
 
+import org.entcore.common.events.EventStore;
+import org.entcore.common.events.EventStoreFactory;
 import org.entcore.common.mongodb.MongoDbControllerHelper;
 import org.entcore.common.service.CrudService;
 import org.entcore.common.user.UserInfos;
@@ -36,17 +41,21 @@ import fr.wseduc.webutils.http.Renders;
 import fr.wseduc.webutils.request.RequestUtils;
 
 public class EventHelper extends MongoDbControllerHelper {
+	static final String RESOURCE_NAME = "timelinegenerator_event";
 
 	private static final String TIMELINE_ID_PARAMETER = "id";
 	private static final String EVENT_ID_PARAMETER = "eventid";
 
 	private final EventService eventService;
+	private final org.entcore.common.events.EventHelper eventHelper;
 
 	
 	public EventHelper(String collection, CrudService eventService) {
 		super(collection, null);
 		this.eventService = (EventService) eventService;
 		this.crudService = eventService;
+		final EventStore eventStore = EventStoreFactory.getFactory().getEventStore(TimelineGenerator.class.getSimpleName());
+		this.eventHelper = new org.entcore.common.events.EventHelper(eventStore);
 	}
 
 	@Override
@@ -72,7 +81,8 @@ public class EventHelper extends MongoDbControllerHelper {
 					RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
 						@Override
 						public void handle(JsonObject object) {
-							eventService.create(timelineId, object, user, notEmptyResponseHandler(request));
+							final Handler<Either<String, JsonObject>> handler = notEmptyResponseHandler(request);
+							eventService.create(timelineId, object, user, eventHelper.onCreateResource(request, RESOURCE_NAME, handler));
 						}
 					});
 				} else {
