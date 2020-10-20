@@ -164,12 +164,9 @@
             </div>
             <div class="bottom">
               <div class="content">
-                <strong class="block overflow-hd">[[timeline.shortenedTitle]]</strong>
-                <span class="cell-ellipsis block">[[timeline.owner.displayName]]</span>
-                <em class="smaller-text block">
-                  <i18n>modified.on</i18n>
-                </em>
-                <br />
+                <strong class="ressource-name" tooltip="[[timeline.shortenedTitle]]">[[timeline.shortenedTitle]]</strong>
+                <span class="owner">[[timeline.owner.displayName]]</span>
+                <span class="date"><i18n>modified.on</i18n></span>
                 <div class="icons">
                   <i class="ic-share inline" ng-if="timeline.shared.length > 0" tooltip="tooltip.shared"></i>
                   <i class="public" ng-if="timeline.visibility === 'PUBLIC'" tooltip="tooltip.public"></i>
