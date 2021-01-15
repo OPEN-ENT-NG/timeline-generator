@@ -1,5 +1,5 @@
-import { model, http, _, notify, moment, Behaviours, Collection } from 'entcore'
-
+import { model, http, _, notify, moment, Behaviours, Collection, EditTrackingEvent } from 'entcore'
+import {EventModel,TimelineModel} from "./commons";
 export let timelineNamespace: any = {};
 
 timelineNamespace.Event = function(){};
@@ -72,29 +72,33 @@ timelineNamespace.Timeline = function(){
 };
 
 timelineNamespace.Timeline.prototype = {
-	saveModifications: function(callback){
+	saveModifications: function(callback, err){
 		http().putJson('/timelinegenerator/timeline/' + this._id, this).done(function(e){
 			notify.info('timelinegenerator.timeline.modification.saved');
 			if(typeof callback === 'function'){
 				callback();
 			}
-		});
+		}).error(function(e){
+			err && err(e)
+		}.bind(this))
 	},
-	save: function(callback){
+	save: function(callback, err){
 		if(this._id){
-			this.saveModifications(callback);
+			this.saveModifications(callback, err);
 		}
 		else{
-			this.createTimeline(callback);
+			this.createTimeline(callback, err);
 		}
 	},
-	createTimeline: function(cb){
+	createTimeline: function(cb, err){
 		let timeline = this;
 		http().postJson('/timelinegenerator/timelines', this).done(function(e){
 			timeline.updateData(e);
 			if(typeof cb === 'function'){
 				cb();
 			}
+		}.bind(this)).error(function(e){
+			err && err(e)
 		}.bind(this));
 	},
 	open: function(cb){
@@ -105,7 +109,7 @@ timelineNamespace.Timeline.prototype = {
 		}.bind(this));
 		this.events.sync();
 	},
-	addEvent: function(event, cb){
+	addEvent: function(event:EventModel, cb, err){
 		event.timeline = this;
 		event.owner = {
 			userId: model.me.userId,
@@ -116,6 +120,8 @@ timelineNamespace.Timeline.prototype = {
 			if(typeof cb === 'function'){
 				cb();
 			}
+		}.bind(this),function(){
+			err && err();
 		}.bind(this));
 	},
 	toJSON: function(){
@@ -169,28 +175,32 @@ timelineNamespace.Timeline.prototype = {
 
 timelineNamespace.Event.prototype = {
 	Event: function(){},
-	save: function(cb){
+	save: function(cb, err){
 		if(this._id){
-			this.saveModifications(cb);
+			this.saveModifications(cb, err);
 		}
 		else{
-			this.createEvent(cb);
+			this.createEvent(cb, err);
 		}
 	},
-	saveModifications: function(cb){
+	saveModifications: function(cb, err){
 		http().putJson('/timelinegenerator/timeline/' + this.timeline._id + '/event/' + this._id, this).done(function(e){
 			if(typeof cb === 'function'){
 				cb();
 			}
-		});
+		}).error(function(e){
+			err && err(e)
+		}.bind(this));
 	},
-	createEvent: function(cb){
+	createEvent: function(cb, err){
 		let event = this;
 		http().postJson('/timelinegenerator/timeline/' + this.timeline._id + '/events', this).done(function(e){
 			event.updateData(e);
 			if(typeof cb === 'function'){
 				cb();
 			}
+		}.bind(this)).error(function(e){
+			err && err(e)
 		}.bind(this));
 	},
 	open: function(cb){

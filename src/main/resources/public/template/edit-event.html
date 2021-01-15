@@ -9,7 +9,7 @@
 			<!-- title form -->
 			<div class="row vertical-spacing">
 				<label class="two cell"><i18n>timelinegenerator.event.headline</i18n></label>
-				<input type="text" i18n-placeholder="timelinegenerator.event.placeholder" class="ten cell" ng-model="event.headline" required input-guard></input>
+				<input type="text" i18n-placeholder="timelinegenerator.event.placeholder" class="ten cell" ng-model="event.headline" required input-guard track-input-event="event.tracker"></input>
 			</div>
 
 			<!-- Date form -->
@@ -19,7 +19,7 @@
 					<div class="row">
 						<label class="two cell"><i18n>timelinegenerator.date.format</i18n></label>
 						<span class="ten cell">
-						<select ng-model="event.dateFormat" ng-change="switchDateFormat()">
+						<select ng-model="event.dateFormat" ng-change="switchDateFormat()" track-input-event="event.tracker">
 							<option name="dateFormat" value="year">[[lang.translate("timelinegenerator.year")]]</option>
 							<option name="dateFormat" value="month">[[lang.translate("timelinegenerator.month")]]</option>
 							<option name="dateFormat" value="day"><i18n></i18n>[[lang.translate("timelinegenerator.day")]]</option>
@@ -29,18 +29,18 @@
 					<div class="row">
 						<label class="two cell"><i18n>timelinegenerator.event.startdate</i18n></label>
 						<span class="ten cell">
-						<date-picker-timeline ng-if="event.dateFormat == 'day'" event-date-format="event.dateFormat" ng-model="event.startDate"></date-picker-timeline>
-						<input type="text" ng-if="event.dateFormat == 'month' || event.dateFormat == 'year'" ng-model="event.startDate.newDate" ng-blur="setDateYear(event.startDate)" placeholder="[[ model.inputPlaceholderDateFormat[event.dateFormat] ]]">
+						<date-picker-timeline ng-if="event.dateFormat == 'day'" event-date-format="event.dateFormat" ng-model="event.startDate"  track-input-event="event.tracker"></date-picker-timeline>
+						<input type="text" ng-if="event.dateFormat == 'month' || event.dateFormat == 'year'" ng-model="event.startDate.newDate" ng-blur="setDateYear(event.startDate)" placeholder="[[ model.inputPlaceholderDateFormat[event.dateFormat] ]]"  track-input-event="event.tracker">
 					</span>
 					</div>
 					<div class="row">
 						<label class="two cell">
-							<input type="checkbox" ng-change="resetEndDate()" ng-model="event.enableEndDate"/>
+							<input type="checkbox" ng-change="resetEndDate()" ng-model="event.enableEndDate"  track-input-event="event.tracker"/>
 							<i18n>timelinegenerator.event.enddate</i18n>
 						</label>
 						<span class="ten cell" ng-if="event.enableEndDate">
-						<date-picker-timeline ng-if=" event.dateFormat == 'day'" event-date-format="event.dateFormat" ng-model="event.endDate"></date-picker-timeline>
-						<input type="text" ng-if="event.dateFormat == 'month' || event.dateFormat == 'year'" ng-model="event.endDate.newDate" ng-blur="setDateYear(event.endDate)" placeholder="[[ model.inputPlaceholderDateFormat[event.dateFormat] ]]">
+						<date-picker-timeline ng-if=" event.dateFormat == 'day'" event-date-format="event.dateFormat" ng-model="event.endDate"  track-input-event="event.tracker"></date-picker-timeline>
+						<input type="text" ng-if="event.dateFormat == 'month' || event.dateFormat == 'year'" ng-model="event.endDate.newDate" ng-blur="setDateYear(event.endDate)" placeholder="[[ model.inputPlaceholderDateFormat[event.dateFormat] ]]"  track-input-event="event.tracker">
 					</span>
 					</div>
 				</div>
@@ -50,17 +50,17 @@
 			<div class="row vertical-spacing">
 				<label class="two cell"><i18n>timelinegenerator.select.media.type</i18n> </label>
 				<div class="ten cell height">
-					<input id="mediatype-image" type="radio" name="mediatype" ng-model="event.mediatype" value="img"/>
+					<input id="mediatype-image" type="radio" name="mediatype" ng-model="event.mediatype" value="img"  track-input-event="event.tracker"/>
 					<label for="mediatype-image"><i18n>timelinegenerator.image</i18n></label>
 
-					<input id="mediatype-video" type="radio" name="mediatype" ng-model="event.mediatype" value="video"/>
+					<input id="mediatype-video" type="radio" name="mediatype" ng-model="event.mediatype" value="video"  track-input-event="event.tracker"/>
 					<label for="mediatype-video"><i18n>timelinegenerator.video</i18n></label>
 					<BR/>
 					<div class="cell" ng-if="event.mediatype == 'img'">
-						<image-select ng-change="resetEventVideo(event)" ng-model="event.img" default="/img/icons/folder-large.png" thumbnails="[{ width: 120, height: 120 }]"></image-select>
+						<image-select ng-change="resetEventVideo(event)" ng-model="event.img" default="/img/icons/folder-large.png" thumbnails="[{ width: 120, height: 120 }]"  track-input-event="event.tracker"></image-select>
 					</div>
 					<div ng-if="event.mediatype == 'video'">
-						<input type="text" i18n-placeholder="timelinegenerator.event.video.placeholder" class="twelve cell" ng-model="event.video" ng-change="resetEventImage(event)" ></input>
+						<input type="text" i18n-placeholder="timelinegenerator.event.video.placeholder" class="twelve cell" ng-model="event.video" ng-change="resetEventImage(event)"  track-input-event="event.tracker"></input>
 					</div>
 				</div>
 			</div>
@@ -69,7 +69,7 @@
 			<div class="twelve cell">
 				<label class="two cell"><i18n>timelinegenerator.event.text</i18n></label>
 				<div class="ten cell">
-					<editor ng-model="event.text" input-guard></editor>
+					<editor ng-model="event.text" input-guard  track-input-event="event.tracker"></editor>
 				</div>
 			</div>
 

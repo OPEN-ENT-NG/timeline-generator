@@ -1,3 +1,5 @@
+import { EditTrackingEvent } from "entcore"
+
 export type TimelineModel = {
 	_id: string;
 	myRights: any;
@@ -8,10 +10,9 @@ export type TimelineModel = {
 	events: EventsModel
 	headline: string
 	text: string
-	owner: { userId: string, displayName: string };
 	toJSON(): any;
 	open(success: () => void, err?: () => void): void;
-	addEvent(event: EventModel, finish?: () => void): void;
+	addEvent(event: EventModel, finish?: () => void, err?: () => void): void;
 	save(finish?: () => void): void;
 	sync(finish?: () => void): void;
 	behaviours(a?:any): any
@@ -42,6 +43,9 @@ export type EventModel = {
 	videoHtml?: string;
 	videoHtmlTrusted? : string;
 	mediatype: "video" | "img"
-	save(finish?: () => void): void;
-	sync(finish?: () => void): void;
+    tracker: EditTrackingEvent;
+	owner?: { userId: string, displayName: string };
+	timeline?: TimelineModel;
+	save(finish?: () => void, err?: () => void): void;
+	sync(finish?: () => void, err?: () => void): void;
 }

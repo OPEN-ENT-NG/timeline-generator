@@ -2,7 +2,7 @@ import { ng, template, idiom, notify, model, Behaviours } from 'entcore';
 import { Folders, Folder, Filters, BaseFolder, Root, Trash } from '../models/folder';
 import { Timeline } from '../models/timeline';
 import { _ } from 'entcore';
-import { TimelineModel } from './commons';
+import { TimelineModel } from '../models/commons';
 
 export interface LibraryControllerScope {
     root: Root
