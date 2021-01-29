@@ -45,6 +45,7 @@ export interface TimelineGeneratorControllerScope {
     saveTimelineEdit(): void
     cancelTimelineEdit(): void
     saveEventEdit(): void
+    isEventFormValid(): boolean;
     cancelEventEdit(): void
     editTimeline(): void
     editEvent(eventModel: EventModel, event: Event): void
@@ -281,6 +282,10 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
         else { // when creating an event
             $scope.addEvent();
         }
+    };
+
+    $scope.isEventFormValid = (): boolean => {
+        return $scope.event && $scope.event.headline != undefined;
     };
 
     $scope.cancelEventEdit = function () {

@@ -5,11 +5,14 @@
 
 	<article class="twelve cell">
 		<div name="form" guard-root guard-ignore-template>
+
+			<!-- title form -->
 			<div class="row vertical-spacing">
 				<label class="two cell"><i18n>timelinegenerator.event.headline</i18n></label>
 				<input type="text" i18n-placeholder="timelinegenerator.event.placeholder" class="ten cell" ng-model="event.headline" required input-guard></input>
 			</div>
 
+			<!-- Date form -->
 			<div class="row vertical-spacing">
 				<label class="two cell"><i18n>timelinegenerator.event.date</i18n></label>
 				<div class="ten cell">
@@ -42,6 +45,8 @@
 					</div>
 				</div>
 			</div>
+
+			<!-- Media type form -->
 			<div class="row vertical-spacing">
 				<label class="two cell"><i18n>timelinegenerator.select.media.type</i18n> </label>
 				<div class="ten cell height">
@@ -60,6 +65,7 @@
 				</div>
 			</div>
 
+			<!-- editor text content form -->
 			<div class="twelve cell">
 				<label class="two cell"><i18n>timelinegenerator.event.text</i18n></label>
 				<div class="ten cell">
@@ -70,7 +76,7 @@
 			<div class="twelve cell warning" ng-if="event.error !== undefined" translate content="[[event.error]]">
 			</div>
 
-			<button class="right-magnet" ng-class="" reset-guard="saveEventEdit()" ng-disabled="form.$invalid"><i18n>save</i18n></button>
+			<button class="right-magnet" ng-class="" reset-guard="saveEventEdit()" ng-disabled="form.$invalid || !isEventFormValid()"><i18n>save</i18n></button>
 			<button class="cancel right-magnet" navigation-trigger="cancelEventEdit()"><i18n>cancel</i18n></button>
 		</div>
 	</article>
