@@ -170,6 +170,12 @@ Behaviours.register('timelinegenerator', {
 								innerDoc.write("<html><head><title></title><base target='_parent' /></head><body><div id='timeline'></div>"+
 									"<script src='/infra/public/js/jquery-1.10.2.min.js'></script>" +
 									"<script src='/timelinegenerator/public/js/storyjs-embed.js'></script>" +
+									"<script src='/infra/public/mathjax/MathJax.js'></script>" +
+									"<script>  window.MathJax.Hub.Config({messageStyle: 'none', tex2jax: { preview: 'none' }," +
+									" jax: [\"input/TeX\", \"output/CommonHTML\"]," +
+									" extensions: [\"tex2jax.js\", \"MathMenu.js\", \"MathZoom.js\"]," +
+									"TeX: {extensions: [\"AMSmath.js\", \"AMSsymbols.js\", \"noErrors.js\", \"noUndefined.js\"]}});</script>" +
+									"<script>if (window.MathJax && window.MathJax.Hub) {window.MathJax.Hub.Queue([\"Typeset\", window.MathJax.Hub]);}</script>" +
 
 									"<script>var timeline = "+ JSON.stringify(scope.source.toTimelineJsJSON()) + ";</script>" +
 									"<script>var userLanguage = '" + scope.userLanguage + "';</script>" +
