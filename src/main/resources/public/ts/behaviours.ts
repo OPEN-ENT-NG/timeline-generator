@@ -4,6 +4,7 @@ import { timelineNamespace } from './models/model'
 declare let $: any;
 declare let createStoryJS: any;
 declare let userLanguage: any;
+declare let window: any;
 
 let Event = timelineNamespace.Event;
 
@@ -32,6 +33,11 @@ console.log('timelinegenerator behaviours loaded');
 	"month": "mois/année",
 	"day": "jour/mois/année"
 };
+
+export function initScript() {
+	console.log("going on initScript");
+	window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub]);
+}
 
 let timelineGeneratorBehaviours = {
 	resources: {
@@ -153,7 +159,7 @@ Behaviours.register('timelinegenerator', {
 								
 								// Hack to display more than one timeline in the same page
 								// https://github.com/NUKnightLab/TimelineJS/issues/591
-								var injectedScript = function(){
+								var injectedScript = function() {
 									createStoryJS({
 										type:       'timeline',
 										width:      '100%',
@@ -165,15 +171,32 @@ Behaviours.register('timelinegenerator', {
 										js: 		'/timelinegenerator/public/js/timeline-min.js'
 									});
 								};
+
+								// Hack to inject and instantiate mathJax lib to iframe
+								var injectMathScript = function () {
+									if (window.MathJax && window.MathJax.Hub) {
+										setTimeout(() => {
+											window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub]);
+										}, 1500);
+									}
+								};
+
 								var innerDoc = $('#' + scope.source._id)[0].contentWindow.document;
+
 								innerDoc.open();
-								innerDoc.write("<html><head><title></title><base target='_parent' /></head><body><div id='timeline'></div>"+
+								innerDoc.write("<html><head>" +
+									"<script src='/infra/public/mathjax/MathJax.js'></script>" +
+									"<script>window.MathJax.Hub.Config({messageStyle: 'none', tex2jax: { preview: 'none' }," +
+									" jax: [\"input/TeX\", \"output/CommonHTML\"]," +
+									" extensions: [\"tex2jax.js\", \"MathMenu.js\", \"MathZoom.js\"]," +
+									"TeX: {extensions: [\"AMSmath.js\", \"AMSsymbols.js\", \"noErrors.js\", \"noUndefined.js\"]}});</script>" +
+									"<title></title><base target='_parent'/></head><body><div id='timeline'></div>"+
 									"<script src='/infra/public/js/jquery-1.10.2.min.js'></script>" +
 									"<script src='/timelinegenerator/public/js/storyjs-embed.js'></script>" +
-
 									"<script>var timeline = "+ JSON.stringify(scope.source.toTimelineJsJSON()) + ";</script>" +
 									"<script>var userLanguage = '" + scope.userLanguage + "';</script>" +
 									"<script>var injectedScript= "+ injectedScript + ";injectedScript();</script>" +
+									"<script>var injectMathScript= "+ injectMathScript + "; injectMathScript();</script>" +
 									"</body></html>");
 								innerDoc.close();
 								
