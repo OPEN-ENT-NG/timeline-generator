@@ -34,11 +34,6 @@ console.log('timelinegenerator behaviours loaded');
 	"day": "jour/mois/année"
 };
 
-export function initScript() {
-	console.log("going on initScript");
-	window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub]);
-}
-
 let timelineGeneratorBehaviours = {
 	resources: {
 		contrib: {
@@ -171,12 +166,20 @@ Behaviours.register('timelinegenerator', {
 										js: 		'/timelinegenerator/public/js/timeline-min.js'
 									});
 								};
-
+								
 								// Hack to inject and instantiate mathJax lib to iframe
 								var injectMathScript = function () {
+
 									if (window.MathJax && window.MathJax.Hub) {
 										setTimeout(() => {
 											window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub]);
+											// tricks to keep calling mathJax since we keep having bad values
+											let $navigation: JQuery = $('.nav-next, .nav-previous, .marker');
+											$navigation.click(() =>{
+												// tricks to keep calling mathJax and other potential lost libs
+												// since we keep having bad interpreter values
+												window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub]);
+											});
 										}, 1500);
 									}
 								};
