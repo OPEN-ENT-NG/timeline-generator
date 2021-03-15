@@ -61,17 +61,17 @@
   <section class="margin-four">
     <!--FILTERS-->
     <div class="twelve cell chips" ng-if="!empty">
-      <label class="chip" ng-click="currentFolder.ressources.refreshFilters()" ng-class="{ selected: filters.mine }"
+      <label class="chip" ng-class="{ selected: filters.mine }"
         ng-if="!empty && (currentFolder.ressources.all.length || currentFolder.children.arr.length)">
         <i class="mine" tooltip="filters.mine"></i>
         <i18n>filters.mine</i18n>
-        <input type="checkbox" ng-model="filters.mine" />
+        <input type="checkbox" ng-change="currentFolder.ressources.refreshFilters()" ng-model="filters.mine" />
       </label>
-      <label class="chip" ng-click="currentFolder.ressources.refreshFilters()" ng-class="{ selected: filters.shared }"
+      <label class="chip" ng-class="{ selected: filters.shared }"
         ng-if="!empty && (currentFolder.ressources.all.length || currentFolder.children.arr.length)">
         <i class="ic-share" tooltip="filters.sharedTimelines"></i>
         <i18n>filters.sharedTimelines</i18n>
-        <input type="checkbox" ng-model="filters.shared" />
+        <input type="checkbox" ng-change="currentFolder.ressources.refreshFilters()" ng-model="filters.shared" />
       </label>
 
       <!-- Empty screen Création -->
