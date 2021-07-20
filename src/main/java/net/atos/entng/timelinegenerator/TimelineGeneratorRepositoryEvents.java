@@ -93,7 +93,7 @@ public class TimelineGeneratorRepositoryEvents extends MongoDbRepositoryEvents {
                 QueryBuilder.start("shared.userId").is(userId).get(),
                 QueryBuilder.start("shared.groupId").in(groups).get()
         );
-        QueryBuilder findByAuthorOrShared = exportSharedResources ? findByAuthor : QueryBuilder.start().or(findByAuthor.get(),findByShared.get());
+        QueryBuilder findByAuthorOrShared = exportSharedResources == false ? findByAuthor : QueryBuilder.start().or(findByAuthor.get(),findByShared.get());
 
         JsonObject query;
 
