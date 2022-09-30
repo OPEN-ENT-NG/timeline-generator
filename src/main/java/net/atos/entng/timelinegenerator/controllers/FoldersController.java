@@ -1,6 +1,7 @@
 package net.atos.entng.timelinegenerator.controllers;
 
 import fr.wseduc.rs.*;
+import fr.wseduc.security.ActionType;
 import fr.wseduc.security.SecuredAction;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerRequest;
@@ -27,6 +28,7 @@ public class FoldersController extends MongoDbControllerHelper {
 	@Override
 	@Get("folder/list/:filter")
 	@ApiDoc("List all user folders.")
+	@SecuredAction(value = "", type = ActionType.AUTHENTICATED)
 	public void list(HttpServerRequest request) {
 		super.list(request);
 	}
