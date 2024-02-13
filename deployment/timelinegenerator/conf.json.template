@@ -1,5 +1,5 @@
 {
-  "name": "net.atos~timelinegenerator~1.13.4",
+  "name": "net.atos~timelinegenerator~1.13.4-dev-sre-SNAPSHOT"
   "config": {
     "main" : "net.atos.entng.timelinegenerator.TimelineGenerator",
     "port" : 8099,
