@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.mongodb.QueryBuilder;
+import com.mongodb.client.model.Filters;
 import fr.wseduc.mongodb.MongoQueryBuilder;
 import fr.wseduc.webutils.I18n;
 import io.vertx.core.json.JsonArray;
@@ -265,7 +265,7 @@ public class TimelineController extends MongoDbControllerHelper {
 	private void cleanFolders(String id, UserInfos user, List<String> recipientIds){
 		//owner style keep the reference to the ressource
 		JsonArray jsonRecipients = new JsonArray(recipientIds).add(user.getUserId());
-		JsonObject query = MongoQueryBuilder.build(QueryBuilder.start("ressourceIds").is(id).and("owner.userId").notIn(jsonRecipients));
+		JsonObject query = MongoQueryBuilder.build(Filters.and(Filters.eq("ressourceIds", id), Filters.nin("owner.userId", jsonRecipients)));
 		JsonObject update = new JsonObject().put("$pull", new JsonObject().put("ressourceIds", new JsonObject().put("$nin",jsonRecipients)));
 		mongo.update("timelinegeneratorFolders", query, update, message -> {
 			JsonObject body = message.body();

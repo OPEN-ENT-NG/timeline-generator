@@ -19,6 +19,7 @@
 
 package net.atos.entng.timelinegenerator;
 
+import io.vertx.core.Promise;
 import net.atos.entng.timelinegenerator.controllers.EventController;
 import net.atos.entng.timelinegenerator.controllers.FoldersController;
 import net.atos.entng.timelinegenerator.controllers.TimelineController;
@@ -45,13 +46,13 @@ public class TimelineGenerator extends BaseServer {
 	final CrudService eventService = new EventServiceMongoImpl(TIMELINE_GENERATOR_EVENT_COLLECTION);
 	
 	@Override
-	public void start() throws Exception {
+	public void start(Promise<Void> startPromise) throws Exception {
 		final MongoDbConf conf = MongoDbConf.getInstance();
 		conf.setCollection(TIMELINE_GENERATOR_COLLECTION);
 		conf.setResourceIdLabel("id");
 		conf.addSearchTextField(TIMELINE_GENERATOR_COLLECTION + ".text");
 
-		super.start();
+		super.start(startPromise);
 		setDefaultResourceFilter(new ShareAndOwner());
 
         setRepositoryEvents(new TimelineGeneratorRepositoryEvents(vertx));
@@ -67,6 +68,7 @@ public class TimelineGenerator extends BaseServer {
 		addController(timelineController);
 		addController(new EventController(TIMELINE_GENERATOR_EVENT_COLLECTION, eventService));
 		addController(new FoldersController("timelinegeneratorFolders"));
+		startPromise.tryComplete();
 	}
 
 	
