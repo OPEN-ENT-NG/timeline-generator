@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Frise chronologique</title>
+    <link rel="icon" id="favicon" href="" />
+    <link rel="stylesheet" href="/assets/themes/edifice-bootstrap/index.css" />
+    <script
+      type="module"
+      crossorigin
+      src="/assets/js/ode-explorer/index.js"
+    ></script>
+    <link rel="stylesheet" href="/assets/js/ode-explorer/style.css" />
+  </head>
+  <body class="app-react" data-explorer-config>
+    <div id="root"></div>
+    <div id="portal"></div>
+
+    <!-- SET INITIALISATION CONFIG -->
+    <script>
+      var WORFLOW_ACCESS = "net.atos.entng.timelinegenerator.controllers.TimelineController|view";
+      var WORKFLOW_CREATE = "net.atos.entng.timelinegenerator.controllers.TimelineController|createTimeline";
+      var WORKFLOW_CREATE_FOLDER = "net.atos.entng.timelinegenerator.controllers.FoldersController|add";
+      var WORKFLOW_PUBLISH = "net.atos.entng.timelinegenerator.controllers.TimelineController|publish";
+      var WORKFLOW_PRINT = "net.atos.entng.timelinegenerator.controllers.TimelineController|print";
+      var explorerConfig = {
+        app: "timelinegenerator",
+        types: ["timelinegenerator"],
+        filters: [
+            { id: "owner", defaultValue: true },
+            { id: "public", defaultValue: false },
+            { id: "shared", defaultValue: true },
+        ],
+        orders: [
+            { id: "name", defaultValue: "asc", i18n: "explorer.sorts.name" },
+            { id: "updatedAt", i18n: "explorer.sortes.updatedat"},
+        ],
+        actions: [
+          {
+            id: "createFolder",
+            workflow: "WORKFLOW_CREATE_FOLDER",
+            target: "manager", // is optional assumed manager, can be changed later
+
+          },
+          {
+            id: "create",
+            workflow: WORKFLOW_CREATE,
+            target: "tree",
+          },
+          {
+            id: "view",
+            workflow: WORFLOW_ACCESS,
+            target: "read", // is optional, assumed read, can be changed later 
+          },
+          {
+            id: "publish",
+            workflow: WORKFLOW_PUBLISH,
+            target: "actionbar",
+            right: "creator",
+          },
+
+        ],
+        trashActions: [
+            {
+                id: "restore",
+                available: true,
+                target: "actionbar",
+                workflow: "",
+                right: "manager",
+            },
+            {
+                id: "delete",
+                available: true,
+                target: "actionbar",
+                workflow: "",
+                right: "manager",
+            },
+        ],
+      };
+      var rootElement = document.querySelector("[data-explorer-config]");
+      rootElement.setAttribute("data-explorer-config", JSON.stringify(explorerConfig));
+    </script>
+  </body>
+</html>
