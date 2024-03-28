@@ -24,7 +24,7 @@ public class DefaultTimelineService extends MongoDbCrudService implements Timeli
 
 	protected static final Logger log = LoggerFactory.getLogger(DefaultTimelineService.class);
 	private TimelineGeneratorExplorerPlugin plugin;
-	
+
 	List<String> UPDATABLE_FIELDS = Arrays.asList("title", "content", "icon", "text", "trashed");
 	public DefaultTimelineService(TimelineGeneratorExplorerPlugin plugin) {
 
@@ -34,7 +34,7 @@ public class DefaultTimelineService extends MongoDbCrudService implements Timeli
 
 	@Override
 	public void create(JsonObject data, UserInfos user, Handler<Either<String, JsonObject>> result) {
-		
+
 		final long version = currentTimeMillis();
 
 		if(validationError(result, data)) {
