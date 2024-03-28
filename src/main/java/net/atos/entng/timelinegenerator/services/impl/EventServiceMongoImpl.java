@@ -22,13 +22,9 @@ package net.atos.entng.timelinegenerator.services.impl;
 import static org.entcore.common.mongodb.MongoDbResult.validActionResultHandler;
 import static org.entcore.common.mongodb.MongoDbResult.validResultHandler;
 import static org.entcore.common.mongodb.MongoDbResult.validResultsHandler;
-import net.atos.entng.timelinegenerator.services.EventService;
 
 import org.entcore.common.service.impl.MongoDbCrudService;
 import org.entcore.common.user.UserInfos;
-import io.vertx.core.Handler;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
 
 import com.mongodb.QueryBuilder;
 
@@ -36,6 +32,10 @@ import fr.wseduc.mongodb.MongoDb;
 import fr.wseduc.mongodb.MongoQueryBuilder;
 import fr.wseduc.mongodb.MongoUpdateBuilder;
 import fr.wseduc.webutils.Either;
+import io.vertx.core.Handler;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+import net.atos.entng.timelinegenerator.services.EventService;
 
 public class EventServiceMongoImpl extends MongoDbCrudService implements EventService {
 

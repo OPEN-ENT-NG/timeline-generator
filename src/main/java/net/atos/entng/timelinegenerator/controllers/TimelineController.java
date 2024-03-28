@@ -19,34 +19,27 @@
 
 package net.atos.entng.timelinegenerator.controllers;
 
+import static net.atos.entng.timelinegenerator.enums.ViewEnum.HOME;
+import static net.atos.entng.timelinegenerator.enums.ViewEnum.RESOURCE;
+import static net.atos.entng.timelinegenerator.enums.ViewEnum.VIEW;
+import static org.entcore.common.http.response.DefaultResponseHandler.leftToResponse;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.mongodb.QueryBuilder;
-import fr.wseduc.mongodb.MongoQueryBuilder;
-import fr.wseduc.webutils.I18n;
-import io.vertx.core.json.JsonArray;
-import net.atos.entng.timelinegenerator.TimelineGenerator;
-
-import net.atos.entng.timelinegenerator.services.EventService;
-import net.atos.entng.timelinegenerator.services.TimelineService;
 import org.entcore.common.events.EventHelper;
 import org.entcore.common.events.EventStore;
 import org.entcore.common.events.EventStoreFactory;
-import org.entcore.common.http.filter.OwnerOnly;
-import org.entcore.common.http.filter.ResourceFilter;
 import org.entcore.common.mongodb.MongoDbControllerHelper;
 import org.entcore.common.user.UserInfos;
 import org.entcore.common.user.UserUtils;
-import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpServerRequest;
 import org.vertx.java.core.http.RouteMatcher;
-import io.vertx.core.json.JsonObject;
 
+import com.mongodb.QueryBuilder;
 
+import fr.wseduc.mongodb.MongoQueryBuilder;
 import fr.wseduc.rs.ApiDoc;
 import fr.wseduc.rs.Delete;
 import fr.wseduc.rs.Get;
@@ -54,9 +47,17 @@ import fr.wseduc.rs.Post;
 import fr.wseduc.rs.Put;
 import fr.wseduc.security.ActionType;
 import fr.wseduc.security.SecuredAction;
+import fr.wseduc.webutils.I18n;
 import fr.wseduc.webutils.request.RequestUtils;
-
-import static org.entcore.common.http.response.DefaultResponseHandler.leftToResponse;
+import io.vertx.core.Handler;
+import io.vertx.core.MultiMap;
+import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+import net.atos.entng.timelinegenerator.TimelineGenerator;
+import net.atos.entng.timelinegenerator.services.EventService;
+import net.atos.entng.timelinegenerator.services.TimelineService;
 
 
 public class TimelineController extends MongoDbControllerHelper {
@@ -79,13 +80,27 @@ public class TimelineController extends MongoDbControllerHelper {
 		this.eventHelper = new EventHelper(eventStore);
 	}
 
+	// @Get("")
+	// @SecuredAction("timelinegenerator.view")
+	// public void view(HttpServerRequest request) {
+	// 	renderView(request);
+
+	// 	// Create event "access to application TimelineGenerator" and store it, for module "statistics"
+	// 	eventHelper.onAccess(request);
+	// }
+
 	@Get("")
 	@SecuredAction("timelinegenerator.view")
 	public void view(HttpServerRequest request) {
-		renderView(request);
-
-		// Create event "access to application TimelineGenerator" and store it, for module "statistics"
-		eventHelper.onAccess(request);
+		final String view = request.params().get(VIEW.getValue());
+		MultiMap all = request.params();
+		if(HOME.getValue().equals(view) || RESOURCE.getValue().equals(view)) {
+			renderView(request, new JsonObject(), "timelinegenerator-explorer.html", null);
+		} else {
+			// use old ui by default for routing
+			renderView(request, new JsonObject(), "timelinegenerator-explorer.html", null);
+//			renderView(request);
+		}
 	}
 
 	@Get("/print")
