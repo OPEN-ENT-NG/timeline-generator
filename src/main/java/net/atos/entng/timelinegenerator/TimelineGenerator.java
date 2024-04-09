@@ -19,9 +19,14 @@
 
 package net.atos.entng.timelinegenerator;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import net.atos.entng.timelinegenerator.controllers.EventController;
+import net.atos.entng.timelinegenerator.controllers.TimelineController;
+import net.atos.entng.timelinegenerator.events.TimelineGeneratorSearchingEvents;
+import net.atos.entng.timelinegenerator.explorer.TimelineGeneratorExplorerPlugin;
+import net.atos.entng.timelinegenerator.services.EventService;
+import net.atos.entng.timelinegenerator.services.TimelineService;
+import net.atos.entng.timelinegenerator.services.impl.DefaultTimelineService;
+import net.atos.entng.timelinegenerator.services.impl.EventServiceMongoImpl;
 import org.entcore.common.explorer.IExplorerPluginClient;
 import org.entcore.common.explorer.impl.ExplorerRepositoryEvents;
 import org.entcore.common.http.BaseServer;
@@ -31,20 +36,12 @@ import org.entcore.common.service.CrudService;
 import org.entcore.common.service.impl.MongoDbSearchService;
 import org.entcore.common.user.RepositoryEvents;
 
-import net.atos.entng.timelinegenerator.controllers.EventController;
-import net.atos.entng.timelinegenerator.controllers.FoldersController;
-import net.atos.entng.timelinegenerator.controllers.TimelineController;
-import net.atos.entng.timelinegenerator.events.TimelineGeneratorSearchingEvents;
-import net.atos.entng.timelinegenerator.explorer.TimelineGeneratorExplorerPlugin;
-import net.atos.entng.timelinegenerator.services.EventService;
-import net.atos.entng.timelinegenerator.services.TimelineService;
-import net.atos.entng.timelinegenerator.services.impl.DefaultTimelineService;
-import net.atos.entng.timelinegenerator.services.impl.EventServiceMongoImpl;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class TimelineGenerator extends BaseServer {
 
-	// TODO create a file called constants and add all constants there.
 	public final static String APPLICATION = "timelinegenerator";
 	public final static String TIMELINE_GENERATOR_COLLECTION = "timelinegenerator";
 	public final static String TIMELINE_GENERATOR_EVENT_COLLECTION = "timelinegeneratorevent";
@@ -77,10 +74,6 @@ public class TimelineGenerator extends BaseServer {
 		createAndSetRepositoryEvents(mainClient, pluginClientPerCollection);
 
 		timelineGeneratorPlugin = TimelineGeneratorExplorerPlugin.create(securedActions);
-		// final EventExplorerPlugin eventPlugin = timelineGeneratorPlugin.eventPlugin();
-		// final MongoDb mongoDb = MongoDb.getInstance();
-		// final EventService eventService = new EventServiceMongoImpl(TIMELINE_GENERATOR_EVENT_COLLECTION);
-		// PAS BESOIN  POUR CREE LE SERVICE.
 
 		final TimelineService timelineService = new DefaultTimelineService(timelineGeneratorPlugin);
 
@@ -89,7 +82,6 @@ public class TimelineGenerator extends BaseServer {
 		timelineController.setEventService((EventService) eventService);
 		addController(timelineController);
 		addController(new EventController(TIMELINE_GENERATOR_EVENT_COLLECTION, eventService));
-		addController(new FoldersController("timelinegeneratorFolders", vertx, timelineGeneratorPlugin));
 
 		timelineGeneratorPlugin.start();
 

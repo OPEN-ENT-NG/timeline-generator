@@ -19,35 +19,13 @@
 
 package net.atos.entng.timelinegenerator.controllers;
 
-import static net.atos.entng.timelinegenerator.enums.ViewEnum.HOME;
-import static net.atos.entng.timelinegenerator.enums.ViewEnum.RESOURCE;
-import static net.atos.entng.timelinegenerator.enums.ViewEnum.VIEW;
-import static org.entcore.common.http.response.DefaultResponseHandler.leftToResponse;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.entcore.common.events.EventHelper;
-import org.entcore.common.events.EventStore;
-import org.entcore.common.events.EventStoreFactory;
-import org.entcore.common.mongodb.MongoDbControllerHelper;
-import org.entcore.common.user.UserInfos;
-import org.entcore.common.user.UserUtils;
-import org.vertx.java.core.http.RouteMatcher;
-
 import com.mongodb.QueryBuilder;
-
 import fr.wseduc.mongodb.MongoQueryBuilder;
-import fr.wseduc.rs.ApiDoc;
-import fr.wseduc.rs.Delete;
-import fr.wseduc.rs.Get;
-import fr.wseduc.rs.Post;
-import fr.wseduc.rs.Put;
+import fr.wseduc.rs.*;
 import fr.wseduc.security.ActionType;
 import fr.wseduc.security.SecuredAction;
 import fr.wseduc.webutils.I18n;
+import fr.wseduc.webutils.http.Renders;
 import fr.wseduc.webutils.request.RequestUtils;
 import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
@@ -58,160 +36,177 @@ import io.vertx.core.json.JsonObject;
 import net.atos.entng.timelinegenerator.TimelineGenerator;
 import net.atos.entng.timelinegenerator.services.EventService;
 import net.atos.entng.timelinegenerator.services.TimelineService;
+import org.entcore.common.controller.ControllerHelper;
+import org.entcore.common.events.EventHelper;
+import org.entcore.common.events.EventStore;
+import org.entcore.common.events.EventStoreFactory;
+import org.entcore.common.http.response.DefaultResponseHandler;
+import org.entcore.common.mongodb.MongoDbControllerHelper;
+import org.entcore.common.user.UserInfos;
+import org.entcore.common.user.UserUtils;
+import org.vertx.java.core.http.RouteMatcher;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static net.atos.entng.timelinegenerator.enums.ViewEnum.*;
+import static org.entcore.common.http.response.DefaultResponseHandler.leftToResponse;
 
 
 public class TimelineController extends MongoDbControllerHelper {
-	static final String RESOURCE_NAME = "timelinegenerator";
+    static final String RESOURCE_NAME = "timelinegenerator";
 
-	// Used for module "statistics"
-	private TimelineService timelineService;
-	private EventService eventService;
-	private final EventHelper eventHelper;
+    // Used for module "statistics"
+    private TimelineService timelineService;
+    private EventService eventService;
+    private final EventHelper eventHelper;
 
-	@Override
-	public void init(Vertx vertx, JsonObject config, RouteMatcher rm,
-			Map<String, fr.wseduc.webutils.security.SecuredAction> securedActions) {
-		super.init(vertx, config, rm, securedActions);
-	}
+    @Override
+    public void init(Vertx vertx, JsonObject config, RouteMatcher rm,
+                     Map<String, fr.wseduc.webutils.security.SecuredAction> securedActions) {
+        super.init(vertx, config, rm, securedActions);
+    }
 
-	public TimelineController(String collection) {
-		super(collection);
-		final EventStore eventStore = EventStoreFactory.getFactory().getEventStore(TimelineGenerator.class.getSimpleName());
-		this.eventHelper = new EventHelper(eventStore);
-	}
+    public TimelineController(String collection) {
+        super(collection);
+        final EventStore eventStore = EventStoreFactory.getFactory().getEventStore(TimelineGenerator.class.getSimpleName());
+        this.eventHelper = new EventHelper(eventStore);
+    }
 
-	// @Get("")
-	// @SecuredAction("timelinegenerator.view")
-	// public void view(HttpServerRequest request) {
-	// 	renderView(request);
+    @Get("")
+    @SecuredAction("timelinegenerator.view")
+    public void view(HttpServerRequest request) {
+        final String view = request.params().get(VIEW.getValue());
+        MultiMap all = request.params();
+        if (HOME.getValue().equals(view) || RESOURCE.getValue().equals(view)) {
+            renderView(request, new JsonObject(), "timelinegenerator-explorer.html", null);
+        } else {
+            // use old ui by default for routing
+            renderView(request);
+        }
+    }
 
-	// 	// Create event "access to application TimelineGenerator" and store it, for module "statistics"
-	// 	eventHelper.onAccess(request);
-	// }
-
-	@Get("")
-	@SecuredAction("timelinegenerator.view")
-	public void view(HttpServerRequest request) {
-		final String view = request.params().get(VIEW.getValue());
-		MultiMap all = request.params();
-		if(HOME.getValue().equals(view) || RESOURCE.getValue().equals(view)) {
-			renderView(request, new JsonObject(), "timelinegenerator-explorer.html", null);
-		} else {
-			// use old ui by default for routing
-			renderView(request, new JsonObject(), "timelinegenerator-explorer.html", null);
-//			renderView(request);
-		}
-	}
-
-	@Get("/print")
-	@SecuredAction("timelinegenerator.print")
-	public void printView(HttpServerRequest request) {
+    @Get("/print")
+    @SecuredAction("timelinegenerator.print")
+    public void printView(HttpServerRequest request) {
         renderView(request, new JsonObject(), "timelinegenerator-print.html", null);
-	}
+    }
 
-	@Get("/timelines")
-	@SecuredAction("timelinegenerator.list")
-	public void listTimelines(HttpServerRequest request) {
-		list(request);
-	}
+    @Get("/timelines")
+    @SecuredAction("timelinegenerator.list")
+    public void listTimelines(HttpServerRequest request) {
+        list(request);
+    }
 
-	@Get("/timeline/:id")
-	@SecuredAction(value = "timelinegenerator.read", type = ActionType.RESOURCE)
-	public void getTimeline(HttpServerRequest request) {
-		retrieve(request);
-	}
-
-
-	@Get("/timeline/:id/data")
-	@SecuredAction(value = "timelinegenerator.read", type = ActionType.RESOURCE)
-	public void getTimelineData(HttpServerRequest request) {
-		retrieve(request);
-	}
+    @Get("/timeline/:id")
+    @SecuredAction(value = "timelinegenerator.read", type = ActionType.RESOURCE)
+    public void getTimeline(HttpServerRequest request) {
+        retrieve(request);
+    }
 
 
-	@Post("/timelines")
-	@SecuredAction("timelinegenerator.create")
-	public void createTimeline(final HttpServerRequest request) {
-	    RequestUtils.bodyToJson(request, pathPrefix + "timeline", new Handler<JsonObject>() {
-            @Override
-            public void handle(JsonObject event) {
-                create(request, r->{
-                	if(r.succeeded()){
-                		eventHelper.onCreateResource(request, RESOURCE_NAME);
-					}
-				});
-            }
+    @Get("/timeline/:id/data")
+    @SecuredAction(value = "timelinegenerator.read", type = ActionType.RESOURCE)
+    public void getTimelineData(HttpServerRequest request) {
+        retrieve(request);
+    }
+
+
+    @Post("/timelines")
+    @SecuredAction("timelinegenerator.create")
+    public void createTimeline(final HttpServerRequest request) {
+        RequestUtils.bodyToJson(request, pathPrefix + "timeline", (event) ->
+        {
+            UserUtils.getUserInfos(this.eb, request, user -> {
+                if (user != null) {
+                    timelineService.create(event, user, (r) -> {
+                        DefaultResponseHandler.notEmptyResponseHandler(request).handle(r);
+                        if (r.isLeft()) {
+                            Renders.renderError(request, new JsonObject().put("error", r.left().getValue()));
+                        } else {
+                            Renders.renderJson(request, r.right().getValue());
+                            eventHelper.onCreateResource(request, RESOURCE_NAME);
+                        }
+
+                    });
+                } else {
+                    ControllerHelper.log.debug("User not found in session.");
+                    Renders.unauthorized(request);
+                }
+            });
         });
-	}
+    }
 
-	@Put("/timeline/:id")
-	@SecuredAction(value = "timelinegenerator.manager", type = ActionType.RESOURCE)
-	public void updateTimeline(final HttpServerRequest request) {
-	    RequestUtils.bodyToJson(request, pathPrefix + "timeline", new Handler<JsonObject>() {
+    @Put("/timeline/:id")
+    @SecuredAction(value = "timelinegenerator.manager", type = ActionType.RESOURCE)
+    public void updateTimeline(final HttpServerRequest request) {
+        RequestUtils.bodyToJson(request, pathPrefix + "timeline", new Handler<JsonObject>() {
             @Override
             public void handle(JsonObject event) {
                 update(request);
             }
         });
-	}
+    }
 
 
-	@Delete("/timeline/:id")
-	@SecuredAction(value = "timelinegenerator.manager", type = ActionType.RESOURCE)
-	public void deleteTimeline(HttpServerRequest request) {
-		delete(request);
-	}
+    @Delete("/timeline/:id")
+    @SecuredAction(value = "timelinegenerator.manager", type = ActionType.RESOURCE)
+    public void deleteTimeline(HttpServerRequest request) {
+        delete(request);
+    }
 
-	@Get("/timeline/:id/print")
-	@SecuredAction(value = "timelinegenerator.read", type = ActionType.RESOURCE)
-	public void print(HttpServerRequest request) {
-		final String id = request.params().get("id");
-		UserUtils.getUserInfos(eb, request, user -> {
-			if (user != null) {
-				timelineService.retrieve(id, user, eTimeline -> {
-					if (eTimeline.isRight()) {
-						eventService.list(id, user, eEvents -> {
-							if (eEvents.isRight()) {
-								final JsonObject timelineWithEvents =
-										eTimeline.right().getValue().put("events", eEvents.right().getValue());
-								if ("json".equals(request.params().get("format"))) {
-									renderJson(request, timelineWithEvents);
-								} else {
-									renderView(request, timelineWithEvents, "print.html", null);
-								}
-							} else {
-								leftToResponse(request, eEvents.left());
-							}
-						});
-					} else {
-						leftToResponse(request, eTimeline.left());
-					}
-				});
-			} else {
-				unauthorized(request, "invalid.user");
-			}
-		});
-	}
+    @Get("/timeline/:id/print")
+    @SecuredAction(value = "timelinegenerator.read", type = ActionType.RESOURCE)
+    public void print(HttpServerRequest request) {
+        final String id = request.params().get("id");
+        UserUtils.getUserInfos(eb, request, user -> {
+            if (user != null) {
+                timelineService.retrieve(id, user, eTimeline -> {
+                    if (eTimeline.isRight()) {
+                        eventService.list(id, user, eEvents -> {
+                            if (eEvents.isRight()) {
+                                final JsonObject timelineWithEvents =
+                                        eTimeline.right().getValue().put("events", eEvents.right().getValue());
+                                if ("json".equals(request.params().get("format"))) {
+                                    renderJson(request, timelineWithEvents);
+                                } else {
+                                    renderView(request, timelineWithEvents, "print.html", null);
+                                }
+                            } else {
+                                leftToResponse(request, eEvents.left());
+                            }
+                        });
+                    } else {
+                        leftToResponse(request, eTimeline.left());
+                    }
+                });
+            } else {
+                unauthorized(request, "invalid.user");
+            }
+        });
+    }
 
-	@Get("/publish")
-	@SecuredAction("timelinegenerator.publish")
-	public void publish(final HttpServerRequest request) {
-		// This route is used to create publish Workflow right, nothing to do
-		return;
-	}
+    @Get("/publish")
+    @SecuredAction("timelinegenerator.publish")
+    public void publish(final HttpServerRequest request) {
+        // This route is used to create publish Workflow right, nothing to do
+        return;
+    }
 
-	@Get("/share/json/:id")
-	@ApiDoc("Share timeline by id.")
-	@SecuredAction(value = "timelinegenerator.manager", type = ActionType.RESOURCE)
-	public void shareTimeline(final HttpServerRequest request) {
-		shareJson(request, false);
-	}
+    @Get("/share/json/:id")
+    @ApiDoc("Share timeline by id.")
+    @SecuredAction(value = "timelinegenerator.manager", type = ActionType.RESOURCE)
+    public void shareTimeline(final HttpServerRequest request) {
+        shareJson(request, false);
+    }
 
-	@Put("/share/json/:id")
-	@ApiDoc("Share timeline by id.")
-	@SecuredAction(value = "timelinegenerator.manager", type = ActionType.RESOURCE)
-	public void shareTimelineSubmit(final HttpServerRequest request) {
-	    UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
+    @Put("/share/json/:id")
+    @ApiDoc("Share timeline by id.")
+    @SecuredAction(value = "timelinegenerator.manager", type = ActionType.RESOURCE)
+    public void shareTimelineSubmit(final HttpServerRequest request) {
+        UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
             @Override
             public void handle(final UserInfos user) {
                 if (user != null) {
@@ -231,34 +226,34 @@ public class TimelineController extends MongoDbControllerHelper {
                 }
             }
         });
-	}
+    }
 
-	@Put("/share/remove/:id")
-	@ApiDoc("Remove timeline by id.")
-	@SecuredAction(value = "timelinegenerator.manager", type = ActionType.RESOURCE)
-	public void removeShareTimeline(final HttpServerRequest request) {
-		removeShare(request, false);
-	}
+    @Put("/share/remove/:id")
+    @ApiDoc("Remove timeline by id.")
+    @SecuredAction(value = "timelinegenerator.manager", type = ActionType.RESOURCE)
+    public void removeShareTimeline(final HttpServerRequest request) {
+        removeShare(request, false);
+    }
 
-	@Put("/share/resource/:id")
-	@ApiDoc("Share timeline by id.")
-	@SecuredAction(value = "timelinegenerator.manager", type = ActionType.RESOURCE)
-	public void shareResource(final HttpServerRequest request) {
-		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
-			@Override
-			public void handle(final UserInfos user) {
-				if (user != null) {
-					final String id = request.params().get("id");
-					if(id == null || id.trim().isEmpty()) {
-						badRequest(request, "invalid.id");
-						return;
-					}
+    @Put("/share/resource/:id")
+    @ApiDoc("Share timeline by id.")
+    @SecuredAction(value = "timelinegenerator.manager", type = ActionType.RESOURCE)
+    public void shareResource(final HttpServerRequest request) {
+        UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
+            @Override
+            public void handle(final UserInfos user) {
+                if (user != null) {
+                    final String id = request.params().get("id");
+                    if (id == null || id.trim().isEmpty()) {
+                        badRequest(request, "invalid.id");
+                        return;
+                    }
 
-					JsonObject params = new JsonObject();
-					params.put("profilUri", "/userbook/annuaire#" + user.getUserId() + "#" + user.getType());
-					params.put("username", user.getUsername());
-					params.put("timelineUri", "/timelinegenerator#/view/" + id);
-					params.put("resourceUri", params.getString("timelineUri"));
+                    JsonObject params = new JsonObject();
+                    params.put("profilUri", "/userbook/annuaire#" + user.getUserId() + "#" + user.getType());
+                    params.put("username", user.getUsername());
+                    params.put("timelineUri", "/timelinegenerator#/view/" + id);
+                    params.put("resourceUri", params.getString("timelineUri"));
 
                     JsonObject pushNotif = new JsonObject()
                             .put("title", "timeline.push-notif.title")
@@ -271,49 +266,49 @@ public class TimelineController extends MongoDbControllerHelper {
 
                     params.put("pushNotif", pushNotif);
 
-					shareResource(request, "timelinegenerator.share", false, params, "headline");
-				}
-			}
-		});
-	}
+                    shareResource(request, "timelinegenerator.share", false, params, "headline");
+                }
+            }
+        });
+    }
 
-	private void cleanFolders(String id, UserInfos user, List<String> recipientIds){
-		//owner style keep the reference to the ressource
-		JsonArray jsonRecipients = new JsonArray(recipientIds).add(user.getUserId());
-		JsonObject query = MongoQueryBuilder.build(QueryBuilder.start("ressourceIds").is(id).and("owner.userId").notIn(jsonRecipients));
-		JsonObject update = new JsonObject().put("$pull", new JsonObject().put("ressourceIds", new JsonObject().put("$nin",jsonRecipients)));
-		mongo.update("timelinegeneratorFolders", query, update, message -> {
-			JsonObject body = message.body();
-			if (!"ok".equals(body.getString("status"))) {
-				String err = body.getString("error", body.getString("message", "unknown cleanFolder Error"));
-				log.error("[cleanFolders] failed to clean folder because of: "+err);
-			}
-		});
-	}
+    private void cleanFolders(String id, UserInfos user, List<String> recipientIds) {
+        //owner style keep the reference to the ressource
+        JsonArray jsonRecipients = new JsonArray(recipientIds).add(user.getUserId());
+        JsonObject query = MongoQueryBuilder.build(QueryBuilder.start("ressourceIds").is(id).and("owner.userId").notIn(jsonRecipients));
+        JsonObject update = new JsonObject().put("$pull", new JsonObject().put("ressourceIds", new JsonObject().put("$nin", jsonRecipients)));
+        mongo.update("timelinegeneratorFolders", query, update, message -> {
+            JsonObject body = message.body();
+            if (!"ok".equals(body.getString("status"))) {
+                String err = body.getString("error", body.getString("message", "unknown cleanFolder Error"));
+                log.error("[cleanFolders] failed to clean folder because of: " + err);
+            }
+        });
+    }
 
-	public void doShareSucceed(HttpServerRequest request, String id, UserInfos user,JsonObject sharePayload, JsonObject result, boolean sendNotify){
-		super.doShareSucceed(request, id, user, sharePayload, result, sendNotify);
-		if(sharePayload!=null){
-			Set<String> userIds = sharePayload.getJsonObject("users", new JsonObject()).getMap().keySet();
-			Set<String> groupIds = sharePayload.getJsonObject("groups", new JsonObject()).getMap().keySet();
-			UserUtils.getUserIdsForGroupIds(groupIds,user.getUserId(),this.eb, founded->{
-				if(founded.succeeded()){
-					List<String> userToKeep = new ArrayList<>(userIds);
-					userToKeep.addAll(founded.result());
-					cleanFolders(id, user, userToKeep);
-				}else{
-					log.error("[doShareSucceed] failed to found recipient because:",founded.cause());
-				}
-			});
-		}
-	}
+    public void doShareSucceed(HttpServerRequest request, String id, UserInfos user, JsonObject sharePayload, JsonObject result, boolean sendNotify) {
+        super.doShareSucceed(request, id, user, sharePayload, result, sendNotify);
+        if (sharePayload != null) {
+            Set<String> userIds = sharePayload.getJsonObject("users", new JsonObject()).getMap().keySet();
+            Set<String> groupIds = sharePayload.getJsonObject("groups", new JsonObject()).getMap().keySet();
+            UserUtils.getUserIdsForGroupIds(groupIds, user.getUserId(), this.eb, founded -> {
+                if (founded.succeeded()) {
+                    List<String> userToKeep = new ArrayList<>(userIds);
+                    userToKeep.addAll(founded.result());
+                    cleanFolders(id, user, userToKeep);
+                } else {
+                    log.error("[doShareSucceed] failed to found recipient because:", founded.cause());
+                }
+            });
+        }
+    }
 
-	public void setTimelineService(TimelineService timelineService) {
-		this.timelineService = timelineService;
-	}
+    public void setTimelineService(TimelineService timelineService) {
+        this.timelineService = timelineService;
+    }
 
-	public void setEventService(EventService eventService) {
-		this.eventService = eventService;
-	}
+    public void setEventService(EventService eventService) {
+        this.eventService = eventService;
+    }
 
 }

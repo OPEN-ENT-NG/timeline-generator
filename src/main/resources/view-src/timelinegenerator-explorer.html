@@ -6,11 +6,7 @@
     <title>Frise chronologique</title>
     <link rel="icon" id="favicon" href="" />
     <link rel="stylesheet" href="/assets/themes/edifice-bootstrap/index.css" />
-    <script
-      type="module"
-      crossorigin
-      src="/assets/js/ode-explorer/index.js"
-    ></script>
+    <script type="module" crossorigin src="/assets/js/ode-explorer/index.js"></script>
     <link rel="stylesheet" href="/assets/js/ode-explorer/style.css" />
   </head>
   <body class="app-react" data-explorer-config>
@@ -21,12 +17,13 @@
     <script>
       var WORFLOW_ACCESS = "net.atos.entng.timelinegenerator.controllers.TimelineController|view";
       var WORKFLOW_CREATE = "net.atos.entng.timelinegenerator.controllers.TimelineController|createTimeline";
-      var WORKFLOW_CREATE_FOLDER = "net.atos.entng.timelinegenerator.controllers.FoldersController|add";
       var WORKFLOW_PUBLISH = "net.atos.entng.timelinegenerator.controllers.TimelineController|publish";
-      var WORKFLOW_PRINT = "net.atos.entng.timelinegenerator.controllers.TimelineController|print";
+      var WORKFLOW_PRINT = "net.atos.entng.timelinegenerator.controllers.TimelineController|printView";
+      var WORKFLOW_LIST = "net.atos.entng.timelinegenerator.controllers.TimelineController|listTimelines";
       var explorerConfig = {
         app: "timelinegenerator",
         types: ["timelinegenerator"],
+        libraryAppFilter:"TimelineGenerator",
         filters: [
             { id: "owner", defaultValue: true },
             { id: "public", defaultValue: false },
@@ -38,20 +35,16 @@
         ],
         actions: [
           {
-            id: "createFolder",
-            workflow: "WORKFLOW_CREATE_FOLDER",
-            target: "manager", // is optional assumed manager, can be changed later
-
-          },
-          {
-            id: "create",
-            workflow: WORKFLOW_CREATE,
-            target: "tree",
-          },
-          {
-            id: "view",
+            id: "open",
             workflow: WORFLOW_ACCESS,
-            target: "read", // is optional, assumed read, can be changed later 
+            target: "actionbar",
+            right: "read",
+          },
+          {
+            id: "share",
+            workflow: WORFLOW_ACCESS,
+            target: "actionbar",
+            right: "manager",
           },
           {
             id: "publish",
@@ -59,7 +52,35 @@
             target: "actionbar",
             right: "creator",
           },
-
+          {
+            id: "move",
+            workflow: WORFLOW_ACCESS,
+            target: "actionbar",
+            right: "read",
+          },
+          {
+            id: "create",//left right button to create timeline
+            workflow: WORKFLOW_CREATE,
+            target: "tree",
+          },
+          {
+            id: "edit",
+            workflow: WORFLOW_ACCESS,
+            target: "actionbar",
+            right: "manager",
+          },
+          {
+            id: "print",
+            workflow: WORKFLOW_PRINT,
+            target: "actionbar",
+            right: "read",
+          },
+          {
+            id: "delete",
+            workflow: WORFLOW_ACCESS,
+            target: "actionbar",
+            right: "read",
+          },
         ],
         trashActions: [
             {
@@ -78,6 +99,7 @@
             },
         ],
       };
+      console.log("TESTING BBBBBB");
       var rootElement = document.querySelector("[data-explorer-config]");
       rootElement.setAttribute("data-explorer-config", JSON.stringify(explorerConfig));
     </script>

@@ -11,4 +11,6 @@ public interface TimelineService {
 
 	void retrieve(String id, UserInfos user, Handler<Either<String, JsonObject>> handler);
 
+	void create(JsonObject data, UserInfos user, Handler<Either<String, JsonObject>> result);
+
 }
