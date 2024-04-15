@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Frise chronologique</title>
     <link rel="icon" id="favicon" href="" />
-    <link rel="stylesheet" href="/assets/themes/edifice-bootstrap/index.css" />
-    <script type="module" crossorigin src="/assets/js/ode-explorer/index.js"></script>
+    <link rel="stylesheet" href="/assets/themes/edifice-bootstrap/index.css?v=@@VERSION" />
+    <script type="module" crossorigin src="/assets/js/ode-explorer/index.js?v=@@VERSION"></script>
     <link rel="stylesheet" href="/assets/js/ode-explorer/style.css" />
   </head>
   <body class="app-react" data-explorer-config>
@@ -99,7 +99,6 @@
             },
         ],
       };
-      console.log("TESTING BBBBBB");
       var rootElement = document.querySelector("[data-explorer-config]");
       rootElement.setAttribute("data-explorer-config", JSON.stringify(explorerConfig));
     </script>
