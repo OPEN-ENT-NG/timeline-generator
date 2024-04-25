@@ -68,6 +68,7 @@ public class TimelineGenerator extends BaseServer {
 		addController(timelineController);
 		addController(new EventController(TIMELINE_GENERATOR_EVENT_COLLECTION, eventService));
 		addController(new FoldersController("timelinegeneratorFolders"));
+		startPromise.tryComplete();
 	}
 
 	
