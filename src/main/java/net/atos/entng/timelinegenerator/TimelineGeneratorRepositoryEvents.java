@@ -19,22 +19,21 @@
 
 package net.atos.entng.timelinegenerator;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Vertx;
-import io.vertx.core.eventbus.Message;
-import org.entcore.common.mongodb.MongoDbResult;
-import org.entcore.common.service.impl.MongoDbRepositoryEvents;
-import io.vertx.core.Handler;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
-
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import com.mongodb.QueryBuilder;
-
+import com.mongodb.client.model.Filters;
 import fr.wseduc.mongodb.MongoQueryBuilder;
 import fr.wseduc.mongodb.MongoUpdateBuilder;
 import fr.wseduc.webutils.Either;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
+import io.vertx.core.eventbus.Message;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+import org.bson.conversions.Bson;
+import org.entcore.common.mongodb.MongoDbResult;
+import org.entcore.common.service.impl.MongoDbRepositoryEvents;
 
 import java.io.File;
 import java.util.HashSet;
@@ -88,21 +87,19 @@ public class TimelineGeneratorRepositoryEvents extends MongoDbRepositoryEvents {
     public void exportResources(JsonArray resourcesIds, boolean exportDocuments, boolean exportSharedResources, String exportId, String userId,
                                 JsonArray groups, String exportPath, String locale, String host, Handler<Boolean> handler) {
 
-        QueryBuilder findByAuthor = QueryBuilder.start("owner.userId").is(userId);
-        QueryBuilder findByShared = QueryBuilder.start().or(
-                QueryBuilder.start("shared.userId").is(userId).get(),
-                QueryBuilder.start("shared.groupId").in(groups).get()
-        );
-        QueryBuilder findByAuthorOrShared = exportSharedResources == false ? findByAuthor : QueryBuilder.start().or(findByAuthor.get(),findByShared.get());
+        Bson findByAuthor = Filters.eq("owner.userId", userId);
+        Bson findByShared = Filters.or(
+                Filters.eq("shared.userId", userId),
+                Filters.in("shared.groupId", groups));
+        Bson findByAuthorOrShared = exportSharedResources == false ? findByAuthor : Filters.or(findByAuthor, findByShared);
 
         JsonObject query;
 
         if(resourcesIds == null)
             query = MongoQueryBuilder.build(findByAuthorOrShared);
         else {
-            QueryBuilder limitToResources = findByAuthorOrShared.and(
-                    QueryBuilder.start("_id").in(resourcesIds).get()
-            );
+            Bson limitToResources = Filters.and(findByAuthorOrShared,
+                    Filters.in("_id", resourcesIds));
             query = MongoQueryBuilder.build(limitToResources);
         }
 
@@ -121,7 +118,7 @@ public class TimelineGeneratorRepositoryEvents extends MongoDbRepositoryEvents {
                     });
 
                     final Set<String> ids = results.stream().map(res -> ((JsonObject)res).getString("_id")).collect(Collectors.toSet());
-                    QueryBuilder findByTimelineId = QueryBuilder.start("timeline").in(ids);
+                    Bson findByTimelineId = Filters.in("timeline", ids);
                     JsonObject query2 = MongoQueryBuilder.build(findByTimelineId);
 
                     mongo.find(TimelineGenerator.TIMELINE_GENERATOR_EVENT_COLLECTION, query2, new Handler<Message<JsonObject>>() {
@@ -199,10 +196,10 @@ public class TimelineGeneratorRepositoryEvents extends MongoDbRepositoryEvents {
             groupIds[i] = j.getString("group");
         }
 
-        final JsonObject matcher = MongoQueryBuilder.build(QueryBuilder.start("shared.groupId").in(groupIds));
+        final JsonObject matcher = MongoQueryBuilder.build(Filters.in("shared.groupId", groupIds));
 
         MongoUpdateBuilder modifier = new MongoUpdateBuilder();
-        modifier.pull("shared", MongoQueryBuilder.build(QueryBuilder.start("groupId").in(groupIds)));
+        modifier.pull("shared", MongoQueryBuilder.build(Filters.in("groupId", groupIds)));
         // remove all the shares with groups
         mongo.update(TimelineGenerator.TIMELINE_GENERATOR_COLLECTION, matcher, modifier.build(), false, true, MongoDbResult.validActionResultHandler(new Handler<Either<String, JsonObject>>() {
             @Override
@@ -255,9 +252,9 @@ public class TimelineGeneratorRepositoryEvents extends MongoDbRepositoryEvents {
      * @param usersIds users identifiers
      */
     private void removeSharesTimelines(final String[] usersIds) {
-        final JsonObject criteria = MongoQueryBuilder.build(QueryBuilder.start("shared.userId").in(usersIds));
+        final JsonObject criteria = MongoQueryBuilder.build(Filters.in("shared.userId", usersIds));
         MongoUpdateBuilder modifier = new MongoUpdateBuilder();
-        modifier.pull("shared", MongoQueryBuilder.build(QueryBuilder.start("userId").in(usersIds)));
+        modifier.pull("shared", MongoQueryBuilder.build(Filters.in("userId", usersIds)));
 
         // Remove Categories shares with these users
         mongo.update(TimelineGenerator.TIMELINE_GENERATOR_COLLECTION, criteria, modifier.build(), false, true, MongoDbResult.validActionResultHandler(new Handler<Either<String, JsonObject>>() {
@@ -278,13 +275,12 @@ public class TimelineGeneratorRepositoryEvents extends MongoDbRepositoryEvents {
      * @param usersIds users identifiers
      */
     private void prepareCleanTimelines(final String[] usersIds) {
-        DBObject deletedUsers = new BasicDBObject();
         // users currently deleted
-        deletedUsers.put("owner.userId", new BasicDBObject("$in", usersIds));
+        Bson deletedUsers = Filters.in("owner.userId",usersIds);
         // users who have already been deleted
-        DBObject ownerIsDeleted = new BasicDBObject("owner.deleted", true);
+        Bson ownerIsDeleted = Filters.eq("owner.deleted", true);
         // no manager found
-        JsonObject matcher = MongoQueryBuilder.build(QueryBuilder.start("shared." + TimelineGenerator.MANAGE_RIGHT_ACTION).notEquals(true).or(deletedUsers, ownerIsDeleted));
+        JsonObject matcher = MongoQueryBuilder.build(Filters.and(Filters.ne("shared." + TimelineGenerator.MANAGE_RIGHT_ACTION, true), Filters.or(deletedUsers, ownerIsDeleted)));
         // return only calendar identifiers
         JsonObject projection = new JsonObject().put("_id", 1);
 
@@ -316,7 +312,7 @@ public class TimelineGeneratorRepositoryEvents extends MongoDbRepositoryEvents {
      * @param timelineIds timelines identifiers
      */
     private void cleanTimelines(final String[] usersIds, final String[] timelineIds) {
-        JsonObject matcher = MongoQueryBuilder.build(QueryBuilder.start("_id").in(timelineIds));
+        JsonObject matcher = MongoQueryBuilder.build(Filters.in("_id", timelineIds));
 
         mongo.delete(TimelineGenerator.TIMELINE_GENERATOR_COLLECTION, matcher, MongoDbResult.validActionResultHandler(new Handler<Either<String, JsonObject>>() {
             @Override
@@ -337,7 +333,7 @@ public class TimelineGeneratorRepositoryEvents extends MongoDbRepositoryEvents {
      * @param timelineIds timeline identifiers
      */
     private void cleanEvents(final String[] timelineIds) {
-        JsonObject matcher = MongoQueryBuilder.build(QueryBuilder.start("timeline").in(timelineIds));
+        JsonObject matcher = MongoQueryBuilder.build(Filters.in("timeline", timelineIds));
 
         mongo.delete(TimelineGenerator.TIMELINE_GENERATOR_EVENT_COLLECTION, matcher, MongoDbResult.validActionResultHandler(new Handler<Either<String, JsonObject>>() {
             @Override
@@ -356,7 +352,7 @@ public class TimelineGeneratorRepositoryEvents extends MongoDbRepositoryEvents {
      * @param usersIds users identifiers
      */
     private void tagUsersAsDeleted(final String[] usersIds) {
-        final JsonObject criteria = MongoQueryBuilder.build(QueryBuilder.start("owner.userId").in(usersIds));
+        final JsonObject criteria = MongoQueryBuilder.build(Filters.in("owner.userId", usersIds));
         MongoUpdateBuilder modifier = new MongoUpdateBuilder();
         modifier.set("owner.deleted", true);
 

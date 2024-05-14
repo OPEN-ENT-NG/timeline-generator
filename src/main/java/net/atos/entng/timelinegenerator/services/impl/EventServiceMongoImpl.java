@@ -22,15 +22,17 @@ package net.atos.entng.timelinegenerator.services.impl;
 import static org.entcore.common.mongodb.MongoDbResult.validActionResultHandler;
 import static org.entcore.common.mongodb.MongoDbResult.validResultHandler;
 import static org.entcore.common.mongodb.MongoDbResult.validResultsHandler;
+
+import com.mongodb.client.model.Filters;
 import net.atos.entng.timelinegenerator.services.EventService;
 
+import org.bson.conversions.Bson;
 import org.entcore.common.service.impl.MongoDbCrudService;
 import org.entcore.common.user.UserInfos;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
-import com.mongodb.QueryBuilder;
 
 import fr.wseduc.mongodb.MongoDb;
 import fr.wseduc.mongodb.MongoQueryBuilder;
@@ -47,7 +49,7 @@ public class EventServiceMongoImpl extends MongoDbCrudService implements EventSe
     @Override
     public void list(String timelineId, UserInfos user, final Handler<Either<String, JsonArray>> handler) {
         // Query
-        QueryBuilder query = QueryBuilder.start("timeline").is(timelineId);
+        Bson query = Filters.eq("timeline", timelineId);
         JsonObject sort = new JsonObject().put("modified", -1);
 
         // Projection
@@ -72,8 +74,7 @@ public class EventServiceMongoImpl extends MongoDbCrudService implements EventSe
     @Override
     public void retrieve(String timelineId, String eventId, UserInfos user, Handler<Either<String, JsonObject>> handler) {
         // Query
-        QueryBuilder query = QueryBuilder.start("_id").is(eventId);
-        query.put("category").is(timelineId);
+        Bson query = Filters.and(Filters.eq("_id", eventId), Filters.eq("category", timelineId));
 
         // Projection
         JsonObject projection = new JsonObject();
@@ -84,8 +85,7 @@ public class EventServiceMongoImpl extends MongoDbCrudService implements EventSe
     @Override
     public void update(String timelineId, String eventId, JsonObject body, UserInfos user, Handler<Either<String, JsonObject>> handler) {
         // Query
-        QueryBuilder query = QueryBuilder.start("_id").is(eventId);
-        query.put("timeline").is(timelineId);
+        Bson query = Filters.and(Filters.eq("_id", eventId), Filters.eq("timeline", timelineId));
 
         // Clean data
         body.remove("_id");
@@ -103,8 +103,7 @@ public class EventServiceMongoImpl extends MongoDbCrudService implements EventSe
 
     @Override
     public void delete(String timelineId, String eventId, UserInfos user, Handler<Either<String, JsonObject>> handler) {
-        QueryBuilder query = QueryBuilder.start("_id").is(eventId);
-        query.put("timeline").is(timelineId);
+        Bson query = Filters.and(Filters.eq("_id", eventId), Filters.eq("timeline", timelineId));
         mongo.delete(this.collection, MongoQueryBuilder.build(query), validActionResultHandler(handler));
 
     }
