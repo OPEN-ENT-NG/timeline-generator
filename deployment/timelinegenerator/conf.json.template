@@ -1,5 +1,5 @@
 {
-  "name": "net.atos~timelinegenerator~1.12-develop-pedago-SNAPSHOT",
+  "name": "net.atos~timelinegenerator~1.13-dev-integration-SNAPSHOT",
   "config": {
     "main" : "net.atos.entng.timelinegenerator.TimelineGenerator",
     "port" : 8099,
