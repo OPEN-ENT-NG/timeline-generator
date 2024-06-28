@@ -4,7 +4,7 @@
   "description": "Timeline tool for ENT Core.",
   "main": "gulpfile.js",
   "dependencies": {
-    "entcore": "4.8.8",
+    "entcore": "~4.8.0-dev",
     "axios": "0.16.2",
     "core-js": "2.4.1",
     "entcore-toolkit": "^1.2.0"
