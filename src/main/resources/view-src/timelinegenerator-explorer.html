@@ -19,76 +19,96 @@
 <!-- SET INITIALISATION CONFIG -->
 <script>
     var WORFLOW_ACCESS = "net.atos.entng.timelinegenerator.controllers.TimelineController|view";
-          var WORKFLOW_CREATE =
-            "net.atos.entng.timelinegenerator.controllers.TimelineController|createTimeline";
-          var explorerConfig = {
-            app: "timelinegenerator",
-            types: ["timelinegenerator"],
-            filters: [
-              { id: "owner", defaultValue: true },
-              { id: "public", defaultValue: false },
-              { id: "shared", defaultValue: true },
-            ],
-            orders: [
-              { id: "name", defaultValue: "asc", i18n: "explorer.sorts.name" },
-              { id: "updatedAt", i18n: "explorer.sorts.updatedat" },
-            ],
-            actions: [
-              {
-                id: "open",
-                workflow: WORFLOW_ACCESS,
-                target: "actionbar",
-                right: "read",
-              },
-              {
-                id: "share",
-                workflow: WORFLOW_ACCESS,
-                target: "actionbar",
-                right: "manager",
-              },
-              {
-                id: "edit",
-                workflow: WORFLOW_ACCESS,
-                target: "actionbar",
-                right: "manager",
-              },
-              {
-                id: "create",
-                workflow: WORKFLOW_CREATE,
-                target: "tree",
-              },
-              {
-                id: "move",
-                workflow: WORFLOW_ACCESS,
-                target: "actionbar",
-                right: "read",
-              },
-              {
-                id: "delete",
-                workflow: WORFLOW_ACCESS,
-                target: "actionbar",
-                right: "read",
-              },
-            ],
-            trashActions: [
-              {
-                id: "restore",
-                available: true,
-                target: "actionbar",
-                workflow: "",
-                right: "manager",
-              },
-              {
-                id: "delete",
-                available: true,
-                target: "actionbar",
-                workflow: "",
-                right: "manager",
-              },
-            ],
-          };
-          var rootElement = document.querySelector("[data-explorer-config]");
-          rootElement.setAttribute("data-explorer-config", JSON.stringify(explorerConfig));
+    var WORKFLOW_CREATE = "net.atos.entng.timelinegenerator.controllers.TimelineController|createTimeline";
+    var WORKFLOW_PRINT = "net.atos.entng.timelinegenerator.controllers.TimelineController|printView";
+    var WORKFLOW_PUBLISH = "net.atos.entng.timelinegenerator.controllers.TimelineController|publish";
+
+    var explorerConfig = {
+        app: "timelinegenerator",
+        types: ["timelinegenerator"],
+        filters: [
+          { id: "owner", defaultValue: true },
+          { id: "public", defaultValue: false },
+          { id: "shared", defaultValue: true },
+        ],
+        orders: [
+          { id: "name", defaultValue: "asc", i18n: "explorer.sorts.name" },
+          { id: "updatedAt", i18n: "explorer.sorts.updatedat" },
+        ],
+        actions: [
+          {
+            id: 'open',
+            workflow: WORFLOW_ACCESS,
+            target: 'actionbar',
+            right: 'read',
+          },
+          {
+            id: 'share',
+            workflow: WORFLOW_ACCESS,
+            target: 'actionbar',
+            right: 'manager',
+          },
+          {
+            id: 'edit',
+            workflow: WORFLOW_ACCESS,
+            target: 'actionbar',
+            right: 'manager',
+          },
+          {
+            id: 'create',
+            workflow: WORKFLOW_CREATE,
+            target: 'tree',
+          },
+          {
+            id: 'copy',
+            workflow: WORFLOW_ACCESS,
+            target: 'actionbar',
+            right: 'read',
+          },
+          {
+            id: 'move',
+            workflow: WORFLOW_ACCESS,
+            target: 'actionbar',
+            right: 'read',
+          },
+          {
+            id: 'publish',
+            workflow: WORKFLOW_PUBLISH,
+            target: 'actionbar',
+            right: 'creator',
+          },
+          {
+            id: 'print',
+            workflow: WORKFLOW_PRINT,
+            target: 'actionbar',
+            right: 'read',
+          },
+          {
+            id: 'delete',
+            workflow: WORFLOW_ACCESS,
+            target: 'actionbar',
+            right: 'read',
+          },
+        ],
+        trashActions: [
+          {
+            id: "restore",
+            available: true,
+            target: "actionbar",
+            workflow: "",
+            right: "manager",
+          },
+          {
+            id: "delete",
+            available: true,
+            target: "actionbar",
+            workflow: "",
+            right: "manager",
+          },
+        ],
+    };
+    var rootElement = document.querySelector("[data-explorer-config]");
+    rootElement.setAttribute("data-explorer-config", JSON.stringify(explorerConfig));
 </script>
 </body>
 </html>
