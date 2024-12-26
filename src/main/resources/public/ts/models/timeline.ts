@@ -117,6 +117,10 @@ export class Timeline extends Model<Timeline> implements Selectable, Shareable {
             Folders.onChange.next(!((await Folders.ressources()).length || (await Folders.folders()).length)); // ICI
         }
         Timeline.eventer.trigger('save');
+        
+        setTimeout(() => {
+            window.open("/timelinegenerator?view=home", "_self");
+        }, 1000);
     }
     async  duplicate()
     {
