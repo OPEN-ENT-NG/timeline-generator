@@ -29,6 +29,9 @@
         },
         "trashed": {
             "type": "boolean"
+        },
+        "folder": {
+            "type": "number"
         }
     },
     "required": [

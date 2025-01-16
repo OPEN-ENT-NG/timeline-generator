@@ -5,6 +5,9 @@ import { LibraryServiceProvider } from "entcore/types/src/ts/library/library.ser
 import { Timeline } from "./models/timeline";
 import { IdAndLibraryResourceInformation } from 'entcore/types/src/ts/library/library.types';
 
+const URL = new URLSearchParams(location.search);
+const HAS_VIEW = URL.has("view");
+
 ng.configs.push(ng.config(['libraryServiceProvider', function (libraryServiceProvider: LibraryServiceProvider<Timeline>) {
     libraryServiceProvider.setInvokableResourceInformationGetterFromResource(function () {
         return function (resource: Timeline): IdAndLibraryResourceInformation {
@@ -25,6 +28,12 @@ ng.configs.push(ng.config(['$sceProvider', function ($sceProvider: any) {
     $sceProvider.enabled(false);
 }]));
 
+function redirectToReact() {
+  if (!HAS_VIEW && window.location.pathname !== "/timelinegenerator/print") {
+    window.location.replace("/timelinegenerator?view=home");
+  }
+}
+
 routes.define(function ($routeProvider) {
     $routeProvider.when('/view/:timelineId', {
         action: 'goToTimeline'
@@ -33,7 +42,8 @@ routes.define(function ($routeProvider) {
     }).when('/timeline/:timelineId/:eventId', {
         action: 'goToEvent'
     }).otherwise({
-        action: 'mainPage'
+        action: HAS_VIEW && 'mainPage',
+        redirectTo: redirectToReact,
     });
 });
 

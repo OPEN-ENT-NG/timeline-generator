@@ -19,24 +19,24 @@
 
 package net.atos.entng.timelinegenerator.controllers;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
 
 import com.mongodb.client.model.Filters;
+import fr.wseduc.mongodb.MongoDb;
 import fr.wseduc.mongodb.MongoQueryBuilder;
 import fr.wseduc.webutils.I18n;
 import io.vertx.core.json.JsonArray;
 import net.atos.entng.timelinegenerator.TimelineGenerator;
 
+import net.atos.entng.timelinegenerator.explorer.TimelineGeneratorExplorerPlugin;
 import net.atos.entng.timelinegenerator.services.EventService;
 import net.atos.entng.timelinegenerator.services.TimelineService;
+import net.atos.entng.timelinegenerator.services.impl.DefaultTimelineService;
 import org.entcore.common.events.EventHelper;
 import org.entcore.common.events.EventStore;
 import org.entcore.common.events.EventStoreFactory;
-import org.entcore.common.http.filter.OwnerOnly;
-import org.entcore.common.http.filter.ResourceFilter;
+import org.entcore.common.explorer.IdAndVersion;
 import org.entcore.common.mongodb.MongoDbControllerHelper;
 import org.entcore.common.user.UserInfos;
 import org.entcore.common.user.UserUtils;
@@ -61,31 +61,61 @@ import static org.entcore.common.http.response.DefaultResponseHandler.leftToResp
 
 public class TimelineController extends MongoDbControllerHelper {
 	static final String RESOURCE_NAME = "timelinegenerator";
-
-	// Used for module "statistics"
 	private TimelineService timelineService;
+	// Used for module "statistics"
 	private EventService eventService;
 	private final EventHelper eventHelper;
+
+	private final TimelineGeneratorExplorerPlugin explorerPlugin;
+
+	enum Operation { CREATE, UPDATE, DELETE }
+
+	public TimelineController(final String collection, final TimelineGeneratorExplorerPlugin plugin) {
+		super(collection);
+		this.explorerPlugin = plugin;
+		final EventStore eventStore = EventStoreFactory.getFactory().getEventStore(TimelineGenerator.class.getSimpleName());
+		this.eventHelper = new EventHelper(eventStore);
+	}
 
 	@Override
 	public void init(Vertx vertx, JsonObject config, RouteMatcher rm,
 			Map<String, fr.wseduc.webutils.security.SecuredAction> securedActions) {
 		super.init(vertx, config, rm, securedActions);
+		final Map<String, List<String>> groupedActions = new HashMap<>();
+		this.shareService = this.explorerPlugin.createShareService(groupedActions);
 	}
 
-	public TimelineController(String collection) {
-		super(collection);
-		final EventStore eventStore = EventStoreFactory.getFactory().getEventStore(TimelineGenerator.class.getSimpleName());
-		this.eventHelper = new EventHelper(eventStore);
+	@Override
+	protected Function<JsonObject, Optional<String>> jsonToOwnerId() {
+		return json -> this.explorerPlugin.getCreatorForModel(json).map(user -> user.getUserId());
 	}
 
 	@Get("")
 	@SecuredAction("timelinegenerator.view")
 	public void view(HttpServerRequest request) {
-		renderView(request);
-
 		// Create event "access to application TimelineGenerator" and store it, for module "statistics"
 		eventHelper.onAccess(request);
+
+		// Get the view parameter from the request
+		final String view = request.params().get("view");
+		// Get the use-explorer-ui configuration from the config
+		final boolean useNewUi = this.config.getBoolean("use-explorer-ui", true);
+		// If the view is home, use the old ui by default
+		if ("home".equals(view)) {
+			if (useNewUi) {
+				// use new ui by default
+				renderView(request, new JsonObject(), "timelinegenerator-explorer.html", null);
+			} else {
+				// use old ui by default
+				renderView(request);
+			}
+		} else if ("resource".equals(view)) {
+			// force new ui
+			renderView(request, new JsonObject(), "timelinegenerator-explorer.html", null);
+		} else {
+			// use old ui by default for routing
+			renderView(request);
+		}
 	}
 
 	@Get("/print")
@@ -113,38 +143,77 @@ public class TimelineController extends MongoDbControllerHelper {
 		retrieve(request);
 	}
 
-
 	@Post("/timelines")
 	@SecuredAction("timelinegenerator.create")
 	public void createTimeline(final HttpServerRequest request) {
-	    RequestUtils.bodyToJson(request, pathPrefix + "timeline", new Handler<JsonObject>() {
-            @Override
-            public void handle(JsonObject event) {
-                create(request, r->{
-                	if(r.succeeded()){
-                		eventHelper.onCreateResource(request, RESOURCE_NAME);
-					}
-				});
-            }
-        });
+		UserUtils.getAuthenticatedUserInfos(eb, request)
+				.onSuccess(user ->
+					RequestUtils.bodyToJson(request, pathPrefix + "timeline", data ->
+							create(request, createRes -> {
+								if (createRes.succeeded()) {
+									final JsonObject createdTimeline = createRes.result();
+									// Create EVENT
+									eventHelper.onCreateResource(request, RESOURCE_NAME);
+									// Notify Explorer
+									final JsonObject newTimeline = data.copy();
+									newTimeline.put("version", System.currentTimeMillis());
+									newTimeline.put("_id", createdTimeline.getString("_id"));
+									final Optional<Number> folderId = Optional.ofNullable(data.getNumber("folder"));
+									explorerPlugin.notifyUpsert(user, newTimeline, folderId);
+									// Render: the render is done by the create method above.
+								}
+							})
+				))
+				.onFailure(e -> unauthorized(request));
 	}
 
 	@Put("/timeline/:id")
 	@SecuredAction(value = "timelinegenerator.manager", type = ActionType.RESOURCE)
 	public void updateTimeline(final HttpServerRequest request) {
-	    RequestUtils.bodyToJson(request, pathPrefix + "timeline", new Handler<JsonObject>() {
-            @Override
-            public void handle(JsonObject event) {
-                update(request);
-            }
-        });
+		final String id = request.params().get("id");
+
+		UserUtils.getAuthenticatedUserInfos(eb, request)
+				.onSuccess(user ->
+					RequestUtils.bodyToJson(request, pathPrefix + "timeline", data -> {
+						data.put("modified", MongoDb.now());
+
+						((DefaultTimelineService) timelineService).update(id, data, updateRes -> {
+							if (updateRes.isRight()) {
+								// Notify Explorer
+								data.put("_id", id);
+								data.put("version", System.currentTimeMillis());
+								explorerPlugin.notifyUpsert(user, data);
+								// Render ok
+								renderJson(request, updateRes.right().getValue());
+							} else {
+								renderErrorWithMessage(request, Operation.UPDATE, id, updateRes.left().getValue());
+							}
+						});
+					})
+				)
+				.onFailure(e -> unauthorized(request));
 	}
 
 
 	@Delete("/timeline/:id")
 	@SecuredAction(value = "timelinegenerator.manager", type = ActionType.RESOURCE)
 	public void deleteTimeline(HttpServerRequest request) {
-		delete(request);
+		final String id = request.params().get("id");
+
+		UserUtils.getAuthenticatedUserInfos(eb, request)
+				.onSuccess(user ->
+					((DefaultTimelineService) timelineService).delete(id, deleteRes -> {
+						if (deleteRes.isRight()) {
+							// Notify Explorer
+							explorerPlugin.notifyDeleteById(user, new IdAndVersion(id, System.currentTimeMillis()));
+							// Render ok
+							renderJson(request, deleteRes.right().getValue());
+						} else {
+							renderErrorWithMessage(request, Operation.DELETE, id, deleteRes.left().getValue());
+						}
+					})
+				)
+				.onFailure(e -> unauthorized(request));
 	}
 
 	@Get("/timeline/:id/print")
@@ -299,6 +368,12 @@ public class TimelineController extends MongoDbControllerHelper {
 
 	public void setEventService(EventService eventService) {
 		this.eventService = eventService;
+	}
+
+	private void renderErrorWithMessage(final HttpServerRequest request, final Operation operation, final String timelineNameOrId, final String cause) {
+		final String errorMessage = "[Timelinegenerator] Error " + operation.name() + " timeline " + timelineNameOrId + ". Error: " + cause;
+		log.error(errorMessage);
+		renderError(request, new JsonObject().put("error", errorMessage));
 	}
 
 }
