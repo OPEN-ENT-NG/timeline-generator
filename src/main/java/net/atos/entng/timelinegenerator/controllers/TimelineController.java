@@ -156,8 +156,10 @@ public class TimelineController extends MongoDbControllerHelper {
 									eventHelper.onCreateResource(request, RESOURCE_NAME);
 									// Notify Explorer
 									final JsonObject newTimeline = data.copy();
-									newTimeline.put("version", System.currentTimeMillis());
-									newTimeline.put("_id", createdTimeline.getString("_id"));
+									newTimeline
+											.put("owner", (new JsonObject()).put("userId", user.getUserId()).put("displayName", user.getUsername()))
+											.put("version", System.currentTimeMillis())
+											.put("_id", createdTimeline.getString("_id"));
 									final Optional<Number> folderId = Optional.ofNullable(data.getNumber("folder"));
 									explorerPlugin.notifyUpsert(user, newTimeline, folderId);
 									// Render: the render is done by the create method above.
