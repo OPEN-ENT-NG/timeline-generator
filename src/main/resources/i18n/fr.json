@@ -93,5 +93,20 @@
     "tooltip.read": "Lecteur",
     "timelinegenerator.folder.placeholder": "Nom du dossier",
     "timelinegenerator.share.varyingrights": "Attention, vous allez modifier des droits de partage sur plusieurs frises : toutes les frises sélectionnées seront affectées, leurs partages respectifs actuels seront écrasés.",
-    "timelinegenerator.library.prompt.title": "Frises chronologiques"
+    "timelinegenerator.library.prompt.title": "Frises chronologiques",
+    "explorer.searchbar.placeholder": "Rechercher dans toutes les frises",
+    "explorer.filter.all": "Toutes les frises",
+    "explorer.filter.owner": "Mes frises",
+    "explorer.filter.shared": "Les frises partagées avec moi",
+    "explorer.filter.public": "Les frises publiques",
+    "explorer.create.title": "Nouvelle frise",
+    "explorer.label.search": "Rechercher dans toutes les frises",
+    "explorer.filters.mine": "Toutes les frises",
+    "explorer.tree.title": "Frises",
+    "explorer.emptyScreen.label": "Ce dossier est vide pour le moment. Vous pouvez organiser vos frises dedans, dès maintenant !",
+    "explorer.emptyScreen.app.alt": "Illustration de l'application frise sans ressources",
+    "explorer.emptyScreen.trash.empty": "Aucunes frises dans la corbeille pour le moment.",
+    "explorer.emptyScreen.search.text": "Désolé, il n’y a rien sous ce nom-là... Aucune frise ne correspond à votre recherche. Modifiez les critères et tentez à nouveau !",
+    "explorer.emptyScreen.search.alt": "Illustration de la recherche de ressources",
+    "explorer.tooltip.shared": "Frise partagée"
 }
