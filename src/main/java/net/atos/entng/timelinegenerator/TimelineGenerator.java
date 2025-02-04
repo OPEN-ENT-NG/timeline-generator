@@ -80,7 +80,7 @@ public class TimelineGenerator extends BaseServer {
 		final IExplorerPluginClient mainClient = IExplorerPluginClient.withBus(vertx, APPLICATION, TYPE);
 		final Map<String, IExplorerPluginClient> pluginClientPerCollection = new HashMap<>();
 		pluginClientPerCollection.put(TIMELINE_GENERATOR_COLLECTION, mainClient);
-		setRepositoryEvents(new ExplorerRepositoryEvents(new MongoDbRepositoryEvents(vertx), pluginClientPerCollection, mainClient));
+		setRepositoryEvents(new ExplorerRepositoryEvents(new TimelineGeneratorRepositoryEvents(vertx), pluginClientPerCollection, mainClient));
 
 		// Add Controllers and Services
 		final TimelineService timelineService = new DefaultTimelineService();
