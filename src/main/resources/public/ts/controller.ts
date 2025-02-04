@@ -31,6 +31,8 @@ export interface TimelineGeneratorControllerScope {
     selectedTimeline: boolean | TimelineModel
     event: EventModel
     forceToClose: boolean
+    getStartTimestamp(ev: EventModel): number;
+    getEndTimestamp(ev: EventModel): number;
     safeApply(fn?: any);
     openMainPage(): void
     newTimeline(): void;
@@ -90,6 +92,34 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
         predicate: 'headline',
         reverse: false
     };
+
+    $scope.getStartTimestamp = function(ev) {
+        var dateStr = ev.startDate;
+    
+        if (!dateStr) {
+          return Infinity;
+        }
+
+        var parsed = new Date(dateStr);
+        if (!isNaN(parsed.getTime())) {
+          return parsed.getTime();
+        }
+        return dateStr;
+      };
+
+      $scope.getEndTimestamp = function(ev) {
+        var dateStr = ev.endDate;
+    
+        if (!dateStr) {
+          return Infinity;
+        }
+
+        var parsed = new Date(dateStr);
+        if (!isNaN(parsed.getTime())) {
+          return parsed.getTime();
+        }
+        return dateStr;
+      };
 
     template.open('side-panel', 'timeline-side-panel');
     //DELEGATE
