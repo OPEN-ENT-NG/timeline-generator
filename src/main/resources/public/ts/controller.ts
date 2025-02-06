@@ -127,7 +127,6 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
     // Definition of actions
     route({
         goToTimeline: function (params) {
-            template.open('timelines', 'timelines');
             const _timeline = new TimelineEntity({ _id: params.timelineId as string } as any);
             _timeline.sync().then(async () => {
                 $scope.timeline = new timelineNamespace.Timeline(_timeline);
@@ -157,7 +156,7 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
         goToEvent: function (params) {
         },
         mainPage: function (params) {
-            template.open('timelines', 'timelines');
+            window.open("/timelinegenerator?view=home", "_self");
             $scope.display.isEditingInfos = false;
         }
     });
@@ -176,8 +175,9 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
         delete $scope.timeline;
         delete $scope.selectedTimeline;
         template.close('main');
-        template.open('timelines', 'timelines');
-        window.location.hash = "";
+        
+        window.open("/timelinegenerator?view=home", "_self");
+
         $scope.display.isEditingInfos = false;
     };
 
@@ -343,7 +343,7 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
     $scope.cancelTimelineEdit = function () {
         $scope.timeline = undefined;
         template.close('main');
-        template.open('timelines', 'timelines');
+        window.open("/timelinegenerator?view=home", "_self");
         $scope.display.isEditingInfos = false;
     };
 
