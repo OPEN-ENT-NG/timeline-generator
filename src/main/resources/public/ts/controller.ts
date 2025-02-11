@@ -157,7 +157,7 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
         $scope.allEvents = timeline.events.all.map(function(event) {
             return {
                 ...event,
-                name: event.headline,
+                headline: event.headline,
 
                 startDate: event.startDate
                     ? moment(event.startDate).valueOf()
