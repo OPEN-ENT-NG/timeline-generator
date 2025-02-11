@@ -31,8 +31,6 @@ export interface TimelineGeneratorControllerScope {
     selectedTimeline: boolean | TimelineModel
     event: EventModel
     forceToClose: boolean
-    getStartTimestamp(ev: EventModel): number;
-    getEndTimestamp(ev: EventModel): number;
     safeApply(fn?: any);
     openMainPage(): void
     newTimeline(): void;
@@ -89,37 +87,9 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
     $scope.editedEvent = new timelineNamespace.Event();
 
     $scope.sort = {
-        predicate: 'getStartTimestamp',
+        predicate: 'headline',
         reverse: false
     };
-
-    $scope.getStartTimestamp = function(ev) {
-        var dateStr = ev.startDate;
-    
-        if (!dateStr) {
-          return Infinity;
-        }
-
-        var parsed = new Date(dateStr);
-        if (!isNaN(parsed.getTime())) {
-          return parsed.getTime();
-        }
-        return dateStr;
-      };
-
-      $scope.getEndTimestamp = function(ev) {
-        var dateStr = ev.endDate;
-    
-        if (!dateStr) {
-          return Infinity;
-        }
-
-        var parsed = new Date(dateStr);
-        if (!isNaN(parsed.getTime())) {
-          return parsed.getTime();
-        }
-        return dateStr;
-      };
 
     template.open('side-panel', 'timeline-side-panel');
     //DELEGATE
@@ -183,7 +153,17 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
 
     $scope.openTimeline = function (timeline) {
         $scope.timeline = $scope.selectedTimeline = timeline;
-        $scope.events = timeline.events;
+        $scope.events.all = timeline.events.all.map(function(event) {
+            event.startDate = event.startDate
+              ? moment(event.startDate).valueOf()
+              : event.startDate;
+    
+            event.endDate = event.endDate
+              ? moment(event.endDate).valueOf()
+              : event.endDate;
+    
+            return event;
+        });
         $scope.previewMode = false;
         $scope.timeline.open(function () {
             template.close('main');
@@ -490,7 +470,7 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
     };
 
     $scope.resetSort = function () {
-        $scope.sort.predicate = 'getStartTimestamp';
+        $scope.sort.predicate = 'headline';
         $scope.sort.reverse = false;
     };
 
