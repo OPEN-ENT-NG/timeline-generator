@@ -294,6 +294,11 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
                 $scope.timeline.events.sync(function () {
                     $scope.cancelEventEdit();
                 });
+                if ($scope.previewMode) {
+                    $scope.openTimelineViewer($scope.timeline);
+                } else {
+                    $scope.openTimeline($scope.timeline);
+                }
                 $scope.event.tracker.onFinish(true);
             }, ()=>{
                 $scope.event.tracker.onFinish(false);
