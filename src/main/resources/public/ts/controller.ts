@@ -27,7 +27,6 @@ export interface TimelineGeneratorControllerScope {
         reverse: boolean
     }
     events: EventsModel
-    allEvents: EventModel[]
     timeline: TimelineModel
     selectedTimeline: boolean | TimelineModel
     event: EventModel
@@ -154,20 +153,21 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
 
     $scope.openTimeline = function (timeline) {
         $scope.timeline = $scope.selectedTimeline = timeline;
-        $scope.allEvents = timeline.events.all.map(function(event) {
+        $scope.events.all = timeline.events.all.map(function(event) {
             return {
                 ...event,
                 headline: event.headline,
-
+    
                 startDate: event.startDate
                     ? moment(event.startDate).valueOf()
                     : null,
-        
+            
                 endDate: event.endDate
                     ? moment(event.endDate).valueOf()
                     : null
             };
         });
+        
         $scope.previewMode = false;
         $scope.timeline.open(function () {
             template.close('main');
@@ -290,7 +290,6 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
         }
         if ($scope.event._id) { // when editing an event
             $scope.event.save(function () {
-                $scope.cancelEventEdit();
                 template.close('main');
                 $scope.timeline.events.sync(function () {
                     $scope.cancelEventEdit();
