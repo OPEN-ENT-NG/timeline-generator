@@ -290,15 +290,11 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
         }
         if ($scope.event._id) { // when editing an event
             $scope.event.save(function () {
+                $scope.cancelEventEdit();
                 template.close('main');
                 $scope.timeline.events.sync(function () {
                     $scope.cancelEventEdit();
                 });
-                if ($scope.previewMode) {
-                    $scope.openTimelineViewer($scope.timeline);
-                } else {
-                    $scope.openTimeline($scope.timeline);
-                }
                 $scope.event.tracker.onFinish(true);
             }, ()=>{
                 $scope.event.tracker.onFinish(false);
