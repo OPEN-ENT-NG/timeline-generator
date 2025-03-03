@@ -1,10 +1,10 @@
 {
   "name": "timeline-generator",
-  "version": "3.0.0",
+  "version": "3.0.0-dev.0",
   "description": "Timeline tool for ENT Core.",
   "main": "gulpfile.js",
   "dependencies": {
-    "entcore": "4.8.11",
+    "entcore": "dev",
     "axios": "0.16.2",
     "core-js": "2.4.1",
     "entcore-toolkit": "^1.2.0"
