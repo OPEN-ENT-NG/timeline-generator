@@ -156,23 +156,26 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
         
         $scope.events = timeline.events;
         
-        if ($scope.events && $scope.events.all) {
-            $scope.events.all.forEach((event) => {
-                if (event.startDate) {
-                    event.startDate = moment(event.startDate).valueOf();
-                }
-                if (event.endDate) {
-                    event.endDate = moment(event.endDate).valueOf();
-                }
-            });
-        }
-        
         $scope.previewMode = false;
         
         $scope.timeline.open(function () {
+            if ($scope.events && $scope.events.all) {
+                $scope.events.all.forEach((event) => {
+                    if (event.startDate) {
+                        event.startDate = moment(event.startDate).valueOf();
+                    }
+                    if (event.endDate) {
+                        event.endDate = moment(event.endDate).valueOf();
+                    }
+                });
+            }
+            else{
+                console.log('no events')
+            }
             template.close('main');
             template.open('timelines', 'events');
-            $scope.safeApply();
+            $scope.$apply();
+        
         });
         
         $scope.display.isEditingInfos = false;
