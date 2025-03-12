@@ -87,7 +87,7 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
     $scope.editedEvent = new timelineNamespace.Event();
 
     $scope.sort = {
-        predicate: 'headline',
+        predicate: 'startDate',
         reverse: false
     };
 
@@ -478,7 +478,7 @@ export const timelineGeneratorController = ng.controller('TimelineGeneratorContr
     };
 
     $scope.resetSort = function () {
-        $scope.sort.predicate = 'headline';
+        $scope.sort.predicate = 'startDate';
         $scope.sort.reverse = false;
     };
 
