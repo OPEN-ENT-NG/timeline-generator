@@ -25,6 +25,7 @@ import net.atos.entng.timelinegenerator.controllers.FoldersController;
 import net.atos.entng.timelinegenerator.controllers.TimelineController;
 import net.atos.entng.timelinegenerator.events.TimelineGeneratorSearchingEvents;
 import net.atos.entng.timelinegenerator.explorer.TimelineGeneratorExplorerPlugin;
+import net.atos.entng.timelinegenerator.listeners.ResourceBrokerListenerImpl;
 import net.atos.entng.timelinegenerator.services.EventService;
 import net.atos.entng.timelinegenerator.services.TimelineService;
 import net.atos.entng.timelinegenerator.services.impl.DefaultTimelineService;
@@ -38,8 +39,13 @@ import org.entcore.common.mongodb.MongoDbConf;
 import org.entcore.common.service.CrudService;
 import org.entcore.common.service.impl.MongoDbRepositoryEvents;
 import org.entcore.common.service.impl.MongoDbSearchService;
+import org.entcore.common.share.ShareService;
+import org.entcore.common.share.impl.ShareBrokerListenerImpl;
+import org.entcore.broker.api.utils.AddressParameter;
+import org.entcore.broker.api.utils.BrokerProxyUtils;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -97,7 +103,13 @@ public class TimelineGenerator extends BaseServer {
 
 		// Start Explorer plugin
 		this.explorerPlugin.start();
-
+        // add broker listener for workspace resources
+        BrokerProxyUtils.addBrokerProxy(new ResourceBrokerListenerImpl(), vertx, new AddressParameter("application", "timelinegenerator"));
+        // add broker listener for share service
+		final Map<String, List<String>> groupedActions = new HashMap<>();
+        final ShareService shareService = this.explorerPlugin.createShareService(groupedActions);
+        BrokerProxyUtils.addBrokerProxy(new ShareBrokerListenerImpl(this.securedActions, shareService), vertx, new AddressParameter("application", "timelinegenerator"));
+		// Set the start promise as completed
 		startPromise.tryComplete();
 	}
 
