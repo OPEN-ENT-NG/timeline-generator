@@ -1,9 +1,9 @@
 # À propos de l'application Frise chronologique
 
-* Licence : [AGPL v3](http://www.gnu.org/licenses/agpl.txt) - Copyright Région Hauts-de-France (ex Picardie)
-* Développeur(s) : ATOS, Open Digital Education
-* Financeur(s) : Région Hauts-de-France (ex Picardie)
-* Description : Application de conception de frise chronologique multimédia  (partageable dans l'ENT) qui s'appuie sur la librairie  http://timeline.knightlab.com/.
+* Licence : [AGPL v3](http://www.gnu.org/licenses/agpl.txt) - Copyright Région Hauts-de-France (ex Picardie), Edifice
+* Développeur(s) : ATOS, Edifice
+* Financeur(s) : Région Hauts-de-France (ex Picardie), Edifice
+* Description : Application de conception de frise chronologique multimédia (partageable dans l'ENT) qui s'appuie sur la librairie  http://timeline.knightlab.com/.
 
 # Documentation technique
 
