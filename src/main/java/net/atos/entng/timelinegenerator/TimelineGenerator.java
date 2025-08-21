@@ -36,6 +36,7 @@ import org.entcore.common.explorer.impl.ExplorerRepositoryEvents;
 import org.entcore.common.http.BaseServer;
 import org.entcore.common.http.filter.ShareAndOwner;
 import org.entcore.common.mongodb.MongoDbConf;
+import org.entcore.common.resources.ResourceBrokerRepositoryEvents;
 import org.entcore.common.service.CrudService;
 import org.entcore.common.service.impl.MongoDbRepositoryEvents;
 import org.entcore.common.service.impl.MongoDbSearchService;
@@ -43,6 +44,7 @@ import org.entcore.common.share.ShareService;
 import org.entcore.common.share.impl.ShareBrokerListenerImpl;
 import org.entcore.broker.api.utils.AddressParameter;
 import org.entcore.broker.api.utils.BrokerProxyUtils;
+import org.entcore.common.user.RepositoryEvents;
 
 import java.util.HashMap;
 import java.util.List;
@@ -86,11 +88,12 @@ public class TimelineGenerator extends BaseServer {
 		final IExplorerPluginClient mainClient = IExplorerPluginClient.withBus(vertx, APPLICATION, TYPE);
 		final Map<String, IExplorerPluginClient> pluginClientPerCollection = new HashMap<>();
 		pluginClientPerCollection.put(TIMELINE_GENERATOR_COLLECTION, mainClient);
-		setRepositoryEvents(new ExplorerRepositoryEvents(new TimelineGeneratorRepositoryEvents(vertx), pluginClientPerCollection, mainClient));
-
+		final RepositoryEvents explorerRepository = new ExplorerRepositoryEvents(new TimelineGeneratorRepositoryEvents(vertx), pluginClientPerCollection, mainClient);
+		final RepositoryEvents resourceRepository = new ResourceBrokerRepositoryEvents(explorerRepository, vertx, APPLICATION, TYPE);
+		setRepositoryEvents(resourceRepository);
 		// Add Controllers and Services
 		final TimelineService timelineService = new DefaultTimelineService();
-		final TimelineController timelineController = new TimelineController(TIMELINE_GENERATOR_COLLECTION, explorerPlugin);
+		final TimelineController timelineController = new TimelineController(vertx, TIMELINE_GENERATOR_COLLECTION, explorerPlugin);
 		timelineController.setTimelineService(timelineService);
 		timelineController.setEventService((EventService) eventService);
 		addController(timelineController);
