@@ -33,6 +33,10 @@ import net.atos.entng.timelinegenerator.explorer.TimelineGeneratorExplorerPlugin
 import net.atos.entng.timelinegenerator.services.EventService;
 import net.atos.entng.timelinegenerator.services.TimelineService;
 import net.atos.entng.timelinegenerator.services.impl.DefaultTimelineService;
+import org.entcore.broker.api.dto.resources.ResourcesDeletedDTO;
+import org.entcore.broker.api.publisher.BrokerPublisherFactory;
+import org.entcore.broker.api.utils.AddressParameter;
+import org.entcore.broker.proxy.ResourceBrokerPublisher;
 import org.entcore.common.events.EventHelper;
 import org.entcore.common.events.EventStore;
 import org.entcore.common.events.EventStoreFactory;
@@ -67,14 +71,21 @@ public class TimelineController extends MongoDbControllerHelper {
 	private final EventHelper eventHelper;
 
 	private final TimelineGeneratorExplorerPlugin explorerPlugin;
+	private final ResourceBrokerPublisher resourcePublisher;
 
 	enum Operation { CREATE, UPDATE, DELETE }
 
-	public TimelineController(final String collection, final TimelineGeneratorExplorerPlugin plugin) {
+	public TimelineController(final Vertx vertx, final String collection, final TimelineGeneratorExplorerPlugin plugin) {
 		super(collection);
 		this.explorerPlugin = plugin;
 		final EventStore eventStore = EventStoreFactory.getFactory().getEventStore(TimelineGenerator.class.getSimpleName());
 		this.eventHelper = new EventHelper(eventStore);
+		// Initialize resource publisher for deletion notifications
+		this.resourcePublisher = BrokerPublisherFactory.create(
+				ResourceBrokerPublisher.class,
+				vertx,
+				new AddressParameter("application", TimelineGenerator.APPLICATION)
+		);
 	}
 
 	@Override
@@ -205,8 +216,10 @@ public class TimelineController extends MongoDbControllerHelper {
 		UserUtils.getAuthenticatedUserInfos(eb, request)
 				.onSuccess(user ->
 					((DefaultTimelineService) timelineService).delete(id, deleteRes -> {
-						if (deleteRes.isRight()) {
-							// Notify Explorer
+						if (deleteRes.isRight()) {// Notify resource deletion via broker and don't wait for completion
+							final ResourcesDeletedDTO notification = ResourcesDeletedDTO.forSingleResource(id, TimelineGenerator.TYPE);
+							resourcePublisher.notifyResourcesDeleted(notification);
+							// Notify EUR and and don't wait for explorer notifications to complete
 							explorerPlugin.notifyDeleteById(user, new IdAndVersion(id, System.currentTimeMillis()));
 							// Render ok
 							renderJson(request, deleteRes.right().getValue());
