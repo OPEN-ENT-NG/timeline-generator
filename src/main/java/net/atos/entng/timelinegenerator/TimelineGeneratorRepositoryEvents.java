@@ -22,12 +22,11 @@ package net.atos.entng.timelinegenerator;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.client.model.Filters;
+import fr.wseduc.mongodb.MongoDbAPI;
 import fr.wseduc.mongodb.MongoQueryBuilder;
 import fr.wseduc.mongodb.MongoUpdateBuilder;
 import fr.wseduc.webutils.Either;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
+import io.vertx.core.*;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -36,7 +35,9 @@ import org.entcore.common.mongodb.MongoDbResult;
 import org.entcore.common.service.impl.MongoDbRepositoryEvents;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -170,25 +171,24 @@ public class TimelineGeneratorRepositoryEvents extends MongoDbRepositoryEvents {
     }
 
     @Override
-    public void deleteGroups(JsonArray groups) {
-		if(groups == null)
-		{
+    public void deleteGroups(JsonArray groups, final Handler<List<ResourceChanges>> handler) {
+        if(groups == null) {
             log.warn("[TimelineGeneratorRepositoryEvents][deleteGroups] JsonArray groups is null or empty");
-			return;
-		}
+            handler.handle(new ArrayList<>());
+            return;
+        }
 
-		for(int i = groups.size(); i-- > 0;)
-		{
-			if(groups.hasNull(i))
-				groups.remove(i);
-			else if (groups.getJsonObject(i) != null && groups.getJsonObject(i).getString("group") == null)
-				groups.remove(i);
-		}
-		if(groups.size() == 0)
-		{
+        for(int i = groups.size(); i-- > 0;) {
+            if(groups.hasNull(i))
+                groups.remove(i);
+            else if (groups.getJsonObject(i) != null && groups.getJsonObject(i).getString("group") == null)
+                groups.remove(i);
+        }
+        if(groups.size() == 0) {
             log.warn("[TimelineGeneratorRepositoryEvents][deleteGroups] JsonArray groups is null or empty");
-			return;
-		}
+            handler.handle(new ArrayList<>());
+            return;
+        }
 
         final String[] groupIds = new String[groups.size()];
         for (int i = 0; i < groups.size(); i++) {
@@ -206,30 +206,32 @@ public class TimelineGeneratorRepositoryEvents extends MongoDbRepositoryEvents {
             public void handle(Either<String, JsonObject> event) {
                 if (event.isRight()) {
                     log.info("[TimelineGeneratorRepositoryEvents][deleteGroups] All groups shares are removed");
+                    handler.handle(new ArrayList<>());
                 } else {
                     log.error("[TimelineGeneratorRepositoryEvents][deleteGroups] Error removing groups shares. Message : " + event.left().getValue());
+                    handler.handle(new ArrayList<>());
                 }
             }
         }));
     }
 
     @Override
-    public void deleteUsers(JsonArray users) {
-        //FIXME: anonymization is not relevant
+    public void deleteUsers(JsonArray users, final Handler<List<ResourceChanges>> handler) {
+        // FIXME: anonymization is not relevant
         if (users == null) {
             log.warn("[TimelineGeneratorRepositoryEvents][deleteUsers] JsonArray users is null or empty");
+            handler.handle(new ArrayList<>());
             return;
         }
-		for(int i = users.size(); i-- > 0;)
-		{
-			if(users.hasNull(i))
-				users.remove(i);
+        for(int i = users.size(); i-- > 0;) {
+            if(users.hasNull(i))
+                users.remove(i);
             else if (users.getJsonObject(i) != null && users.getJsonObject(i).getString("id") == null)
                 users.remove(i);
-		}
-        if(users.size() == 0)
-        {
+        }
+        if(users.size() == 0) {
             log.warn("[TimelineGeneratorRepositoryEvents][deleteUsers] JsonArray users is null or empty");
+            handler.handle(new ArrayList<>());
             return;
         }
 
@@ -244,39 +246,56 @@ public class TimelineGeneratorRepositoryEvents extends MongoDbRepositoryEvents {
          * subjects that do not belong to a category - finally, tag all users as deleted in their own categories
          */
 
-        this.removeSharesTimelines(usersIds);
+        final List<ResourceChanges> resourceChanges = new ArrayList<>();
+        
+        this.removeSharesTimelinesWithHandler(usersIds, resourceChanges, handler);
     }
 
     /**
-     * Remove the shares of categories with a list of users if OK, Call prepareCleanCategories()
+     * Remove the shares of timelines with a list of users, and notify handler when complete
      * @param usersIds users identifiers
+     * @param resourceChanges list to collect resource changes
+     * @param handler callback to notify when process is complete
      */
-    private void removeSharesTimelines(final String[] usersIds) {
+    private void removeSharesTimelinesWithHandler(final String[] usersIds, final List<ResourceChanges> resourceChanges, final Handler<List<ResourceChanges>> handler) {
         final JsonObject criteria = MongoQueryBuilder.build(Filters.in("shared.userId", usersIds));
         MongoUpdateBuilder modifier = new MongoUpdateBuilder();
         modifier.pull("shared", MongoQueryBuilder.build(Filters.in("userId", usersIds)));
 
-        // Remove Categories shares with these users
+        // Remove timelines shares with these users
         mongo.update(TimelineGenerator.TIMELINE_GENERATOR_COLLECTION, criteria, modifier.build(), false, true, MongoDbResult.validActionResultHandler(new Handler<Either<String, JsonObject>>() {
             @Override
             public void handle(Either<String, JsonObject> event) {
                 if (event.isRight()) {
-                    log.info("[TimelineGeneratorRepositoryEvents][removeSharesTimelines] All calendars shares with users are removed");
-                    prepareCleanTimelines(usersIds);
+                    log.info("[TimelineGeneratorRepositoryEvents][removeSharesTimelines] All timelines shares with users are removed");
+                    
+                    // First tag users as deleted in their own timelines
+                    tagUsersAsDeleted(usersIds)
+                        .onSuccess(success -> {
+                            // Then prepare cleaning timelines with no owner/manager
+                            prepareCleanTimelinesWithHandler(usersIds, resourceChanges, handler);
+                        })
+                        .onFailure(err -> {
+                            log.error("[TimelineGeneratorRepositoryEvents][removeSharesTimelines] Error tagging users as deleted: " + err.getMessage());
+                            handler.handle(resourceChanges);
+                        });
                 } else {
-                    log.error("[TimelineGeneratorRepositoryEvents][removeSharesTimelines] Error removing calendars shares with users. Message : " + event.left().getValue());
+                    log.error("[TimelineGeneratorRepositoryEvents][removeSharesTimelines] Error removing timelines shares with users. Message : " + event.left().getValue());
+                    handler.handle(resourceChanges);
                 }
             }
         }));
     }
 
     /**
-     * Prepare a list of categories identifiers if OK, Call cleanCategories()
+     * Prepare a list of categories identifiers if OK, Call cleanCategories() with handler
      * @param usersIds users identifiers
+     * @param resourceChanges list to collect resource changes
+     * @param handler callback to notify when process is complete
      */
-    private void prepareCleanTimelines(final String[] usersIds) {
+    private void prepareCleanTimelinesWithHandler(final String[] usersIds, final List<ResourceChanges> resourceChanges, final Handler<List<ResourceChanges>> handler) {
         // users currently deleted
-        Bson deletedUsers = Filters.in("owner.userId",usersIds);
+        Bson deletedUsers = Filters.in("owner.userId", usersIds);
         // users who have already been deleted
         Bson ownerIsDeleted = Filters.eq("owner.deleted", true);
         // no manager found
@@ -291,27 +310,32 @@ public class TimelineGeneratorRepositoryEvents extends MongoDbRepositoryEvents {
                     JsonArray timelines = event.right().getValue();
                     if (timelines == null || timelines.size() == 0) {
                         log.info("[TimelineGeneratorRepositoryEvents][prepareCleanTimelines] No timelines to delete");
+                        handler.handle(resourceChanges);
                         return;
                     }
                     final String[] timelineIds = new String[timelines.size()];
                     for (int i = 0; i < timelines.size(); i++) {
                         JsonObject j = timelines.getJsonObject(i);
                         timelineIds[i] = j.getString("_id");
+                        resourceChanges.add(new ResourceChanges(j.getString("_id"), true));
                     }
-                    cleanTimelines(usersIds, timelineIds);
+                    cleanTimelinesWithHandler(usersIds, timelineIds, resourceChanges, handler);
                 } else {
-                    log.error("[TimelineGeneratorRepositoryEvents][prepareCleanTimelines] Error retreving the timelines created by users. Message : " + event.left().getValue());
+                    log.error("[TimelineGeneratorRepositoryEvents][prepareCleanTimelines] Error retrieving the timelines created by users. Message : " + event.left().getValue());
+                    handler.handle(resourceChanges);
                 }
             }
         }));
     }
 
     /**
-     * Delete timelines by identifier if OK, call cleanEvents() and tagUsersAsDeleted()
+     * Delete timelines by identifier if OK, call cleanEvents() with handler
      * @param usersIds users identifiers, used for tagUsersAsDeleted()
      * @param timelineIds timelines identifiers
+     * @param resourceChanges list to collect resource changes
+     * @param handler callback to notify when process is complete
      */
-    private void cleanTimelines(final String[] usersIds, final String[] timelineIds) {
+    private void cleanTimelinesWithHandler(final String[] usersIds, final String[] timelineIds, final List<ResourceChanges> resourceChanges, final Handler<List<ResourceChanges>> handler) {
         JsonObject matcher = MongoQueryBuilder.build(Filters.in("_id", timelineIds));
 
         mongo.delete(TimelineGenerator.TIMELINE_GENERATOR_COLLECTION, matcher, MongoDbResult.validActionResultHandler(new Handler<Either<String, JsonObject>>() {
@@ -319,20 +343,22 @@ public class TimelineGeneratorRepositoryEvents extends MongoDbRepositoryEvents {
             public void handle(Either<String, JsonObject> event) {
                 if (event.isRight()) {
                     log.info("[TimelineGeneratorRepositoryEvents][cleanTimelines] The timelines created by users are deleted");
-                    cleanEvents(timelineIds);
-                    tagUsersAsDeleted(usersIds);
+                    cleanEventsWithHandler(timelineIds, resourceChanges, handler);
                 } else {
                     log.error("[TimelineGeneratorRepositoryEvents][cleanTimelines] Error deleting the timelines created by users. Message : " + event.left().getValue());
+                    handler.handle(resourceChanges);
                 }
             }
         }));
     }
 
     /**
-     * Delete events by timeline identifier
+     * Delete events by timeline identifier and notify handler when complete
      * @param timelineIds timeline identifiers
+     * @param resourceChanges list to collect resource changes
+     * @param handler callback to notify when process is complete
      */
-    private void cleanEvents(final String[] timelineIds) {
+    private void cleanEventsWithHandler(final String[] timelineIds, final List<ResourceChanges> resourceChanges, final Handler<List<ResourceChanges>> handler) {
         JsonObject matcher = MongoQueryBuilder.build(Filters.in("timeline", timelineIds));
 
         mongo.delete(TimelineGenerator.TIMELINE_GENERATOR_EVENT_COLLECTION, matcher, MongoDbResult.validActionResultHandler(new Handler<Either<String, JsonObject>>() {
@@ -343,28 +369,35 @@ public class TimelineGeneratorRepositoryEvents extends MongoDbRepositoryEvents {
                 } else {
                     log.error("[TimelineGeneratorRepositoryEvents][cleanEvents] Error deleting the events created by users. Message : " + event.left().getValue());
                 }
+                handler.handle(resourceChanges);
             }
         }));
     }
 
     /**
-     * Tag as deleted a list of users in their own calendars
+     * Tag as deleted a list of users in their own timelines
      * @param usersIds users identifiers
+     * @return Future with success status
      */
-    private void tagUsersAsDeleted(final String[] usersIds) {
+    private Future<Boolean> tagUsersAsDeleted(final String[] usersIds) {
+        final Promise<Boolean> promise = Promise.promise();
         final JsonObject criteria = MongoQueryBuilder.build(Filters.in("owner.userId", usersIds));
         MongoUpdateBuilder modifier = new MongoUpdateBuilder();
         modifier.set("owner.deleted", true);
 
-        mongo.update(TimelineGenerator.TIMELINE_GENERATOR_COLLECTION, criteria, modifier.build(), false, true, MongoDbResult.validActionResultHandler(new Handler<Either<String, JsonObject>>() {
+        mongo.update(TimelineGenerator.TIMELINE_GENERATOR_COLLECTION, criteria, modifier.build(), false, true, MongoDbAPI.WriteConcern.MAJORITY, MongoDbResult.validActionResultHandler(new Handler<Either<String, JsonObject>>() {
             @Override
             public void handle(Either<String, JsonObject> event) {
                 if (event.isRight()) {
                     log.info("[TimelineGeneratorRepositoryEvents][tagUsersAsDeleted] users are tagged as deleted in their own timelines");
+                    promise.complete(true);
                 } else {
                     log.error("[TimelineGeneratorRepositoryEvents][tagUsersAsDeleted] Error tagging as deleted users. Message : " + event.left().getValue());
+                    promise.fail(event.left().getValue());
                 }
             }
         }));
+    
+        return promise.future();
     }
 }
