@@ -19,8 +19,6 @@
 
 package net.atos.entng.timelinegenerator;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 import com.mongodb.client.model.Filters;
 import fr.wseduc.mongodb.MongoDbAPI;
 import fr.wseduc.mongodb.MongoQueryBuilder;
@@ -33,6 +31,7 @@ import io.vertx.core.json.JsonObject;
 import org.bson.conversions.Bson;
 import org.entcore.common.mongodb.MongoDbResult;
 import org.entcore.common.service.impl.MongoDbRepositoryEvents;
+import org.entcore.common.user.ExportResourceResult;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -86,7 +85,7 @@ public class TimelineGeneratorRepositoryEvents extends MongoDbRepositoryEvents {
 
     @Override
     public void exportResources(JsonArray resourcesIds, boolean exportDocuments, boolean exportSharedResources, String exportId, String userId,
-                                JsonArray groups, String exportPath, String locale, String host, Handler<Boolean> handler) {
+                                JsonArray groups, String exportPath, String locale, String host, Handler<ExportResourceResult> handler) {
 
         Bson findByAuthor = Filters.eq("owner.userId", userId);
         Bson findByShared = Filters.or(
@@ -140,31 +139,31 @@ public class TimelineGeneratorRepositoryEvents extends MongoDbRepositoryEvents {
                                             Handler<Boolean> finish = new Handler<Boolean>() {
                                                 @Override
                                                 public void handle(Boolean bool) {
-                                                    exportFiles(results, path, new HashSet<String>(), exported, handler);
+                                                    exportFiles(results, path, new HashSet<>(), exported, e -> new ExportResourceResult(bool, path));
                                                 }
                                             };
 
-                                            if(exportDocuments == true)
+                                            if(exportDocuments)
                                                 exportDocumentsDependancies(results.addAll(results2), path, finish);
                                             else
                                                 finish.handle(Boolean.TRUE);
                                         }
                                         else {
-                                            handler.handle(exported.get());
+                                            handler.handle(ExportResourceResult.KO);
                                         }
                                     }
                                 });
                             }
                             else {
                                 log.error("Blog : Could not proceed query " + query2.encode(), event2.body().getString("message"));
-                                handler.handle(exported.get());
+                                handler.handle(ExportResourceResult.KO);
                             }
                         }
                     });
                 }
                 else {
                     log.error("Blog : Could not proceed query " + query.encode(), event.body().getString("message"));
-                    handler.handle(exported.get());
+                    handler.handle(ExportResourceResult.KO);
                 }
             }
         });

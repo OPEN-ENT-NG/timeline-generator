@@ -19,6 +19,7 @@
 
 package net.atos.entng.timelinegenerator;
 
+import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import net.atos.entng.timelinegenerator.controllers.EventController;
 import net.atos.entng.timelinegenerator.controllers.FoldersController;
@@ -70,50 +71,54 @@ public class TimelineGenerator extends BaseServer {
 
 	@Override
 	public void start(Promise<Void> startPromise) throws Exception {
-		super.start(startPromise);
+		final Promise<Void> promise = Promise.promise();
+		super.start(promise);
+		promise.future().compose(init -> initTimelineGenerator()).onComplete(startPromise);
+	}
 
-		// Create Explorer plugin
-		this.explorerPlugin = TimelineGeneratorExplorerPlugin.create(securedActions);
+	private Future<Void> initTimelineGenerator() {
+        return TimelineGeneratorExplorerPlugin.create(securedActions).compose(p -> {
+            this.explorerPlugin = p;
+            // Mongo Conf
+            final MongoDbConf conf = MongoDbConf.getInstance();
+            // Set the main collection
+            conf.setCollection(TIMELINE_GENERATOR_COLLECTION);
+            conf.setResourceIdLabel("id");
+            conf.addSearchTextField(TIMELINE_GENERATOR_COLLECTION + ".text");
 
-		// Mongo Conf
-		final MongoDbConf conf = MongoDbConf.getInstance();
-		// Set the main collection
-		conf.setCollection(TIMELINE_GENERATOR_COLLECTION);
-		conf.setResourceIdLabel("id");
-		conf.addSearchTextField(TIMELINE_GENERATOR_COLLECTION + ".text");
+            setDefaultResourceFilter(new ShareAndOwner());
 
-		setDefaultResourceFilter(new ShareAndOwner());
+			// Create Repository Event with Explorer Proxy
+			final IExplorerPluginClient mainClient = IExplorerPluginClient.withBus(vertx, APPLICATION, TYPE);
+			final Map<String, IExplorerPluginClient> pluginClientPerCollection = new HashMap<>();
+			pluginClientPerCollection.put(TIMELINE_GENERATOR_COLLECTION, mainClient);
+			final RepositoryEvents explorerRepository = new ExplorerRepositoryEvents(new TimelineGeneratorRepositoryEvents(vertx), pluginClientPerCollection, mainClient);
+			final RepositoryEvents resourceRepository = new ResourceBrokerRepositoryEvents(explorerRepository, vertx, APPLICATION, TYPE);
+			setRepositoryEvents(resourceRepository);
+			// Add Controllers and Services
+			final TimelineService timelineService = new DefaultTimelineService();
+			final TimelineController timelineController = new TimelineController(vertx, TIMELINE_GENERATOR_COLLECTION, explorerPlugin);
+			timelineController.setTimelineService(timelineService);
+			timelineController.setEventService((EventService) eventService);
+			addController(timelineController);
+			addController(new EventController(TIMELINE_GENERATOR_EVENT_COLLECTION, eventService));
+			addController(new FoldersController("timelinegeneratorFolders"));
 
-		// Create Repository Event with Explorer Proxy
-		final IExplorerPluginClient mainClient = IExplorerPluginClient.withBus(vertx, APPLICATION, TYPE);
-		final Map<String, IExplorerPluginClient> pluginClientPerCollection = new HashMap<>();
-		pluginClientPerCollection.put(TIMELINE_GENERATOR_COLLECTION, mainClient);
-		final RepositoryEvents explorerRepository = new ExplorerRepositoryEvents(new TimelineGeneratorRepositoryEvents(vertx), pluginClientPerCollection, mainClient);
-		final RepositoryEvents resourceRepository = new ResourceBrokerRepositoryEvents(explorerRepository, vertx, APPLICATION, TYPE);
-		setRepositoryEvents(resourceRepository);
-		// Add Controllers and Services
-		final TimelineService timelineService = new DefaultTimelineService();
-		final TimelineController timelineController = new TimelineController(vertx, TIMELINE_GENERATOR_COLLECTION, explorerPlugin);
-		timelineController.setTimelineService(timelineService);
-		timelineController.setEventService((EventService) eventService);
-		addController(timelineController);
-		addController(new EventController(TIMELINE_GENERATOR_EVENT_COLLECTION, eventService));
-		addController(new FoldersController("timelinegeneratorFolders"));
+            if (config.getBoolean("searching-event", true)) {
+                setSearchingEvents(new TimelineGeneratorSearchingEvents(new MongoDbSearchService(TIMELINE_GENERATOR_COLLECTION)));
+            }
 
-		if (config.getBoolean("searching-event", true)) {
-			setSearchingEvents(new TimelineGeneratorSearchingEvents(new MongoDbSearchService(TIMELINE_GENERATOR_COLLECTION)));
-		}
+			// Start Explorer plugin
+			this.explorerPlugin.start();
+	        // add broker listener for workspace resources
+	        BrokerProxyUtils.addBrokerProxy(new ResourceBrokerListenerImpl(), vertx, new AddressParameter("application", "timelinegenerator"));
+	        // add broker listener for share service
+			final Map<String, List<String>> groupedActions = new HashMap<>();
+	        final ShareService shareService = this.explorerPlugin.createShareService(groupedActions);
+	        BrokerProxyUtils.addBrokerProxy(new ShareBrokerListenerImpl(this.securedActions, shareService), vertx, new AddressParameter("application", "timelinegenerator"));
 
-		// Start Explorer plugin
-		this.explorerPlugin.start();
-        // add broker listener for workspace resources
-        BrokerProxyUtils.addBrokerProxy(new ResourceBrokerListenerImpl(), vertx, new AddressParameter("application", "timelinegenerator"));
-        // add broker listener for share service
-		final Map<String, List<String>> groupedActions = new HashMap<>();
-        final ShareService shareService = this.explorerPlugin.createShareService(groupedActions);
-        BrokerProxyUtils.addBrokerProxy(new ShareBrokerListenerImpl(this.securedActions, shareService), vertx, new AddressParameter("application", "timelinegenerator"));
-		// Set the start promise as completed
-		startPromise.tryComplete();
+            return Future.succeededFuture();
+        });
 	}
 
 	

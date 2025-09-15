@@ -7,12 +7,12 @@
     <parent>
         <groupId>io.edifice</groupId>
         <artifactId>app-parent</artifactId>
-        <version>1.0.1</version>
+        <version>1.1-SNAPSHOT</version>
     </parent>
 
     <groupId>net.atos</groupId>
     <artifactId>timelinegenerator</artifactId>
-    <version>3.2-SNAPSHOT</version>
+    <version>3.3-zookeeper-SNAPSHOT</version>
 
     <scm>
         <connection>scm:git:https://github.com/OPEN-ENT-NG/timeline-generator.git</connection>
@@ -29,9 +29,7 @@
     </repositories>
 
     <properties>
-        <entCoreVersion>6.11-SNAPSHOT</entCoreVersion>
-        <web-utils.version>3.2-SNAPSHOT</web-utils.version>
-        <mongodb-helper.version>3.0-SNAPSHOT</mongodb-helper.version>
+        <entCoreVersion>6.10-zookeeper-SNAPSHOT</entCoreVersion>
     </properties>
 
     <dependencies>

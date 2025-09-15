@@ -13,7 +13,6 @@ import org.entcore.broker.api.utils.AddressParameter;
 import org.entcore.broker.proxy.ResourceBrokerPublisher;
 import org.entcore.common.explorer.ExplorerMessage;
 import org.entcore.common.explorer.ExplorerPluginFactory;
-import org.entcore.common.explorer.IExplorerPlugin;
 import org.entcore.common.explorer.IExplorerPluginCommunication;
 import org.entcore.common.explorer.impl.ExplorerPluginResourceMongo;
 import org.entcore.common.explorer.impl.ExplorerSubResource;
@@ -36,11 +35,11 @@ public class TimelineGeneratorExplorerPlugin extends ExplorerPluginResourceMongo
     private ShareService shareService;
     private final ResourceBrokerPublisher resourcePublisher;
 
-    public static TimelineGeneratorExplorerPlugin create(final Map<String, SecuredAction> securedActions) throws Exception  {
+    public static Future<TimelineGeneratorExplorerPlugin> create(final Map<String, SecuredAction> securedActions)  {
         // Create the explorer plugin using mongo
-        final IExplorerPlugin plugin = ExplorerPluginFactory.createMongoPlugin((params) ->
-            new TimelineGeneratorExplorerPlugin(params.getCommunication(), params.getDb(), securedActions));
-        return (TimelineGeneratorExplorerPlugin) plugin;
+        return ExplorerPluginFactory.createMongoPlugin((params) ->
+            new TimelineGeneratorExplorerPlugin(params.getCommunication(), params.getDb(), securedActions))
+        .map(plugin -> (TimelineGeneratorExplorerPlugin) plugin);
     }
 
     protected TimelineGeneratorExplorerPlugin(final IExplorerPluginCommunication communication, final MongoClient mongoClient, final Map<String, SecuredAction> securedActions) {
