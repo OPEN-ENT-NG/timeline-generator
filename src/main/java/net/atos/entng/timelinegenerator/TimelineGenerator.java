@@ -19,6 +19,7 @@
 
 package net.atos.entng.timelinegenerator;
 
+import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import net.atos.entng.timelinegenerator.controllers.EventController;
 import net.atos.entng.timelinegenerator.controllers.FoldersController;
@@ -62,10 +63,19 @@ public class TimelineGenerator extends BaseServer {
 
 	@Override
 	public void start(Promise<Void> startPromise) throws Exception {
-		super.start(startPromise);
+		final Promise<Void> promise = Promise.promise();
+		super.start(promise);
+		promise.future().compose(init -> initTimelineGenerator()).onComplete(startPromise);
+	}
+
+	private Future<Void> initTimelineGenerator() {
 
 		// Create Explorer plugin
-		this.explorerPlugin = TimelineGeneratorExplorerPlugin.create(securedActions);
+		try {
+			this.explorerPlugin = TimelineGeneratorExplorerPlugin.create(securedActions);
+		} catch (Exception e) {
+			return Future.failedFuture(e);
+		}
 
 		// Mongo Conf
 		final MongoDbConf conf = MongoDbConf.getInstance();
@@ -98,7 +108,7 @@ public class TimelineGenerator extends BaseServer {
 		// Start Explorer plugin
 		this.explorerPlugin.start();
 
-		startPromise.tryComplete();
+		return Future.succeededFuture();
 	}
 
 	
