@@ -30,7 +30,6 @@
 
     <properties>
         <entCoreVersion>6.8-zookeeper-SNAPSHOT</entCoreVersion>
-        <mongodb-helper.version>3.0-SNAPSHOT</mongodb-helper.version>
     </properties>
 
     <dependencies>
