@@ -69,46 +69,41 @@ public class TimelineGenerator extends BaseServer {
 	}
 
 	private Future<Void> initTimelineGenerator() {
+        return TimelineGeneratorExplorerPlugin.create(securedActions).compose(p -> {
+            this.explorerPlugin = p;
+            // Mongo Conf
+            final MongoDbConf conf = MongoDbConf.getInstance();
+            // Set the main collection
+            conf.setCollection(TIMELINE_GENERATOR_COLLECTION);
+            conf.setResourceIdLabel("id");
+            conf.addSearchTextField(TIMELINE_GENERATOR_COLLECTION + ".text");
 
-		// Create Explorer plugin
-		try {
-			this.explorerPlugin = TimelineGeneratorExplorerPlugin.create(securedActions);
-		} catch (Exception e) {
-			return Future.failedFuture(e);
-		}
+            setDefaultResourceFilter(new ShareAndOwner());
 
-		// Mongo Conf
-		final MongoDbConf conf = MongoDbConf.getInstance();
-		// Set the main collection
-		conf.setCollection(TIMELINE_GENERATOR_COLLECTION);
-		conf.setResourceIdLabel("id");
-		conf.addSearchTextField(TIMELINE_GENERATOR_COLLECTION + ".text");
+            // Create Repository Event with Explorer Proxy
+            final IExplorerPluginClient mainClient = IExplorerPluginClient.withBus(vertx, APPLICATION, TYPE);
+            final Map<String, IExplorerPluginClient> pluginClientPerCollection = new HashMap<>();
+            pluginClientPerCollection.put(TIMELINE_GENERATOR_COLLECTION, mainClient);
+            setRepositoryEvents(new ExplorerRepositoryEvents(new TimelineGeneratorRepositoryEvents(vertx), pluginClientPerCollection, mainClient));
 
-		setDefaultResourceFilter(new ShareAndOwner());
+            // Add Controllers and Services
+            final TimelineService timelineService = new DefaultTimelineService();
+            final TimelineController timelineController = new TimelineController(TIMELINE_GENERATOR_COLLECTION, explorerPlugin);
+            timelineController.setTimelineService(timelineService);
+            timelineController.setEventService((EventService) eventService);
+            addController(timelineController);
+            addController(new EventController(TIMELINE_GENERATOR_EVENT_COLLECTION, eventService));
+            addController(new FoldersController("timelinegeneratorFolders"));
 
-		// Create Repository Event with Explorer Proxy
-		final IExplorerPluginClient mainClient = IExplorerPluginClient.withBus(vertx, APPLICATION, TYPE);
-		final Map<String, IExplorerPluginClient> pluginClientPerCollection = new HashMap<>();
-		pluginClientPerCollection.put(TIMELINE_GENERATOR_COLLECTION, mainClient);
-		setRepositoryEvents(new ExplorerRepositoryEvents(new TimelineGeneratorRepositoryEvents(vertx), pluginClientPerCollection, mainClient));
+            if (config.getBoolean("searching-event", true)) {
+                setSearchingEvents(new TimelineGeneratorSearchingEvents(new MongoDbSearchService(TIMELINE_GENERATOR_COLLECTION)));
+            }
 
-		// Add Controllers and Services
-		final TimelineService timelineService = new DefaultTimelineService();
-		final TimelineController timelineController = new TimelineController(TIMELINE_GENERATOR_COLLECTION, explorerPlugin);
-		timelineController.setTimelineService(timelineService);
-		timelineController.setEventService((EventService) eventService);
-		addController(timelineController);
-		addController(new EventController(TIMELINE_GENERATOR_EVENT_COLLECTION, eventService));
-		addController(new FoldersController("timelinegeneratorFolders"));
+            // Start Explorer plugin
+            this.explorerPlugin.start();
 
-		if (config.getBoolean("searching-event", true)) {
-			setSearchingEvents(new TimelineGeneratorSearchingEvents(new MongoDbSearchService(TIMELINE_GENERATOR_COLLECTION)));
-		}
-
-		// Start Explorer plugin
-		this.explorerPlugin.start();
-
-		return Future.succeededFuture();
+            return Future.succeededFuture();
+        });
 	}
 
 	
