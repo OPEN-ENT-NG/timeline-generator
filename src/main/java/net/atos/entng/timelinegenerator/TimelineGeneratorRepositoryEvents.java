@@ -32,7 +32,7 @@ import io.vertx.core.json.JsonObject;
 import org.bson.conversions.Bson;
 import org.entcore.common.mongodb.MongoDbResult;
 import org.entcore.common.service.impl.MongoDbRepositoryEvents;
-import org.entcore.common.user.position.ExportResourceResult;
+import org.entcore.common.user.ExportResourceResult;
 
 import java.io.File;
 import java.util.HashSet;
