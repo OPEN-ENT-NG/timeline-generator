@@ -139,7 +139,7 @@ public class TimelineGeneratorRepositoryEvents extends MongoDbRepositoryEvents {
                                             Handler<Boolean> finish = new Handler<Boolean>() {
                                                 @Override
                                                 public void handle(Boolean bool) {
-                                                    exportFiles(results, path, new HashSet<>(), exported, e -> new ExportResourceResult(bool, path));
+                                                    exportFiles(results, path, new HashSet<>(), exported, e -> handler.handle(new ExportResourceResult(bool, path)));
                                                 }
                                             };
 
