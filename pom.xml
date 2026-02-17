@@ -12,7 +12,7 @@
 
     <groupId>net.atos</groupId>
     <artifactId>timelinegenerator</artifactId>
-    <version>3.3-develop-pedago-SNAPSHOT</version>
+    <version>3.3-SNAPSHOT</version>
 
     <scm>
         <connection>scm:git:https://github.com/OPEN-ENT-NG/timeline-generator.git</connection>
@@ -29,7 +29,7 @@
     </repositories>
 
     <properties>
-        <entCoreVersion>6.13-SNAPSHOT</entCoreVersion>
+        <entCoreVersion>6.14-SNAPSHOT</entCoreVersion>
     </properties>
 
     <dependencies>
