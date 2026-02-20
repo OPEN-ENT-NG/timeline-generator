@@ -607,9 +607,9 @@ bn.js@^5.0.0, bn.js@^5.2.1:
   integrity sha512-eXRvHzWyYPBuB4NBy0cmYQjGitUrtqwbvlzP3G6VFnNRbsZQIxQ10PbKKHt8gZ/HW/D/747aDl+QkDqg3KQLMQ==
 
 brace-expansion@^1.1.7:
-  version "1.1.11"
-  resolved "https://registry.npmjs.org/brace-expansion/-/brace-expansion-1.1.11.tgz"
-  integrity sha512-iCuPHDFgrHX7H2vEI/5xpz07zSHB00TpugqhmYtVmMO6518mCuRMoOYFldEBl0g187ufozdaHgWKcYFb61qGiA==
+  version "1.1.12"
+  resolved "https://registry.yarnpkg.com/brace-expansion/-/brace-expansion-1.1.12.tgz#ab9b454466e5a8cc3a187beaad580412a9c5b843"
+  integrity sha512-9T9UjW3r0UW5c1Q7GTwllptXwhvYmEzFhzMfZ9H7FQWt+uZePjZPjBP/W1ZEyZ1twGWom5/56TF4lPcqjnDHcg==
   dependencies:
     balanced-match "^1.0.0"
     concat-map "0.0.1"
@@ -1671,10 +1671,10 @@ entcore-toolkit@^1.0.0, entcore-toolkit@^1.2.0:
     merge2 "^1.0.3"
     typescript "2.1.1"
 
-entcore@~4.8.0-dev:
-  version "4.8.5"
-  resolved "https://registry.yarnpkg.com/entcore/-/entcore-4.8.5.tgz#a55786e8bf7751786b6548076ffd8d754f8dc5e6"
-  integrity sha512-XfUtzh9Izcn7t3IJ6j86lhfxkZOQrTfbZA3B1ZQGuhDgiAIKBkkffotLT0UQ9bdgO7UdzcNYG6/Ur9e6502wkg==
+entcore@4.8.14:
+  version "4.8.14"
+  resolved "https://registry.yarnpkg.com/entcore/-/entcore-4.8.14.tgz#bc5bd8b41cb6240b2ce4641598837929295d176c"
+  integrity sha512-CZSdsRM2cuKNpq/WFJ8+zj08UxcuDBpWNJMhGTQ+YuKZqW/Y3Umc8/IJmE4DPU90C0RRYdF5iCoy4CrDg5fIPw==
   dependencies:
     angular "1.8.3"
     angular-route "1.8.3"
