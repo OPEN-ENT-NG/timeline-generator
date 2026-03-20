@@ -2,6 +2,10 @@
   "name": "net.atos~timelinegenerator",
   "config": {
     "main": "net.atos.entng.timelinegenerator.TimelineGenerator",
+    "probes": [
+      "org.entcore.common.http.health.Neo4jProbe",
+      "org.entcore.common.http.health.MongoProbe"
+    ],
     "port": 8099,
     "csrf-token": {{ csrfToken | default('true') }},
     "app-name": "TimelineGenerator",
