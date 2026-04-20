@@ -39,6 +39,7 @@ import io.vertx.core.json.JsonObject;
 
 import fr.wseduc.webutils.http.Renders;
 import fr.wseduc.webutils.request.RequestUtils;
+import net.atos.entng.timelinegenerator.security.EventSanitizer;
 
 public class EventHelper extends MongoDbControllerHelper {
 	static final String RESOURCE_NAME = "timelinegenerator_event";
@@ -81,6 +82,7 @@ public class EventHelper extends MongoDbControllerHelper {
 					RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
 						@Override
 						public void handle(JsonObject object) {
+							EventSanitizer.sanitize(object);
 							final Handler<Either<String, JsonObject>> handler = notEmptyResponseHandler(request);
 							eventService.create(timelineId, object, user, eventHelper.onCreateResource(request, RESOURCE_NAME, handler));
 						}
@@ -102,6 +104,7 @@ public class EventHelper extends MongoDbControllerHelper {
 					RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
 						@Override
 						public void handle(JsonObject object) {
+							EventSanitizer.sanitize(object);
 							String id = request.params().get(EVENT_ID_PARAMETER);
 							crudService.update(id, object, user, notEmptyResponseHandler(request));
 						}
