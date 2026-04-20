@@ -59,6 +59,7 @@ import fr.wseduc.rs.Put;
 import fr.wseduc.security.ActionType;
 import fr.wseduc.security.SecuredAction;
 import fr.wseduc.webutils.request.RequestUtils;
+import net.atos.entng.timelinegenerator.security.EventSanitizer;
 
 import static org.entcore.common.http.response.DefaultResponseHandler.leftToResponse;
 
@@ -159,24 +160,26 @@ public class TimelineController extends MongoDbControllerHelper {
 	public void createTimeline(final HttpServerRequest request) {
 		UserUtils.getAuthenticatedUserInfos(eb, request)
 				.onSuccess(user ->
-					RequestUtils.bodyToJson(request, pathPrefix + "timeline", data ->
-							create(request, createRes -> {
-								if (createRes.succeeded()) {
-									final JsonObject createdTimeline = createRes.result();
-									// Create EVENT
-									eventHelper.onCreateResource(request, RESOURCE_NAME);
-									// Notify Explorer
-									final JsonObject newTimeline = data.copy();
-									newTimeline
-											.put("owner", (new JsonObject()).put("userId", user.getUserId()).put("displayName", user.getUsername()))
-											.put("version", System.currentTimeMillis())
-											.put("_id", createdTimeline.getString("_id"));
-									final Optional<Number> folderId = Optional.ofNullable(data.getNumber("folder"));
-									explorerPlugin.notifyUpsert(user, newTimeline, folderId);
-									// Render: the render is done by the create method above.
-								}
-							})
-				))
+					RequestUtils.bodyToJson(request, pathPrefix + "timeline", data -> {
+						EventSanitizer.sanitize(data);
+						create(request, createRes -> {
+							if (createRes.succeeded()) {
+								final JsonObject createdTimeline = createRes.result();
+								// Create EVENT
+								eventHelper.onCreateResource(request, RESOURCE_NAME);
+								// Notify Explorer
+								final JsonObject newTimeline = data.copy();
+								newTimeline
+										.put("owner", (new JsonObject()).put("userId", user.getUserId()).put("displayName", user.getUsername()))
+										.put("version", System.currentTimeMillis())
+										.put("_id", createdTimeline.getString("_id"));
+								final Optional<Number> folderId = Optional.ofNullable(data.getNumber("folder"));
+								explorerPlugin.notifyUpsert(user, newTimeline, folderId);
+								// Render: the render is done by the create method above.
+							}
+						});
+					})
+				)
 				.onFailure(e -> unauthorized(request));
 	}
 
@@ -188,6 +191,7 @@ public class TimelineController extends MongoDbControllerHelper {
 		UserUtils.getAuthenticatedUserInfos(eb, request)
 				.onSuccess(user ->
 					RequestUtils.bodyToJson(request, pathPrefix + "timeline", data -> {
+						EventSanitizer.sanitize(data);
 						data.put("modified", MongoDb.now());
 
 						((DefaultTimelineService) timelineService).update(id, data, updateRes -> {
