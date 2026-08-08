@@ -1671,10 +1671,10 @@ entcore-toolkit@^1.0.0, entcore-toolkit@^1.2.0:
     merge2 "^1.0.3"
     typescript "2.1.1"
 
-entcore@~4.8.0-dev:
-  version "4.8.5"
-  resolved "https://registry.yarnpkg.com/entcore/-/entcore-4.8.5.tgz#a55786e8bf7751786b6548076ffd8d754f8dc5e6"
-  integrity sha512-XfUtzh9Izcn7t3IJ6j86lhfxkZOQrTfbZA3B1ZQGuhDgiAIKBkkffotLT0UQ9bdgO7UdzcNYG6/Ur9e6502wkg==
+entcore@4.8.14:
+  version "4.8.14"
+  resolved "https://registry.yarnpkg.com/entcore/-/entcore-4.8.14.tgz#bc5bd8b41cb6240b2ce4641598837929295d176c"
+  integrity sha512-CZSdsRM2cuKNpq/WFJ8+zj08UxcuDBpWNJMhGTQ+YuKZqW/Y3Umc8/IJmE4DPU90C0RRYdF5iCoy4CrDg5fIPw==
   dependencies:
     angular "1.8.3"
     angular-route "1.8.3"
@@ -3400,9 +3400,9 @@ lodash.templatesettings@^4.0.0:
     lodash._reinterpolate "^3.0.0"
 
 lodash@^4.17.1, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.4, lodash@^4.2.1:
-  version "4.17.21"
-  resolved "https://registry.npmjs.org/lodash/-/lodash-4.17.21.tgz"
-  integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
+  version "4.17.23"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.23.tgz#f113b0378386103be4f6893388c73d0bde7f2c5a"
+  integrity sha512-LgVTMpQtIopCi79SJeDiP0TfWi5CNEc/L/aRdTh3yIvmZXTnheWpKjSZhnvMl8iXbC1tFg9gdHHDMLoV7CnG+w==
 
 longest@^1.0.1:
   version "1.0.1"
