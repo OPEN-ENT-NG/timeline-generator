@@ -1,5 +1,4 @@
-import { Selectable, Model, Selection, Eventer, Mix } from 'entcore-toolkit';
-import http from "axios";
+import { Selectable, Model, Selection, Eventer, Mix, http } from 'entcore-toolkit';
 import { Shareable, Rights, notify, moment, model } from 'entcore';
 import { Folders, Folder, Filters } from './folder';
 type TimelineData = {

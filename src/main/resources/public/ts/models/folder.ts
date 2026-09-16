@@ -1,6 +1,5 @@
-import http from 'axios';
 import { Rights, Shareable, model, idiom } from 'entcore';
-import { Mix, Provider, Selection, Selectable, Eventer } from 'entcore-toolkit';
+import { Mix, Provider, Selection, Selectable, Eventer, http } from 'entcore-toolkit';
 import { _ } from 'entcore';
 import { Timeline, Timelines } from './timeline';
 import { Subject } from 'rxjs';
