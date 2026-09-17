@@ -506,14 +506,6 @@ awesome-typescript-loader@^3.2.1:
     mkdirp "^0.5.1"
     source-map-support "^0.5.3"
 
-axios@0.16.2:
-  version "0.16.2"
-  resolved "https://registry.npmjs.org/axios/-/axios-0.16.2.tgz"
-  integrity sha512-IMYFDrcVbUksQhsMYtWCM6KdNaDpr1NY56dpzaIgj92ecPVI29bf2sOgAf8aGTiq8UoixJD61Pj0Ahej5DPv7w==
-  dependencies:
-    follow-redirects "^1.2.3"
-    is-buffer "^1.1.5"
-
 axios@^0.15.2, axios@^0.15.3:
   version "0.15.3"
   resolved "https://registry.npmjs.org/axios/-/axios-0.15.3.tgz"
@@ -1540,6 +1532,11 @@ des.js@^1.0.0:
     inherits "^2.0.1"
     minimalistic-assert "^1.0.0"
 
+detect-europe-js@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/detect-europe-js/-/detect-europe-js-0.1.2.tgz#aa76642e05dae786efc2e01a23d4792cd24c7b88"
+  integrity sha512-lgdERlL3u0aUdHocoouzT10d9I89VVhk0qNRmll7mXdGfJT1/wqZ2ZLA4oJAjeACPY5fT1wsbq2AT+GkuInsow==
+
 detect-file@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/detect-file/-/detect-file-1.0.0.tgz"
@@ -1660,7 +1657,12 @@ enhanced-resolve@~0.9.0:
     memory-fs "^0.2.0"
     tapable "^0.1.8"
 
-entcore-toolkit@^1.0.0, entcore-toolkit@^1.2.0:
+entcore-toolkit@2.0.0-dev.3:
+  version "2.0.0-dev.3"
+  resolved "https://registry.yarnpkg.com/entcore-toolkit/-/entcore-toolkit-2.0.0-dev.3.tgz#1e64ab8f231a04114b35ec9f1c5853cb36b6e1b7"
+  integrity sha512-l9kzMF8xfP5Z9qSLGEqoE2R8JNJZzZNQc2AFLCS+2IDhvmpPnN3XoTSPIPPQ98iFnS8pGQCfgm9P4jvl44j9+A==
+
+entcore-toolkit@^1.0.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/entcore-toolkit/-/entcore-toolkit-1.2.0.tgz#01ca517b0193db7917e6fcfe0d3cc7ff0756fb7f"
   integrity sha512-xyZBu6lQMLKfTiZIR3bkEgp58NwTR7NO4kqUOpeMk7BFvHUXUMGEfj0y/61S0Nv4RD3wVzabe6aXcV3P0A+UiQ==
@@ -1671,10 +1673,10 @@ entcore-toolkit@^1.0.0, entcore-toolkit@^1.2.0:
     merge2 "^1.0.3"
     typescript "2.1.1"
 
-entcore@~4.8.0-dev:
-  version "4.8.5"
-  resolved "https://registry.yarnpkg.com/entcore/-/entcore-4.8.5.tgz#a55786e8bf7751786b6548076ffd8d754f8dc5e6"
-  integrity sha512-XfUtzh9Izcn7t3IJ6j86lhfxkZOQrTfbZA3B1ZQGuhDgiAIKBkkffotLT0UQ9bdgO7UdzcNYG6/Ur9e6502wkg==
+entcore@dev:
+  version "4.8.19-dev.202609031552"
+  resolved "https://registry.yarnpkg.com/entcore/-/entcore-4.8.19-dev.202609031552.tgz#a677c8c6af32297a9225e431194704027443d241"
+  integrity sha512-HHWeF5RUm4LvBqazPKMYmJRu4faP1W94GoW7zVK/eUO4DfbbcYQzWkllBTXp2GRAwvNiPj16sLiZMvUzaRtC/A==
   dependencies:
     angular "1.8.3"
     angular-route "1.8.3"
@@ -1698,7 +1700,7 @@ entcore@~4.8.0-dev:
     rxjs "5.4.2"
     source-map-loader "^0.1.6"
     typescript "2.4.1"
-    ua-parser-js "0.7.28"
+    ua-parser-js "2.0.9"
     uglify-js "^3.0.23"
     uglifyjs-webpack-plugin "^0.4.6"
     underscore "^1.8.3"
@@ -2106,11 +2108,6 @@ follow-redirects@1.0.0:
   integrity sha512-7s+wBk4z5xTwVJuozRBAyRofWKjD3uG2CUjZfZTrw9f+f+z8ZSxOjAqfIDLtc0Hnz+wGK2Y8qd93nGGjXBYKsQ==
   dependencies:
     debug "^2.2.0"
-
-follow-redirects@^1.2.3:
-  version "1.15.3"
-  resolved "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.15.3.tgz"
-  integrity sha512-1VzOtuEM8pC9SFU1E+8KfTjZyMztRsgEfwQl44z8A25uy13jSzTj6dyK2Df52iV0vgHCfBwLhDWevLn95w5v6Q==
 
 for-in@^1.0.1, for-in@^1.0.2:
   version "1.0.2"
@@ -2981,6 +2978,11 @@ is-relative@^1.0.0:
   integrity sha512-Kw/ReK0iqwKeu0MITLFuj0jbPAmEiOsIwyIXvvbfa6QfmN9pkD1M+8pdk7Rl/dTKbH34/XBFMbgD4iMJhLQbGA==
   dependencies:
     is-unc-path "^1.0.0"
+
+is-standalone-pwa@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/is-standalone-pwa/-/is-standalone-pwa-0.1.1.tgz#7a1b0459471a95378aa0764d5dc0a9cec95f2871"
+  integrity sha512-9Cbovsa52vNQCjdXOzeQq5CnCbAcRk05aU62K20WO372NrTv0NxibLFCK6lQ4/iZEFdEA3p3t2VNOn8AJ53F5g==
 
 is-stream@^1.1.0:
   version "1.1.0"
@@ -5465,10 +5467,19 @@ typescript@2.4.1:
   resolved "https://registry.npmjs.org/typescript/-/typescript-2.4.1.tgz"
   integrity sha512-3O/A1TbKiXlfWsBv+X9QpzylORsBSXZuIG8GMzYvPTFCrkc65iXKd4gAkVN/jmLgSkmdTDMRY5XyNu+DxZD7mQ==
 
-ua-parser-js@0.7.28:
-  version "0.7.28"
-  resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.28.tgz#8ba04e653f35ce210239c64661685bf9121dec31"
-  integrity sha512-6Gurc1n//gjp9eQNXjD9O3M/sMwVtN5S8Lv9bvOYBfKfDNiIIhqiyi01vMBO45u4zkDE420w/e0se7Vs+sIg+g==
+ua-is-frozen@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/ua-is-frozen/-/ua-is-frozen-0.1.2.tgz#bfbc5f06336e379590e36beca444188c7dc3a7f3"
+  integrity sha512-RwKDW2p3iyWn4UbaxpP2+VxwqXh0jpvdxsYpZ5j/MLLiQOfbsV5shpgQiw93+KMYQPcteeMQ289MaAFzs3G9pw==
+
+ua-parser-js@2.0.9:
+  version "2.0.9"
+  resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-2.0.9.tgz#befd25ded7d3490008463f3d5ea6259ec6316d7a"
+  integrity sha512-OsqGhxyo/wGdLSXMSJxuMGN6H4gDnKz6Fb3IBm4bxZFMnyy0sdf6MN96Ie8tC6z/btdO+Bsy8guxlvLdwT076w==
+  dependencies:
+    detect-europe-js "^0.1.2"
+    is-standalone-pwa "^0.1.1"
+    ua-is-frozen "^0.1.2"
 
 uglify-js@^2.8.29:
   version "2.8.29"
