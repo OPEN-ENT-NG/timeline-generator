@@ -6,7 +6,7 @@
   "dependencies": {
     "entcore": "dev",
     "core-js": "2.4.1",
-    "entcore-toolkit": "2.0.0-dev.3"
+    "entcore-toolkit": "2.0.0-dev.4"
   },
   "devDependencies": {
     "@types/core-js": "0.9.42",
